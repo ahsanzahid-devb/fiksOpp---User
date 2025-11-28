@@ -8,7 +8,6 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../model/service_data_model.dart';
 import '../../../notification/notification_screen.dart';
-import '../../../service/search_service_screen.dart';
 
 class AppbarDashboardComponent3 extends StatefulWidget {
   final List<ServiceData> featuredList;
@@ -45,11 +44,13 @@ class _AppbarDashboardComponent3State extends State<AppbarDashboardComponent3> {
           ).cornerRadiusWithClipRRect(100).paddingRight(16),
         Row(
           children: [
-            Text(
-              appStore.isLoggedIn ? appStore.userFullName : language.helloGuest,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: boldTextStyle(),
+            Flexible(
+              child: Text(
+                appStore.isLoggedIn ? appStore.userFullName : language.helloGuest,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: boldTextStyle(),
+              ),
             ),
             appStore.isLoggedIn
                 ? Offstage()

@@ -1,6 +1,7 @@
 import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
 import 'package:booking_system_flutter/component/cached_image_widget.dart';
 import 'package:booking_system_flutter/main.dart';
+import 'package:booking_system_flutter/model/category_model.dart';
 import 'package:booking_system_flutter/model/service_data_model.dart';
 import 'package:booking_system_flutter/network/rest_apis.dart';
 import 'package:booking_system_flutter/screens/jobRequest/createService/create_service_screen.dart';
@@ -39,9 +40,9 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
   List<ServiceData> myServiceList = [];
   List<ServiceData> selectedServiceList = [];
 
-  // ✅ Category dropdown
-  String? selectedCategory;
-  List<String> categories = [];
+  // ✅ Category dropdown - fetched from API
+  CategoryData? selectedCategory;
+  List<CategoryData> categoryList = [];
 
   @override
   void initState() {
@@ -50,34 +51,43 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
     init();
   }
 
-  // Organize services by category
-  Map<String, List<ServiceData>> getServicesByCategory(
-      List<ServiceData> services) {
-    Map<String, List<ServiceData>> categorized = {};
-    for (var service in services) {
-      final key = service.categoryName.validate();
-      if (!categorized.containsKey(key)) categorized[key] = [];
-      categorized[key]!.add(service);
+  // Fetch categories from API
+  Future<void> getCategoryData() async {
+    try {
+      CategoryResponse response = await getCategoryList(CATEGORY_LIST_ALL);
+      
+      categoryList.clear();
+      if (response.categoryList != null && response.categoryList!.isNotEmpty) {
+        // Add "All" option at the beginning
+        CategoryData allCategory = CategoryData(
+          id: -1,
+          name: language.lblAll,
+        );
+        categoryList.add(allCategory);
+        categoryList.addAll(response.categoryList.validate());
+        
+        // Set default selection to "All"
+        if (selectedCategory == null) {
+          selectedCategory = allCategory;
+        }
+      }
+      setState(() {});
+    } catch (e) {
+      toast(e.toString(), print: true);
     }
-    return categorized;
   }
 
   Future<void> init() async {
     appStore.setLoading(true);
+
+    // Fetch categories from API
+    await getCategoryData();
 
     await getMyServiceList().then((value) {
       appStore.setLoading(false);
 
       if (value.userServices != null) {
         myServiceList = value.userServices.validate();
-
-        // Extract unique categories
-        categories = myServiceList
-            .map((e) => e.categoryName.validate())
-            .toSet()
-            .toList();
-        categories.sort();
-        if (categories.isNotEmpty) selectedCategory = categories.first;
       }
     }).catchError((e) {
       appStore.setLoading(false);
@@ -86,6 +96,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
 
     setState(() {});
   }
+
 
   void createPostJobClick() {
     appStore.setLoading(true);
@@ -149,11 +160,13 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categorizedServices = getServicesByCategory(myServiceList);
-
-    // Services to show based on selected category
-    final List<ServiceData> filteredServices = selectedCategory != null
-        ? categorizedServices[selectedCategory!] ?? []
+    // Filter services based on selected category ID
+    final List<ServiceData> filteredServices = selectedCategory != null &&
+            selectedCategory!.id != -1
+        ? myServiceList
+            .where((service) =>
+                service.categoryId == selectedCategory!.id)
+            .toList()
         : myServiceList;
 
     return GestureDetector(
@@ -239,41 +252,114 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                       ).paddingAll(16),
                     ),
 
-                    // ✅ Category Dropdown
-                    if (categories.isNotEmpty)
-                      DropdownButtonFormField<String>(
-                        value: selectedCategory,
-                        decoration: inputDecoration(context,
-                            labelText: "Select Category"),
-                        items: categories
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e),
-                                ))
-                            .toList(),
-                        onChanged: (val) {
-                          setState(() {
-                            selectedCategory = val;
-                          });
-                        },
-                      ).paddingSymmetric(horizontal: 16, vertical: 8),
-
                     // Services Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(language.services,
                             style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                        AppButton(
-                          child: Text(language.addNewService,
-                              style:
-                                  boldTextStyle(color: context.primaryColor)),
-                          onTap: () async {
-                            hideKeyboard(context);
-                            bool? res =
-                                await CreateServiceScreen().launch(context);
-                            if (res ?? false) init();
-                          },
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppButton(
+                              child: Text(language.addNewService,
+                                  style:
+                                      boldTextStyle(color: context.primaryColor)),
+                              onTap: () async {
+                                hideKeyboard(context);
+                                bool? res =
+                                    await CreateServiceScreen().launch(context);
+                                if (res ?? false) init();
+                              },
+                            ),
+                            if (categoryList.isNotEmpty) 8.width,
+                            // ✅ Category Filter Button (Top Right Corner)
+                            if (categoryList.isNotEmpty)
+                              PopupMenuButton<CategoryData>(
+                                offset: Offset(0, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: radius(defaultRadius),
+                                ),
+                                color: context.cardColor,
+                                elevation: 8,
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: boxDecorationWithRoundedCorners(
+                                    backgroundColor: selectedCategory != null && selectedCategory!.id != -1
+                                        ? context.primaryColor.withValues(alpha: 0.1)
+                                        : context.cardColor,
+                                    borderRadius: radius(defaultRadius),
+                                    border: Border.all(
+                                      color: selectedCategory != null && selectedCategory!.id != -1
+                                          ? context.primaryColor
+                                          : gray.withValues(alpha: 0.3),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Icon(
+                                        Icons.filter_list_rounded,
+                                        color: selectedCategory != null && selectedCategory!.id != -1
+                                            ? context.primaryColor
+                                            : gray,
+                                        size: 20,
+                                      ),
+                                      if (selectedCategory != null && selectedCategory!.id != -1)
+                                        Positioned(
+                                          top: -4,
+                                          right: -4,
+                                          child: Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: boxDecorationDefault(
+                                              color: context.primaryColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                itemBuilder: (BuildContext context) {
+                                  return categoryList.map((CategoryData category) {
+                                    bool isSelected = selectedCategory?.id == category.id;
+                                    return PopupMenuItem<CategoryData>(
+                                      value: category,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              category.name.validate(),
+                                              style: primaryTextStyle(
+                                                size: 14,
+                                                color: isSelected
+                                                    ? context.primaryColor
+                                                    : textPrimaryColorGlobal,
+                                                weight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isSelected)
+                                            Icon(
+                                              Icons.check_rounded,
+                                              color: context.primaryColor,
+                                              size: 20,
+                                            ).paddingLeft(8),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList();
+                                },
+                                onSelected: (CategoryData category) {
+                                  setState(() {
+                                    selectedCategory = category;
+                                  });
+                                },
+                              ),
+                           
+                          ],
                         ),
                       ],
                     ).paddingOnly(right: 8, left: 16),

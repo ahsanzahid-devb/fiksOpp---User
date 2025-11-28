@@ -58,35 +58,90 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
   }
 
   void init() async {
+    log("🔵 [CHAT DEBUG] ========== INIT STARTED ==========");
+    log("🔵 [CHAT DEBUG] Receiver User Email: ${widget.receiverUser.email}");
+    log("🔵 [CHAT DEBUG] Receiver User UID: ${widget.receiverUser.uid}");
+    log("🔵 [CHAT DEBUG] Sender User Email: ${appStore.userEmail}");
+    log("🔵 [CHAT DEBUG] Sender User UID: ${appStore.uid}");
+    log("🔵 [CHAT DEBUG] Is Chatting Allowed: ${widget.isChattingAllow}");
+    
     WidgetsBinding.instance.addObserver(this);
 
     //OneSignal.shared.disablePush(true);
 
     if (widget.receiverUser.uid.validate().isEmpty) {
+      log("🔵 [CHAT DEBUG] Receiver UID is empty, fetching user by email...");
       await userService.getUser(email: widget.receiverUser.email.validate()).then((value) {
         widget.receiverUser.uid = value.uid;
+        log("🔵 [CHAT DEBUG] ✅ Receiver UID fetched successfully: ${value.uid}");
       }).catchError((e) {
-        log(e.toString());
+        log("🔴 [CHAT DEBUG] ❌ Error fetching receiver user: ${e.toString()}");
+        toast(e.toString());
       });
+    } else {
+      log("🔵 [CHAT DEBUG] ✅ Receiver UID already exists: ${widget.receiverUser.uid}");
     }
 
-    senderUser = await userService.getUser(email: appStore.userEmail.validate());
+    log("🔵 [CHAT DEBUG] Fetching sender user...");
+    try {
+      senderUser = await userService.getUser(email: appStore.userEmail.validate());
+      log("🔵 [CHAT DEBUG] ✅ Sender user fetched: ${senderUser.displayName} (UID: ${senderUser.uid})");
+    } catch (e) {
+      log("🔴 [CHAT DEBUG] ❌ Error fetching sender user: ${e.toString()}");
+    }
+    
     appStore.setLoading(false);
     setState(() {});
 
-    if (await userService.isReceiverInContacts(senderUserId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate())) {
-      await chatServices.setUnReadStatusToTrue(senderId: appStore.uid.validate(), receiverId: widget.receiverUser.uid.validate()).catchError((e) {
+    log("🔵 [CHAT DEBUG] Checking if receiver is in contacts...");
+    bool isInContacts = await userService.isReceiverInContacts(
+      senderUserId: appStore.uid.validate(), 
+      receiverUserId: widget.receiverUser.uid.validate()
+    );
+    log("🔵 [CHAT DEBUG] Is receiver in contacts: $isInContacts");
+
+    if (isInContacts) {
+      log("🔵 [CHAT DEBUG] Setting unread status to true...");
+      await chatServices.setUnReadStatusToTrue(
+        senderId: appStore.uid.validate(), 
+        receiverId: widget.receiverUser.uid.validate()
+      ).then((_) {
+        log("🔵 [CHAT DEBUG] ✅ Unread status set successfully");
+      }).catchError((e) {
+        log("🔴 [CHAT DEBUG] ❌ Error setting unread status: ${e.toString()}");
         toast(e.toString());
       });
 
-      log("receiver ID ${widget.receiverUser.uid}");
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 1);
-      //
-      _streamSubscription = chatServices.isReceiverOnline(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()).listen((event) {
-        isReceiverOnline = event.isOnline.validate();
-        log("=======*=======*=======*=======*=======* User $isReceiverOnline =======*=======*=======*=======*=======");
-      });
+      log("🔵 [CHAT DEBUG] Receiver ID: ${widget.receiverUser.uid}");
+      log("🔵 [CHAT DEBUG] Setting online count to 1...");
+      chatServices.setOnlineCount(
+        senderId: widget.receiverUser.uid.validate(), 
+        receiverId: appStore.uid.validate(), 
+        status: 1
+      );
+      
+      log("🔵 [CHAT DEBUG] Setting up online status listener...");
+      _streamSubscription = chatServices.isReceiverOnline(
+        senderId: appStore.uid.validate(), 
+        receiverUserId: widget.receiverUser.uid.validate()
+      ).listen(
+        (event) {
+          isReceiverOnline = event.isOnline.validate();
+          log("🔵 [CHAT DEBUG] ====== Online Status Changed: $isReceiverOnline ======");
+        },
+        onError: (error) {
+          log("🔴 [CHAT DEBUG] ❌ Error in online status stream: ${error.toString()}");
+        },
+        onDone: () {
+          log("🔵 [CHAT DEBUG] Online status stream closed");
+        },
+      );
+      log("🔵 [CHAT DEBUG] ✅ Online status listener set up successfully");
+    } else {
+      log("🔵 [CHAT DEBUG] ⚠️ Receiver not in contacts, will add when first message is sent");
     }
+    
+    log("🔵 [CHAT DEBUG] ========== INIT COMPLETED ==========");
   }
 
   //region Widget
@@ -151,12 +206,24 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     bool isFile = false,
     List<String> attachmentFiles = const [],
   }) async {
-    if (appStore.isLoading) return;
+    log("🟢 [CHAT DEBUG] ========== SEND MESSAGE STARTED ==========");
+    log("🟢 [CHAT DEBUG] Is File: $isFile");
+    log("🟢 [CHAT DEBUG] Attachment Files Count: ${attachmentFiles.length}");
+    log("🟢 [CHAT DEBUG] Message Text: ${messageCont.text}");
+    log("🟢 [CHAT DEBUG] App Store Loading: ${appStore.isLoading}");
+    
+    if (appStore.isLoading) {
+      log("🟡 [CHAT DEBUG] ⚠️ App is loading, aborting send message");
+      return;
+    }
+    
     // If Message TextField is Empty.
     if (messageCont.text.trim().isEmpty && !isFile) {
+      log("🟡 [CHAT DEBUG] ⚠️ Message is empty and not a file, requesting focus");
       messageFocus.requestFocus();
       return;
     } else if (isFile && attachmentFiles.isEmpty) {
+      log("🟡 [CHAT DEBUG] ⚠️ File message but no attachments");
       return;
     }
 
@@ -172,28 +239,73 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     data.updatedAtTime = Timestamp.now();
     data.messageType = isFile ? MessageType.Files.name : MessageType.TEXT.name;
     data.attachmentfiles = attachmentFiles;
-    log('ChatMessageModel Data : ${data.toJson()}');
+    
+    log("🟢 [CHAT DEBUG] Message Data Prepared:");
+    log("🟢 [CHAT DEBUG] - Receiver ID: ${data.receiverId}");
+    log("🟢 [CHAT DEBUG] - Sender ID: ${data.senderId}");
+    log("🟢 [CHAT DEBUG] - Message: ${data.message}");
+    log("🟢 [CHAT DEBUG] - Message Type: ${data.messageType}");
+    log("🟢 [CHAT DEBUG] - Is Read: ${data.isMessageRead}");
+    log("🟢 [CHAT DEBUG] - Created At: ${data.createdAt}");
+    log("🟢 [CHAT DEBUG] - Attachments: ${data.attachmentfiles?.length ?? 0}");
+    log('🟢 [CHAT DEBUG] ChatMessageModel JSON: ${data.toJson()}');
+    
     messageCont.clear();
 
-    if (!(await userService.isReceiverInContacts(senderUserId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()))) {
-      log("========Adding To Contacts=========");
-      await chatServices.addToContacts(
-        senderId: data.senderId,
-        receiverId: data.receiverId,
-        receiverName: widget.receiverUser.displayName.validate(),
-        senderName: senderUser.displayName.validate(),
-      );
-      _streamSubscription = chatServices.isReceiverOnline(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()).listen((event) {
-        isReceiverOnline = event.isOnline.validate();
-        log("=======*=======*=======*=======*=======* User $isReceiverOnline =======*=======*=======*=======*=======");
-      });
+    bool isInContacts = await userService.isReceiverInContacts(
+      senderUserId: appStore.uid.validate(), 
+      receiverUserId: widget.receiverUser.uid.validate()
+    );
+    log("🟢 [CHAT DEBUG] Is receiver in contacts: $isInContacts");
+
+    if (!isInContacts) {
+      log("🟢 [CHAT DEBUG] ========== Adding To Contacts ==========");
+      log("🟢 [CHAT DEBUG] Sender ID: ${data.senderId}");
+      log("🟢 [CHAT DEBUG] Receiver ID: ${data.receiverId}");
+      log("🟢 [CHAT DEBUG] Receiver Name: ${widget.receiverUser.displayName.validate()}");
+      log("🟢 [CHAT DEBUG] Sender Name: ${senderUser.displayName.validate()}");
+      
+      try {
+        await chatServices.addToContacts(
+          senderId: data.senderId,
+          receiverId: data.receiverId,
+          receiverName: widget.receiverUser.displayName.validate(),
+          senderName: senderUser.displayName.validate(),
+        );
+        log("🟢 [CHAT DEBUG] ✅ Successfully added to contacts");
+        
+        log("🟢 [CHAT DEBUG] Setting up online status listener after adding to contacts...");
+        _streamSubscription?.cancel();
+        _streamSubscription = chatServices.isReceiverOnline(
+          senderId: appStore.uid.validate(), 
+          receiverUserId: widget.receiverUser.uid.validate()
+        ).listen(
+          (event) {
+            isReceiverOnline = event.isOnline.validate();
+            log("🟢 [CHAT DEBUG] ====== Online Status: $isReceiverOnline ======");
+          },
+          onError: (error) {
+            log("🔴 [CHAT DEBUG] ❌ Error in online status stream: ${error.toString()}");
+          },
+        );
+        log("🟢 [CHAT DEBUG] ✅ Online status listener set up");
+      } catch (e) {
+        log("🔴 [CHAT DEBUG] ❌ Error adding to contacts: ${e.toString()}");
+      }
     }
-    log('-------addMessage----');
-    await chatServices.addMessage(data).then((value) async {
-      log("--Message Successfully Added--");
+    
+    log("🟢 [CHAT DEBUG] ------- Calling addMessage -------");
+    try {
+      DocumentReference messageRef = await chatServices.addMessage(data);
+      log("🟢 [CHAT DEBUG] ✅ Message Successfully Added to Firebase");
+      log("🟢 [CHAT DEBUG] Message Document Reference: ${messageRef.path}");
+      
       // todo : remove this
       isReceiverOnline = 0;
+      log("🟢 [CHAT DEBUG] Is Receiver Online: $isReceiverOnline");
+      
       if (isReceiverOnline != 1) {
+        log("🟢 [CHAT DEBUG] Receiver is offline, sending push notification...");
         /// Send Notification
         NotificationService()
             .sendPushNotifications(
@@ -203,25 +315,44 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
           receiverUser: widget.receiverUser,
           senderUserData: senderUser,
         )
+            .then((_) {
+          log("🟢 [CHAT DEBUG] ✅ Push notification sent successfully");
+        })
             .catchError((e) {
-          log("Notification Error ${e.toString()}");
+          log("🔴 [CHAT DEBUG] ❌ Notification Error: ${e.toString()}");
         });
+      } else {
+        log("🟢 [CHAT DEBUG] Receiver is online, skipping notification");
       }
 
       /// Save receiverId to Sender Doc.
-      userService.saveToContacts(senderId: appStore.uid, receiverId: widget.receiverUser.uid.validate()).then((value) => log("---ReceiverId to Sender Doc.---")).catchError((e) {
-        log(e.toString());
+      log("🟢 [CHAT DEBUG] Saving receiverId to sender contacts...");
+      userService.saveToContacts(
+        senderId: appStore.uid, 
+        receiverId: widget.receiverUser.uid.validate()
+      ).then((value) {
+        log("🟢 [CHAT DEBUG] ✅ ReceiverId saved to Sender Doc");
+      }).catchError((e) {
+        log("🔴 [CHAT DEBUG] ❌ Error saving receiverId to sender: ${e.toString()}");
       });
 
       /// Save senderId to Receiver Doc.
-      userService.saveToContacts(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid).then((value) => log("---SenderId to Receiver Doc.---")).catchError((e) {
-        log(e.toString());
+      log("🟢 [CHAT DEBUG] Saving senderId to receiver contacts...");
+      userService.saveToContacts(
+        senderId: widget.receiverUser.uid.validate(), 
+        receiverId: appStore.uid
+      ).then((value) {
+        log("🟢 [CHAT DEBUG] ✅ SenderId saved to Receiver Doc");
+      }).catchError((e) {
+        log("🔴 [CHAT DEBUG] ❌ Error saving senderId to receiver: ${e.toString()}");
       });
 
-      /// ENd
-    }).catchError((e) {
-      log(e.toString());
-    });
+      log("🟢 [CHAT DEBUG] ========== SEND MESSAGE COMPLETED ==========");
+    } catch (e, stackTrace) {
+      log("🔴 [CHAT DEBUG] ❌ Error adding message: ${e.toString()}");
+      log("🔴 [CHAT DEBUG] Stack Trace: $stackTrace");
+      toast("Failed to send message: ${e.toString()}");
+    }
   }
 
   //endregion
@@ -347,7 +478,10 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                   isLive: true,
                   padding: EdgeInsets.only(left: 8, top: 8, right: 8, bottom: 0),
                   physics: BouncingScrollPhysics(),
-                  query: chatServices.chatMessagesWithPagination(senderId: appStore.uid.validate(), receiverUserId: widget.receiverUser.uid.validate()),
+                  query: chatServices.chatMessagesWithPagination(
+                    senderId: appStore.uid.validate(), 
+                    receiverUserId: widget.receiverUser.uid.validate()
+                  ),
                   initialLoader: LoaderWidget(),
                   limit: PER_PAGE_CHAT_LIST_COUNT,
                   onEmpty: NoDataWidget(
@@ -357,11 +491,18 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                   shrinkWrap: true,
                   viewType: ViewType.list,
                   itemBuilder: (context, snap, index) {
-                    ChatMessageModel data = ChatMessageModel.fromJson(snap[index].data() as Map<String, dynamic>);
-                    data.isMe = data.senderId == appStore.uid;
-                    data.chatDocumentReference = snap[index].reference;
-
-                    return ChatItemWidget(chatItemData: data);
+                    try {
+                      ChatMessageModel data = ChatMessageModel.fromJson(snap[index].data() as Map<String, dynamic>);
+                      data.isMe = data.senderId == appStore.uid;
+                      data.chatDocumentReference = snap[index].reference;
+                      
+                      log("🟣 [CHAT DEBUG] Message loaded - Index: $index, IsMe: ${data.isMe}, Type: ${data.messageType}, Message: ${data.message?.substring(0, data.message!.length > 50 ? 50 : data.message!.length)}");
+                      
+                      return ChatItemWidget(chatItemData: data);
+                    } catch (e) {
+                      log("🔴 [CHAT DEBUG] ❌ Error parsing message at index $index: ${e.toString()}");
+                      return SizedBox.shrink();
+                    }
                   },
                 ),
               ),
@@ -404,33 +545,69 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
   }
 
   Future<void> handleUploadAndSendFiles(List<File> pickedfiles) async {
-    if (pickedfiles.isEmpty) return;
+    log("🟡 [CHAT DEBUG] ========== HANDLE UPLOAD FILES STARTED ==========");
+    log("🟡 [CHAT DEBUG] Files count: ${pickedfiles.length}");
+    
+    if (pickedfiles.isEmpty) {
+      log("🟡 [CHAT DEBUG] ⚠️ No files to upload");
+      return;
+    }
+    
+    for (int i = 0; i < pickedfiles.length; i++) {
+      log("🟡 [CHAT DEBUG] File $i: ${pickedfiles[i].path} (${pickedfiles[i].lengthSync()} bytes)");
+    }
+    
     await SendFilePreviewScreen(pickedfiles: pickedfiles).launch(context).then((value) async {
-      debugPrint('text: ${value}');
-      debugPrint('text: ${value[MessageType.TEXT.name]}');
-      debugPrint('files: ${value[MessageType.Files.name]}');
-      debugPrint('files: ${value[MessageType.Files.name].runtimeType}');
+      log("🟡 [CHAT DEBUG] File preview screen returned");
+      log("🟡 [CHAT DEBUG] Return value: $value");
+      log("🟡 [CHAT DEBUG] Text value: ${value[MessageType.TEXT.name]}");
+      log("🟡 [CHAT DEBUG] Files value: ${value[MessageType.Files.name]}");
+      log("🟡 [CHAT DEBUG] Files type: ${value[MessageType.Files.name].runtimeType}");
 
       if (value[MessageType.Files.name] is List<File>) {
         pickedfiles = value[MessageType.Files.name];
+        log("🟡 [CHAT DEBUG] Updated files list, new count: ${pickedfiles.length}");
       }
 
       if (value[MessageType.TEXT.name] is String) {
         messageCont.text = value[MessageType.TEXT.name];
+        log("🟡 [CHAT DEBUG] Message text set: ${messageCont.text}");
       }
 
       if (messageCont.text.trim().isNotEmpty || pickedfiles.isNotEmpty) {
+        log("🟡 [CHAT DEBUG] Starting file upload...");
         appStore.setLoading(true);
         await ChatServices().uploadFiles(pickedfiles).then((attached_files) async {
-          if (attached_files.isEmpty) return;
-          log('ATTACHEDFILES: ${attached_files}');
-          await sendMessages(isFile: true, attachmentFiles: attached_files).whenComplete(() => appStore.setLoading(false));
-        }).catchError((e) {
+          log("🟡 [CHAT DEBUG] ✅ Files uploaded successfully");
+          log("🟡 [CHAT DEBUG] Attached files count: ${attached_files.length}");
+          for (int i = 0; i < attached_files.length; i++) {
+            log("🟡 [CHAT DEBUG] Attached file $i: ${attached_files[i]}");
+          }
+          
+          if (attached_files.isEmpty) {
+            log("🟡 [CHAT DEBUG] ⚠️ No files were uploaded");
+            return;
+          }
+          
+          log("🟡 [CHAT DEBUG] Sending message with attachments...");
+          await sendMessages(isFile: true, attachmentFiles: attached_files).whenComplete(() {
+            log("🟡 [CHAT DEBUG] ✅ Message with attachments sent");
+            appStore.setLoading(false);
+          });
+        }).catchError((e, stackTrace) {
+          log("🔴 [CHAT DEBUG] ❌ ChatServices().uploadFiles Error: ${e.toString()}");
+          log("🔴 [CHAT DEBUG] Stack Trace: $stackTrace");
           toast(e);
-          log('ChatServices().uploadFiles Err: ${e}');
           return;
-        }).whenComplete(() => appStore.setLoading(false));
+        }).whenComplete(() {
+          appStore.setLoading(false);
+          log("🟡 [CHAT DEBUG] ========== HANDLE UPLOAD FILES COMPLETED ==========");
+        });
+      } else {
+        log("🟡 [CHAT DEBUG] ⚠️ No text or files to send");
       }
+    }).catchError((e) {
+      log("🔴 [CHAT DEBUG] ❌ Error in SendFilePreviewScreen: ${e.toString()}");
     });
   }
 }
