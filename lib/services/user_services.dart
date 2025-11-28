@@ -101,15 +101,39 @@ class UserService extends BaseService {
 
   Future<void> saveToContacts(
       {required String senderId, required String receiverId}) async {
-    return ref!
-        .doc(senderId)
-        .collection(CONTACT_COLLECTION)
-        .doc(receiverId)
-        .update({
-      'lastMessageTime': DateTime.now().millisecondsSinceEpoch
-    }).catchError((e) {
+    log("🟡 [CHAT DEBUG] saveToContacts called - Sender: $senderId, Receiver: $receiverId");
+    try {
+      final contactRef = ref!
+          .doc(senderId)
+          .collection(CONTACT_COLLECTION)
+          .doc(receiverId);
+      
+      log("🟡 [CHAT DEBUG] Checking if contact document exists...");
+      // Check if document exists first
+      final contactSnapshot = await contactRef.get();
+      
+      if (contactSnapshot.exists) {
+        log("🟡 [CHAT DEBUG] Contact document exists, updating lastMessageTime...");
+        // Document exists, update it
+        await contactRef.update({
+          'lastMessageTime': DateTime.now().millisecondsSinceEpoch
+        });
+        log("🟡 [CHAT DEBUG] ✅ Contact document updated successfully");
+      } else {
+        log("🟡 [CHAT DEBUG] Contact document doesn't exist, creating it...");
+        // Document doesn't exist, create it with set
+        await contactRef.set({
+          'uid': receiverId,
+          'lastMessageTime': DateTime.now().millisecondsSinceEpoch,
+          'addedOn': Timestamp.now(),
+        }, SetOptions(merge: true));
+        log("🟡 [CHAT DEBUG] ✅ Contact document created successfully");
+      }
+    } catch (e, stackTrace) {
+      log("🔴 [CHAT DEBUG] ❌ Error in saveToContacts: ${e.toString()}");
+      log("🔴 [CHAT DEBUG] Stack Trace: $stackTrace");
       throw "${language.lblUserNotCreated}";
-    });
+    }
   }
 
   Future<bool> isReceiverInContacts(

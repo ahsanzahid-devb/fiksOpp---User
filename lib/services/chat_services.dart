@@ -83,16 +83,34 @@ class ChatServices extends BaseService {
   }
 
   Future<DocumentReference> addMessage(ChatMessageModel data) async {
+    log("🟡 [CHAT DEBUG] addMessage - Sender: ${data.senderId}, Receiver: ${data.receiverId}");
+    
     final senderCollection = ref!.doc(data.senderId).collection(data.receiverId!);
-    final receiverCollection = ref!.doc(data.receiverId).collection(data.senderId!);
+    
+    // Check if sender and receiver are the same (self-chat)
+    final bool isSelfChat = data.senderId == data.receiverId;
+    
+    if (isSelfChat) {
+      log("🟡 [CHAT DEBUG] Self-chat detected, adding message only once");
+      // For self-chat, only add to one collection
+      final senderDoc = await senderCollection.add(data.toJson());
+      await senderDoc.update({'uid': senderDoc.id});
+      log("🟡 [CHAT DEBUG] ✅ Message added to sender collection only");
+      return senderDoc;
+    } else {
+      log("🟡 [CHAT DEBUG] Different users, adding to both collections");
+      // For different users, add to both collections
+      final receiverCollection = ref!.doc(data.receiverId).collection(data.senderId!);
 
-    final senderDoc = await senderCollection.add(data.toJson());
-    final receiverDoc = await receiverCollection.add(data.toJson());
+      final senderDoc = await senderCollection.add(data.toJson());
+      final receiverDoc = await receiverCollection.add(data.toJson());
 
-    await senderDoc.update({'uid': senderDoc.id});
-    await receiverDoc.update({'uid': receiverDoc.id});
-
-    return senderDoc;
+      await senderDoc.update({'uid': senderDoc.id});
+      await receiverDoc.update({'uid': receiverDoc.id});
+      
+      log("🟡 [CHAT DEBUG] ✅ Message added to both sender and receiver collections");
+      return senderDoc;
+    }
   }
 
   Future<void> addToContacts({String? senderId, String? receiverId, String? senderName, String? receiverName, bool isSenderUpdate = false, bool isReceiverUpdate = false}) async {
