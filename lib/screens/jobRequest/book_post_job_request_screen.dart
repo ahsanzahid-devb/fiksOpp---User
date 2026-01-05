@@ -3,11 +3,16 @@ import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
 import 'package:booking_system_flutter/component/loader_widget.dart';
 import 'package:booking_system_flutter/main.dart';
 import 'package:booking_system_flutter/model/post_job_detail_response.dart';
+import 'package:booking_system_flutter/model/booking_detail_model.dart';
 import 'package:booking_system_flutter/network/rest_apis.dart';
 import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
 import 'package:booking_system_flutter/screens/map/map_screen.dart';
+import 'package:booking_system_flutter/screens/payment/payment_screen.dart';
+import 'package:booking_system_flutter/screens/booking/booking_detail_screen.dart';
+import 'package:booking_system_flutter/component/price_widget.dart';
 import 'package:booking_system_flutter/services/location_service.dart';
 import 'package:booking_system_flutter/utils/common.dart';
+import 'package:booking_system_flutter/utils/colors.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:booking_system_flutter/utils/images.dart';
 import 'package:booking_system_flutter/utils/model_keys.dart';
@@ -174,6 +179,7 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
 
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
+                            finish(context); // Close the confirmation dialog first
                             bookServices();
                           }
                         },
@@ -205,7 +211,7 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
       CommonKeys.serviceId: serviceId,
       CommonKeys.providerId: widget.providerId.toString(),
       CommonKeys.customerId: appStore.userId.toString().toString(),
-      CommonKeys.status: BookingStatusKeys.accept,
+      CommonKeys.status: BookingStatusKeys.waitingAdvancedPayment,
       CommonKeys.address: addressCont.text.validate(),
       CommonKeys.date: dateTimeCont.text,
       BookService.amount: widget.postJobDetailResponse.postRequestDetail!.jobPrice.validate(),
@@ -218,10 +224,28 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
 
     appStore.setLoading(true);
 
-    saveBooking(request).then((value) {
+    saveBooking(request).then((bookingDetailResponse) async {
       appStore.setLoading(false);
 
-      DashboardScreen(redirectToBooking: true).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      // Always show payment screen for advance payment
+      await PaymentScreen(
+        bookings: bookingDetailResponse,
+        isForAdvancePayment: true,
+        onPaymentSuccess: () {
+          // After payment success, show booking confirmation dialog
+          showInDialog(
+            context,
+            barrierDismissible: false,
+            backgroundColor: transparentColor,
+            contentPadding: EdgeInsets.zero,
+            builder: (BuildContext context) => _SimpleBookingConfirmationDialog(
+              bookingId: bookingDetailResponse.bookingDetail!.id,
+              bookingPrice: widget.postJobDetailResponse.postRequestDetail!.jobPrice.validate(),
+              bookingDetailResponse: bookingDetailResponse,
+            ),
+          );
+        },
+      ).launch(context);
     }).catchError((e) {
       appStore.setLoading(false);
       toast(e.toString(), print: true);
@@ -331,6 +355,129 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Simple booking confirmation dialog for inquiry-based bookings
+class _SimpleBookingConfirmationDialog extends StatelessWidget {
+  final int? bookingId;
+  final num? bookingPrice;
+  final BookingDetailResponse? bookingDetailResponse;
+
+  _SimpleBookingConfirmationDialog({
+    required this.bookingId,
+    this.bookingPrice,
+    this.bookingDetailResponse,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: context.width(),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              borderRadius: radius(),
+            ),
+            padding: EdgeInsets.all(16),
+            margin: EdgeInsets.only(top: 30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                30.height,
+                Text(language.thankYou, style: boldTextStyle(size: 20)),
+                8.height,
+                Text(language.bookingConfirmedMsg, style: secondaryTextStyle()),
+                24.height,
+                if (bookingDetailResponse?.bookingDetail != null)
+                  DottedBorderWidget(
+                    color: primaryColor.withValues(alpha: 0.6),
+                    strokeWidth: 1,
+                    gap: 6,
+                    padding: EdgeInsets.all(16),
+                    radius: 12,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(language.lblDate, style: secondaryTextStyle()),
+                            Text(language.lblTime, style: secondaryTextStyle()),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              formatBookingDate(bookingDetailResponse!.bookingDetail!.date.validate(), format: DATE_FORMAT_2),
+                              style: boldTextStyle(),
+                            ).expand(flex: 2),
+                            Text(
+                              formatBookingDate(bookingDetailResponse!.bookingDetail!.date.validate(), format: HOUR_12_FORMAT),
+                              style: boldTextStyle(),
+                            ).expand(flex: 1),
+                          ],
+                        ),
+                      ],
+                    ).center(),
+                  ),
+                16.height,
+                if (bookingPrice != null && bookingPrice! > 0)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(language.price, style: secondaryTextStyle()),
+                      PriceWidget(price: bookingPrice!, color: primaryColor),
+                    ],
+                  ),
+                16.height,
+                Row(
+                  children: [
+                    AppButton(
+                      padding: EdgeInsets.zero,
+                      text: language.goToHome,
+                      textStyle: boldTextStyle(size: 14, color: Colors.white),
+                      color: context.primaryColor,
+                      onTap: () {
+                        DashboardScreen().launch(context, isNewTask: true);
+                      },
+                    ).expand(),
+                    16.width,
+                    AppButton(
+                      padding: EdgeInsets.zero,
+                      text: language.goToReview,
+                      textStyle: boldTextStyle(size: 12),
+                      shapeBorder: RoundedRectangleBorder(borderRadius: radius(), side: BorderSide(color: primaryColor)),
+                      color: context.scaffoldBackgroundColor,
+                      onTap: () {
+                        DashboardScreen(redirectToBooking: true).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+                        if (bookingId != null) {
+                          BookingDetailScreen(bookingId: bookingId!).launch(context);
+                        }
+                      },
+                    ).expand(),
+                  ],
+                ),
+                16.height,
+              ],
+            ),
+          ),
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: context.primaryColor,
+              border: Border.all(width: 5, color: context.cardColor, style: BorderStyle.solid, strokeAlign: BorderSide.strokeAlignOutside),
+            ),
+            child: Icon(Icons.check, color: context.cardColor, size: 40),
           ),
         ],
       ),

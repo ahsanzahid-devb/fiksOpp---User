@@ -93,34 +93,36 @@ class _ConfirmBookingDialogState extends State<ConfirmBookingDialog> {
     if (!widget.data.serviceDetail!.isFreeService && widget.data.taxes.validate().isNotEmpty) {
       request.putIfAbsent('tax', () => widget.data.taxes);
     }
-    if (widget.data.serviceDetail != null && widget.data.serviceDetail!.isAdvancePayment && !widget.data.serviceDetail!.isFreeService && widget.data.serviceDetail!.isFixedService) {
-      request.putIfAbsent(CommonKeys.status, () => BookingStatusKeys.waitingAdvancedPayment);
-    }
+    // Always set status to waiting for advance payment
+    request.putIfAbsent(CommonKeys.status, () => BookingStatusKeys.waitingAdvancedPayment);
 
     appStore.setLoading(true);
 
     saveBooking(request).then((bookingDetailResponse) async {
       appStore.setLoading(false);
 
-      if (widget.data.serviceDetail != null && widget.data.serviceDetail!.isAdvancePayment && !widget.data.serviceDetail!.isFreeService && widget.data.serviceDetail!.isFixedService) {
-        finish(context);
-        PaymentScreen(bookings: bookingDetailResponse, isForAdvancePayment: true).launch(context);
-      } else {
-        finish(context);
-        showInDialog(
-          context,
-          barrierDismissible: false,
-          builder: (BuildContext context) => BookingConfirmationDialog(
-            data: widget.data,
-            bookingId: bookingDetailResponse.bookingDetail!.id,
-            bookingPrice: widget.bookingPrice,
-            selectedPackage: widget.selectedPackage,
-            bookingDetailResponse: bookingDetailResponse,
-          ),
-          backgroundColor: transparentColor,
-          contentPadding: EdgeInsets.zero,
-        );
-      }
+      finish(context);
+      // Always show payment screen for advance payment
+      await PaymentScreen(
+        bookings: bookingDetailResponse,
+        isForAdvancePayment: true,
+        onPaymentSuccess: () {
+          // After payment success, show booking confirmation dialog
+          showInDialog(
+            context,
+            barrierDismissible: false,
+            backgroundColor: transparentColor,
+            contentPadding: EdgeInsets.zero,
+            builder: (BuildContext context) => BookingConfirmationDialog(
+              data: widget.data,
+              bookingId: bookingDetailResponse.bookingDetail!.id,
+              bookingPrice: widget.bookingPrice,
+              selectedPackage: widget.selectedPackage,
+              bookingDetailResponse: bookingDetailResponse,
+            ),
+          );
+        },
+      ).launch(context);
     }).catchError((e) {
       appStore.setLoading(false);
       toast(e.toString(), print: true);

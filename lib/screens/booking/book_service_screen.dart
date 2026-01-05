@@ -353,6 +353,8 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
                         toast(language.pleaseSelectBookingDate);
                       } else {
                         widget.data.serviceDetail!.address = addressCont.text;
+                        
+                        // Always show confirm booking dialog first
                         showInDialog(
                           context,
                           barrierDismissible: false,

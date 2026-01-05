@@ -32,8 +32,9 @@ import '../dashboard/dashboard_screen.dart';
 class PaymentScreen extends StatefulWidget {
   final BookingDetailResponse bookings;
   final bool isForAdvancePayment;
+  final VoidCallback? onPaymentSuccess;
 
-  PaymentScreen({required this.bookings, this.isForAdvancePayment = false});
+  PaymentScreen({required this.bookings, this.isForAdvancePayment = false, this.onPaymentSuccess});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -52,7 +53,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
     super.initState();
     init();
 
-    if (widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+    log("Payment Screen Init - isForAdvancePayment: ${widget.isForAdvancePayment}, totalAmount from booking: ${widget.bookings.bookingDetail!.totalAmount.validate()}");
+
+    // If this is for advance payment, always calculate advance payment amount as 100% of total
+    if (widget.isForAdvancePayment) {
+      log("Processing advance payment - using 100% of total amount");
+      if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
+        // Always use 100% for advance payment (full amount)
+        advancePaymentAmount = widget.bookings.bookingDetail!.totalAmount.validate();
+        totalAmount = advancePaymentAmount!;
+        log("Advance Payment: Using 100% of total amount = $totalAmount");
+      } else {
+        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() - widget.bookings.bookingDetail!.paidAmount.validate();
+        log("Advance Payment: Remaining amount = $totalAmount");
+      }
+    } else if (widget.bookings.service != null && widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+      // Original logic for service-based advance payment
       if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
         advancePaymentAmount = widget.bookings.bookingDetail!.totalAmount.validate() * widget.bookings.service!.advancePaymentPercentage.validate() / 100;
         totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() * widget.bookings.service!.advancePaymentPercentage.validate() / 100;
@@ -63,12 +79,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
       totalAmount = widget.bookings.bookingDetail!.totalAmount.validate();
     }
 
-    log(totalAmount);
+    log("Total Amount: $totalAmount, Advance Payment Amount: $advancePaymentAmount");
   }
 
   void init() async {
     log("ISaDVANCE${widget.isForAdvancePayment}");
-    future = getPaymentGateways(requireCOD: !widget.isForAdvancePayment);
+    // Always allow Cash on Delivery for advance payments
+    future = getPaymentGateways(requireCOD: true);
     setState(() {});
   }
 
@@ -80,7 +97,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _handleClick() async {
     appStore.setLoading(true);
     if (currentPaymentMethod!.type == PAYMENT_METHOD_COD) {
-      savePay(paymentMethod: PAYMENT_METHOD_COD, paymentStatus: SERVICE_PAYMENT_STATUS_PENDING);
+      // For advance payments, use ADVANCE_PAID status; otherwise use PENDING
+      savePay(
+        paymentMethod: PAYMENT_METHOD_COD, 
+        paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PENDING
+      );
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_STRIPE) {
       StripeServiceNew stripeServiceNew = StripeServiceNew(
         paymentSetting: currentPaymentMethod!,
@@ -296,7 +317,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     Map request = {
       CommonKeys.bookingId: widget.bookings.bookingDetail!.id.validate(),
       CommonKeys.customerId: appStore.userId,
-      CouponKeys.discount: widget.bookings.service!.discount,
+      CouponKeys.discount: widget.bookings.service?.discount ?? 0,
       BookingServiceKeys.totalAmount: totalAmount,
       CommonKeys.dateTime: DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now()),
       CommonKeys.txnId: txnId != '' ? txnId : "#${widget.bookings.bookingDetail!.id.validate()}",
@@ -304,12 +325,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
       CommonKeys.paymentMethod: paymentMethod,
     };
 
-    if (widget.bookings.service != null && widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+    // If this is for advance payment, always set advance payment amount and status
+    if (widget.isForAdvancePayment) {
+      request[AdvancePaymentKey.advancePaymentAmount] = advancePaymentAmount ?? widget.bookings.bookingDetail!.totalAmount.validate();
+      
+      if ((widget.bookings.bookingDetail!.paymentStatus == null || 
+           widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_ADVANCE_PAID || 
+           widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_PAID) &&
+          (widget.bookings.bookingDetail!.paidAmount == null || widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
+        request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_ADVANCE_PAID;
+      } else if (widget.bookings.bookingDetail!.paymentStatus == SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
+        request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_PAID;
+      }
+    } else if (widget.bookings.service != null && widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+      // Original logic for service-based advance payment
       request[AdvancePaymentKey.advancePaymentAmount] = advancePaymentAmount ?? widget.bookings.bookingDetail!.paidAmount;
 
       if ((widget.bookings.bookingDetail!.paymentStatus == null || widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_ADVANCE_PAID || widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_PAID) &&
           (widget.bookings.bookingDetail!.paidAmount == null || widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
-        // TODO: check this condition  widget.bookings.bookingPackage?.id == -1
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_ADVANCE_PAID;
       } else if (widget.bookings.bookingDetail!.paymentStatus == SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_PAID;
@@ -319,7 +352,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     appStore.setLoading(true);
     savePayment(request).then((value) {
       appStore.setLoading(false);
-      push(DashboardScreen(redirectToBooking: true), isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      if (widget.onPaymentSuccess != null) {
+        finish(context);
+        widget.onPaymentSuccess!();
+      } else {
+        push(DashboardScreen(redirectToBooking: true), isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      }
     }).catchError((e) {
       toast(e.toString());
       appStore.setLoading(false);
