@@ -27,7 +27,7 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
           14.height,
           Text(
             language.ifYouDidnTFind,
-            style: boldTextStyle(color: white, size: 16),
+            style: boldTextStyle(color: black, size: 14),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -54,7 +54,7 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
             child: Text(
               language.newRequest,
               style: boldTextStyle(
-                  color: Colors.black, decoration: TextDecoration.underline),
+                  color: Colors.white, decoration: TextDecoration.underline,decorationColor: Colors.white),
             ),
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
+import '../main.dart';
 import '../utils/constant.dart';
 
 class AppScaffold extends StatelessWidget {
@@ -41,21 +42,35 @@ class AppScaffold extends StatelessWidget {
       )
           : null,
       backgroundColor: scaffoldBackgroundColor,
-      body: Observer(
-        builder: (_) {
-          final loading = showLoader && (isLoading?.value ?? false);
-          return Stack(
-            children: [
-              AbsorbPointer(
-                absorbing: loading,
-                child: child,
-              ),
-              if (loading)  LoaderWidget().center(),
-            ],
-          );
-        },
-      ),
-      bottomNavigationBar: bottomNavigationBar,
+      body: isLoading != null
+          ? Observer(
+              builder: (_) {
+                final loading = showLoader && (isLoading!.value);
+                return Stack(
+                  children: [
+                    AbsorbPointer(
+                      absorbing: loading,
+                      child: child,
+                    ),
+                    if (loading) LoaderWidget().center(),
+                  ],
+                );
+              },
+            )
+          : Stack(
+              children: [
+                child,
+                if (showLoader)
+                  Observer(
+                    builder: (_) => LoaderWidget().center().visible(appStore.isLoading),
+                  ),
+              ],
+            ),
+      bottomNavigationBar: bottomNavigationBar != null
+          ? SafeArea(
+              child: bottomNavigationBar!,
+            )
+          : null,
     );
   }
 }

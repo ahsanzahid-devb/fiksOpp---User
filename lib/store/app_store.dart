@@ -6,11 +6,9 @@ import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobx/mobx.dart';
-import 'package:nb_utils/nb_utils.dart';
-
+import 'package:nb_utils/nb_utils.dart' hide SELECTED_LANGUAGE_CODE;
 import '../network/rest_apis.dart';
 import '../utils/common.dart';
-
 part 'app_store.g.dart';
 
 class AppStore = _AppStore with _$AppStore;
@@ -29,7 +27,8 @@ abstract class _AppStore with Store {
   bool isCurrentLocation = getBoolAsync(IS_CURRENT_LOCATION);
 
   @observable
-  String selectedLanguageCode = getStringAsync(SELECTED_LANGUAGE_CODE, defaultValue: DEFAULT_LANGUAGE);
+  String selectedLanguageCode =
+      getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
 
   @observable
   String userProfileImage = getStringAsync(PROFILE_IMAGE);
@@ -98,7 +97,8 @@ abstract class _AppStore with Store {
   num userWalletAmount = 0.0;
 
   @observable
-  bool isSubscribedForPushNotification = getBoolAsync(IS_SUBSCRIBED_FOR_PUSH_NOTIFICATION, defaultValue: true);
+  bool isSubscribedForPushNotification =
+      getBoolAsync(IS_SUBSCRIBED_FOR_PUSH_NOTIFICATION, defaultValue: true);
 
   @observable
   bool isSpeechActivated = false;
@@ -110,7 +110,8 @@ abstract class _AppStore with Store {
   LanguageDataModel selectedLanguage = languageList().first;
 
   @observable
-  bool isHelpDeskFirstTime = getBoolAsync(IS_HELP_DESK_FIRST_TIME, defaultValue: true);
+  bool isHelpDeskFirstTime =
+      getBoolAsync(IS_HELP_DESK_FIRST_TIME, defaultValue: true);
 
   @action
   void setExpansionDynamicHeight(double val) {
@@ -318,7 +319,8 @@ abstract class _AppStore with Store {
     selectedLanguageCode = val;
     selectedLanguageDataModel = getSelectedLanguageModel();
 
-    await setValue(SELECTED_LANGUAGE_CODE, selectedLanguageCode);
+    // Use string literal to avoid conflict with nb_utils
+    await setValue('selected_language_code', selectedLanguageCode);
 
     language = await AppLocalizations().load(Locale(selectedLanguageCode));
 

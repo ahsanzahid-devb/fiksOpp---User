@@ -28,6 +28,7 @@ import 'package:booking_system_flutter/utils/common.dart';
 import 'package:booking_system_flutter/utils/configs.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:booking_system_flutter/utils/firebase_messaging_utils.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -36,14 +37,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import 'model/bank_list_response.dart';
 import 'model/booking_data_model.dart';
 import 'model/booking_status_model.dart';
 import 'model/category_model.dart';
 import 'model/coupon_list_model.dart';
 import 'model/dashboard_model.dart';
-
 //region Handle Background Firebase Message
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -69,7 +68,6 @@ AuthService authService = AuthService();
 ChatServices chatServices = ChatServices();
 RemoteConfigDataModel remoteConfigDataModel = RemoteConfigDataModel();
 //endregion
-
 //region Cached Response Variables for Dashboard Tabs
 DashboardResponse? cachedDashboardResponse;
 List<BookingData>? cachedBookingList;
@@ -77,7 +75,6 @@ List<CategoryData>? cachedCategoryList;
 List<BookingStatusResponse>? cachedBookingStatusDropdown;
 List<PostJobData>? cachedPostJobList;
 List<WalletDataElement>? cachedWalletHistoryList;
-
 List<ServiceData>? cachedServiceFavList;
 List<UserData>? cachedProviderFavList;
 List<UserData>? cachedHandymanList;
@@ -100,7 +97,8 @@ void main() async {
     /// Firebase Notification
     initFirebaseMessaging();
     if (kReleaseMode) {
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
     }
   });
 
@@ -121,17 +119,24 @@ void main() async {
   await initialize();
   localeLanguageList = languageList();
 
-  int themeModeIndex = getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+  // Initialize language before app starts
+  String savedLanguageCode = getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
+  language = await AppLocalizations().load(Locale(savedLanguageCode));
+  appStore.selectedLanguageCode = savedLanguageCode;
+
+  int themeModeIndex =
+      getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
   if (themeModeIndex == THEME_MODE_LIGHT) {
     appStore.setDarkMode(false);
   } else if (themeModeIndex == THEME_MODE_DARK) {
     appStore.setDarkMode(true);
   }
 
-  defaultToastBackgroundColor = appStore.isDarkMode ? Colors.white : Colors.black;
+  defaultToastBackgroundColor =
+      appStore.isDarkMode ? Colors.white : Colors.black;
   defaultToastTextColor = appStore.isDarkMode ? Colors.black : Colors.white;
 
-  runApp(MyApp());
+  runApp( MyApp(),);
 }
 
 class MyApp extends StatefulWidget {
@@ -164,7 +169,8 @@ class _MyAppState extends State<MyApp> {
                 home: SplashScreen(),
                 theme: AppTheme.lightTheme(color: snap.data),
                 darkTheme: AppTheme.darkTheme(color: snap.data),
-                themeMode: appStore.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                themeMode:
+                    appStore.isDarkMode ? ThemeMode.dark : ThemeMode.light,
                 title: APP_NAME,
                 supportedLocales: LanguageDataModel.languageLocales(),
                 localizationsDelegates: [
@@ -176,7 +182,8 @@ class _MyAppState extends State<MyApp> {
                 builder: (context, child) {
                   return MediaQuery(
                     child: child!,
-                    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: TextScaler.linear(1.0)),
                   );
                 },
                 localeResolutionCallback: (locale, supportedLocales) => locale,

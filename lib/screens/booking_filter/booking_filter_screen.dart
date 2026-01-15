@@ -213,7 +213,7 @@ class _BookingFilterScreenState extends State<BookingFilterScreen> {
             ),
           ),
           Positioned(
-            bottom: 0,
+            bottom: MediaQuery.of(context).padding.bottom,
             left: 0,
             right: 0,
             child: Observer(

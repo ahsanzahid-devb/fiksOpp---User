@@ -44,18 +44,67 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
   CategoryData? selectedCategory;
   List<CategoryData> categoryList = [];
 
+  // Track changes to show "Publish" instead of "Save"
+  bool hasChanges = false;
+  String initialTitle = '';
+  String initialDescription = '';
+  String initialDate = '';
+  List<int> initialSelectedServiceIds = [];
+
   @override
   void initState() {
     super.initState();
     priceCont.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    
+    // Store initial values
+    initialDate = priceCont.text;
+    
+    // Add listeners to detect changes
+    postTitleCont.addListener(_checkForChanges);
+    descriptionCont.addListener(_checkForChanges);
+    priceCont.addListener(_checkForChanges);
+    
     init();
+  }
+
+  void _checkForChanges() {
+    bool changed = false;
+    
+    // Check title
+    if (postTitleCont.text != initialTitle) {
+      changed = true;
+    }
+    
+    // Check description
+    if (descriptionCont.text != initialDescription) {
+      changed = true;
+    }
+    
+    // Check date
+    if (priceCont.text != initialDate) {
+      changed = true;
+    }
+    
+    // Check selected services
+    List<int> currentServiceIds = selectedServiceList.map((e) => e.id.validate()).toList();
+    if (currentServiceIds.length != initialSelectedServiceIds.length ||
+        !currentServiceIds.every((id) => initialSelectedServiceIds.contains(id)) ||
+        !initialSelectedServiceIds.every((id) => currentServiceIds.contains(id))) {
+      changed = true;
+    }
+    
+    if (hasChanges != changed) {
+      setState(() {
+        hasChanges = changed;
+      });
+    }
   }
 
   // Fetch categories from API
   Future<void> getCategoryData() async {
     try {
       CategoryResponse response = await getCategoryList(CATEGORY_LIST_ALL);
-      
+
       categoryList.clear();
       if (response.categoryList != null && response.categoryList!.isNotEmpty) {
         // Add "All" option at the beginning
@@ -65,7 +114,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
         );
         categoryList.add(allCategory);
         categoryList.addAll(response.categoryList.validate());
-        
+
         // Set default selection to "All"
         if (selectedCategory == null) {
           selectedCategory = allCategory;
@@ -89,6 +138,13 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
       if (value.userServices != null) {
         myServiceList = value.userServices.validate();
       }
+      
+      // Store initial values after data is loaded
+      initialTitle = postTitleCont.text;
+      initialDescription = descriptionCont.text;
+      initialDate = priceCont.text;
+      initialSelectedServiceIds = selectedServiceList.map((e) => e.id.validate()).toList();
+      hasChanges = false;
     }).catchError((e) {
       appStore.setLoading(false);
       toast(e.toString());
@@ -96,7 +152,6 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
 
     setState(() {});
   }
-
 
   void createPostJobClick() {
     appStore.setLoading(true);
@@ -161,13 +216,12 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
   @override
   Widget build(BuildContext context) {
     // Filter services based on selected category ID
-    final List<ServiceData> filteredServices = selectedCategory != null &&
-            selectedCategory!.id != -1
-        ? myServiceList
-            .where((service) =>
-                service.categoryId == selectedCategory!.id)
-            .toList()
-        : myServiceList;
+    final List<ServiceData> filteredServices =
+        selectedCategory != null && selectedCategory!.id != -1
+            ? myServiceList
+                .where((service) => service.categoryId == selectedCategory!.id)
+                .toList()
+            : myServiceList;
 
     return GestureDetector(
       onTap: () => hideKeyboard(context),
@@ -188,6 +242,131 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       child: Column(
                         children: [
+                          16.height,
+                          // Services Section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(language.services,
+                                  style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppButton(
+                                    child: Text(language.addNewService,
+                                        style: boldTextStyle(
+                                            color: context.primaryColor)),
+                                    onTap: () async {
+                                      hideKeyboard(context);
+                                      bool? res = await CreateServiceScreen()
+                                          .launch(context);
+                                      if (res ?? false) init();
+                                    },
+                                  ),
+                                  if (categoryList.isNotEmpty) 8.width,
+                                  // ✅ Category Filter Button (Top Right Corner)
+                                  if (categoryList.isNotEmpty)
+                                    PopupMenuButton<CategoryData>(
+                                      offset: Offset(0, 50),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: radius(defaultRadius),
+                                      ),
+                                      color: context.cardColor,
+                                      elevation: 8,
+                                      child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        decoration:
+                                            boxDecorationWithRoundedCorners(
+                                          backgroundColor:
+                                              selectedCategory != null &&
+                                                      selectedCategory!.id != -1
+                                                  ? context.primaryColor
+                                                      .withValues(alpha: 0.1)
+                                                  : context.cardColor,
+                                          borderRadius: radius(defaultRadius),
+                                          border: Border.all(
+                                            color: selectedCategory != null &&
+                                                    selectedCategory!.id != -1
+                                                ? context.primaryColor
+                                                : gray.withValues(alpha: 0.3),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Icon(
+                                              Icons.filter_list_rounded,
+                                              color: selectedCategory != null &&
+                                                      selectedCategory!.id != -1
+                                                  ? context.primaryColor
+                                                  : gray,
+                                              size: 20,
+                                            ),
+                                            if (selectedCategory != null &&
+                                                selectedCategory!.id != -1)
+                                              Positioned(
+                                                top: -4,
+                                                right: -4,
+                                                child: Container(
+                                                  width: 8,
+                                                  height: 8,
+                                                  decoration:
+                                                      boxDecorationDefault(
+                                                    color: context.primaryColor,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                      itemBuilder: (BuildContext context) {
+                                        return categoryList
+                                            .map((CategoryData category) {
+                                          bool isSelected =
+                                              selectedCategory?.id ==
+                                                  category.id;
+                                          return PopupMenuItem<CategoryData>(
+                                            value: category,
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    category.name.validate(),
+                                                    style: primaryTextStyle(
+                                                      size: 14,
+                                                      color: isSelected
+                                                          ? context.primaryColor
+                                                          : textPrimaryColorGlobal,
+                                                      weight: isSelected
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (isSelected)
+                                                  Icon(
+                                                    Icons.check_rounded,
+                                                    color: context.primaryColor,
+                                                    size: 20,
+                                                  ).paddingLeft(8),
+                                              ],
+                                            ),
+                                          );
+                                        }).toList();
+                                      },
+                                      onSelected: (CategoryData category) {
+                                        setState(() {
+                                          selectedCategory = category;
+                                        });
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ).paddingOnly(right: 8, left: 16),
+
                           16.height,
                           AppTextField(
                             controller: postTitleCont,
@@ -231,8 +410,6 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                             errorThisFieldRequired: language.requiredText,
                             decoration: inputDecoration(
                               context,
-                              labelText:
-                                  "Date or Text (e.g. 2025-10-31 or 'Later this week')",
                             ),
                             keyboardType: TextInputType.text,
                             validator: (s) {
@@ -251,119 +428,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                         ],
                       ).paddingAll(16),
                     ),
-
-                    // Services Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(language.services,
-                            style: boldTextStyle(size: LABEL_TEXT_SIZE)),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AppButton(
-                              child: Text(language.addNewService,
-                                  style:
-                                      boldTextStyle(color: context.primaryColor)),
-                              onTap: () async {
-                                hideKeyboard(context);
-                                bool? res =
-                                    await CreateServiceScreen().launch(context);
-                                if (res ?? false) init();
-                              },
-                            ),
-                            if (categoryList.isNotEmpty) 8.width,
-                            // ✅ Category Filter Button (Top Right Corner)
-                            if (categoryList.isNotEmpty)
-                              PopupMenuButton<CategoryData>(
-                                offset: Offset(0, 50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: radius(defaultRadius),
-                                ),
-                                color: context.cardColor,
-                                elevation: 8,
-                                child: Container(
-                                  padding: EdgeInsets.all(10),
-                                  decoration: boxDecorationWithRoundedCorners(
-                                    backgroundColor: selectedCategory != null && selectedCategory!.id != -1
-                                        ? context.primaryColor.withValues(alpha: 0.1)
-                                        : context.cardColor,
-                                    borderRadius: radius(defaultRadius),
-                                    border: Border.all(
-                                      color: selectedCategory != null && selectedCategory!.id != -1
-                                          ? context.primaryColor
-                                          : gray.withValues(alpha: 0.3),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Icon(
-                                        Icons.filter_list_rounded,
-                                        color: selectedCategory != null && selectedCategory!.id != -1
-                                            ? context.primaryColor
-                                            : gray,
-                                        size: 20,
-                                      ),
-                                      if (selectedCategory != null && selectedCategory!.id != -1)
-                                        Positioned(
-                                          top: -4,
-                                          right: -4,
-                                          child: Container(
-                                            width: 8,
-                                            height: 8,
-                                            decoration: boxDecorationDefault(
-                                              color: context.primaryColor,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                itemBuilder: (BuildContext context) {
-                                  return categoryList.map((CategoryData category) {
-                                    bool isSelected = selectedCategory?.id == category.id;
-                                    return PopupMenuItem<CategoryData>(
-                                      value: category,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              category.name.validate(),
-                                              style: primaryTextStyle(
-                                                size: 14,
-                                                color: isSelected
-                                                    ? context.primaryColor
-                                                    : textPrimaryColorGlobal,
-                                                weight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ),
-                                          if (isSelected)
-                                            Icon(
-                                              Icons.check_rounded,
-                                              color: context.primaryColor,
-                                              size: 20,
-                                            ).paddingLeft(8),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList();
-                                },
-                                onSelected: (CategoryData category) {
-                                  setState(() {
-                                    selectedCategory = category;
-                                  });
-                                },
-                              ),
-                           
-                          ],
-                        ),
-                      ],
-                    ).paddingOnly(right: 8, left: 16),
-
+                    16.height,
                     if (filteredServices.isNotEmpty)
                       AnimatedListView(
                         itemCount: filteredServices.length,
@@ -438,6 +503,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                                                 color: redColor, size: 14)),
                                         onTap: () {
                                           selectedServiceList.remove(data);
+                                          _checkForChanges();
                                           setState(() {});
                                         },
                                       )
@@ -448,6 +514,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                                                 color: context.primaryColor)),
                                         onTap: () {
                                           selectedServiceList.add(data);
+                                          _checkForChanges();
                                           setState(() {});
                                         },
                                       ),
@@ -456,7 +523,6 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                           );
                         },
                       ),
-
                     if (myServiceList.isEmpty && !appStore.isLoading)
                       NoDataWidget(
                         imageWidget: EmptyStateWidget(),
@@ -469,31 +535,29 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
             ),
 
             // Save Button
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: AppButton(
-                child: Text(language.save, style: boldTextStyle(color: white)),
-                color: context.primaryColor,
-                width: context.width(),
-                onTap: () {
-                  hideKeyboard(context);
-
-                  if (formKey.currentState!.validate()) {
-                    formKey.currentState!.save();
-
-                    if (selectedServiceList.isNotEmpty) {
-                      createPostJobClick();
-                    } else {
-                      toast(language.createPostJobWithoutSelectService);
-                    }
-                  }
-                },
-              ),
-            ),
           ],
         ),
+        bottomNavigationBar: AppButton(
+          child: Text(
+            hasChanges ? language.publish : language.save,
+            style: boldTextStyle(color: white),
+          ),
+          color: context.primaryColor,
+          width: context.width(),
+          onTap: () {
+            hideKeyboard(context);
+
+            if (formKey.currentState!.validate()) {
+              formKey.currentState!.save();
+
+              if (selectedServiceList.isNotEmpty) {
+                createPostJobClick();
+              } else {
+                toast(language.createPostJobWithoutSelectService);
+              }
+            }
+          },
+        ).paddingAll(16),
       ),
     );
   }

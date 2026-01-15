@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:booking_system_flutter/component/add_review_dialog.dart';
 import 'package:booking_system_flutter/component/app_common_dialog.dart';
 import 'package:booking_system_flutter/component/cached_image_widget.dart';
@@ -23,14 +22,12 @@ import 'package:booking_system_flutter/screens/booking/component/price_common_wi
 import 'package:booking_system_flutter/screens/booking/component/reason_dialog.dart';
 import 'package:booking_system_flutter/screens/booking/component/service_proof_list_widget.dart';
 import 'package:booking_system_flutter/screens/booking/handyman_info_screen.dart';
-import 'package:booking_system_flutter/screens/booking/provider_info_screen.dart';
 import 'package:booking_system_flutter/screens/booking/shimmer/booking_detail_shimmer.dart';
 import 'package:booking_system_flutter/screens/booking/track_location.dart';
 import 'package:booking_system_flutter/screens/payment/payment_screen.dart';
 import 'package:booking_system_flutter/screens/review/components/review_widget.dart';
 import 'package:booking_system_flutter/screens/review/rating_view_all_screen.dart';
 import 'package:booking_system_flutter/screens/service/service_detail_screen.dart';
-import 'package:booking_system_flutter/utils/booking_calculations_logic.dart';
 import 'package:booking_system_flutter/utils/colors.dart';
 import 'package:booking_system_flutter/utils/common.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
@@ -44,12 +41,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../component/base_scaffold_widget.dart';
 import '../../component/empty_error_state_widget.dart';
-import '../../model/booking_amount_model.dart';
 import '../service/addons/service_addons_component.dart';
 import 'booking_history_component.dart';
 import 'component/cancellations_booking_charge_dialog.dart';
@@ -1321,67 +1315,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen>
         },
       );
     } else if (bookingResponse.bookingDetail!.status ==
-        BookingStatusKeys.onGoing) {
-      return AppButton(
-        text: language.lblStart,
-        textColor: Colors.white,
-        color: Colors.green,
-        onTap: () {
-          _handleStartClick(status: bookingResponse);
-        },
-      );
-    } else if (bookingResponse.bookingDetail!.status ==
-        BookingStatusKeys.inProgress) {
-      return Row(
-        children: [
-          if (!bookingResponse.service!.isOnlineService.validate())
-            AppButton(
-              text: language.lblHold,
-              textColor: Colors.white,
-              color: hold,
-              onTap: () {
-                _handleHoldClick(status: bookingResponse);
-              },
-            ).expand(),
-          if (!bookingResponse.service!.isOnlineService.validate()) 16.width,
-          AppButton(
-            text: language.done,
-            textColor: Colors.white,
-            color: primaryColor,
-            onTap: () {
-              _handleDoneClick(status: bookingResponse);
-            },
-          ).expand(),
-        ],
-      ).paddingOnly(bottom: 16);
-    } else if (bookingResponse.bookingDetail!.status ==
-        BookingStatusKeys.hold) {
-      return Row(
-        children: [
-          AppButton(
-            text: language.lblResume,
-            textColor: Colors.white,
-            color: primaryColor,
-            onTap: () {
-              _handleResumeClick(status: bookingResponse);
-            },
-          ).expand(),
-          16.width,
-          AppButton(
-            text: language.lblCancel,
-            textColor: Colors.white,
-            color: cancelled,
-            onTap: () {
-              _handleCancelClick(
-                  status: bookingResponse,
-                  isDurationMode: checkTimeDifference(
-                      inputDateTime: DateTime.parse(
-                          bookingResponse.bookingDetail!.date.validate())));
-            },
-          ).expand(),
-        ],
-      ).paddingOnly(bottom: 16);
-    } else if (bookingResponse.bookingDetail!.status ==
         BookingStatusKeys.pendingApproval) {
       return Container(
         width: context.width(),
@@ -1682,213 +1615,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen>
     });
   }
 
-  void _handleDoneClick({required BookingDetailResponse status}) {
-    bool isAnyServiceAddonUnCompleted = status.bookingDetail!.serviceaddon
-        .validate()
-        .any((element) => element.status.getBoolInt() == false);
-    showConfirmDialogCustom(
-      context,
-      negativeText: language.lblNo,
-      dialogType: DialogType.CONFIRMATION,
-      primaryColor: context.primaryColor,
-      title: isAnyServiceAddonUnCompleted
-          ? language.confirmation
-          : language.lblEndServicesMsg,
-      subTitle: isAnyServiceAddonUnCompleted
-          ? language.pleaseNoteThatAllServiceMarkedCompleted
-          : null,
-      positiveText: language.lblYes,
-      onAccept: (c) async {
-        String endDateTime =
-            DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now());
-
-        log('STATUS.BOOKINGDETAIL!.STARTAT: ${status.bookingDetail!.startAt}');
-        num durationDiff = DateTime.parse(endDateTime.validate())
-            .difference(
-                DateTime.parse(status.bookingDetail!.startAt.validate()))
-            .inSeconds;
-
-        Map request = {
-          CommonKeys.id: status.bookingDetail!.id.validate(),
-          BookingUpdateKeys.startAt: status.bookingDetail!.startAt.validate(),
-          BookingUpdateKeys.endAt: endDateTime,
-          BookingUpdateKeys.durationDiff: durationDiff,
-          BookingUpdateKeys.reason: DONE,
-          CommonKeys.status: BookingStatusKeys.pendingApproval,
-          BookingUpdateKeys.paymentStatus:
-              status.bookingDetail!.isAdvancePaymentDone
-                  ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
-                  : status.bookingDetail!.paymentStatus.validate(),
-        };
-
-        //TODO Complete all service addon on booking
-        if (status.bookingDetail!.serviceaddon.validate().isNotEmpty) {
-          request.putIfAbsent(
-              BookingUpdateKeys.serviceAddon,
-              () => status.bookingDetail!.serviceaddon
-                  .validate()
-                  .map((e) => e.id)
-                  .toList());
-        }
-
-        /// Perform new calculations if service hourly
-        if (status.bookingDetail!.isHourlyService) {
-          BookingAmountModel bookingAmountModel = finalCalculations(
-            servicePrice: status.bookingDetail!.amount.validate(),
-            appliedCouponData: status.couponData,
-            discount: status.service!.discount.validate(),
-            serviceAddons: serviceAddonStore.selectedServiceAddon,
-            taxes: status.bookingDetail!.taxes,
-            quantity: status.bookingDetail!.quantity.validate(),
-            selectedPackage: status.bookingDetail!.bookingPackage,
-            extraCharges: status.bookingDetail!.extraCharges,
-            serviceType: status.service!.type!,
-            bookingType: status.bookingDetail!.bookingType!,
-            durationDiff: durationDiff.toInt(),
-          );
-
-          request.addAll(bookingAmountModel.toBookingUpdateJson());
-        }
-
-        appStore.setLoading(true);
-
-        log('RES: ${jsonEncode(request)}');
-        await updateBooking(request).then((res) async {
-          toast(res.message!);
-          commonStartTimer(
-              isHourlyService: status.bookingDetail!.isHourlyService,
-              status: BookingStatusKeys.complete,
-              timeInSec: status.bookingDetail!.durationDiff.validate().toInt());
-
-          appStore.setLoading(false);
-          init();
-          setState(() {});
-        }).catchError((e) {
-          appStore.setLoading(false);
-          toast(e.toString(), print: true);
-        });
-      },
-    );
-  }
-
-  void startClick({required BookingDetailResponse status}) async {
-    Map request = {
-      CommonKeys.id: status.bookingDetail!.id.validate(),
-      BookingUpdateKeys.startAt: formatBookingDate(DateTime.now().toString(),
-          format: BOOKING_SAVE_FORMAT, isLanguageNeeded: false),
-      BookingUpdateKeys.endAt: status.bookingDetail!.endAt.validate(),
-      BookingUpdateKeys.durationDiff: 0,
-      BookingUpdateKeys.reason: "",
-      CommonKeys.status: BookingStatusKeys.inProgress,
-      BookingUpdateKeys.paymentStatus:
-          status.bookingDetail!.isAdvancePaymentDone
-              ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
-              : status.bookingDetail!.paymentStatus.validate(),
-    };
-
-    appStore.setLoading(true);
-
-    await updateBooking(request).then((res) async {
-      toast(res.message!);
-      stopLocationUpdates();
-      commonStartTimer(
-          isHourlyService: status.bookingDetail!.isHourlyService,
-          status: BookingStatusKeys.inProgress,
-          timeInSec: status.bookingDetail!.durationDiff.validate().toInt());
-
-      init();
-      setState(() {});
-    }).catchError((e) {
-      toast(e.toString(), print: true);
-    });
-
-    appStore.setLoading(false);
-  }
-
-  void _handleStartClick({required BookingDetailResponse status}) {
-    showConfirmDialogCustom(
-      context,
-      title: language.confirmationRequestTxt,
-      dialogType: DialogType.CONFIRMATION,
-      primaryColor: context.primaryColor,
-      negativeText: language.lblNo,
-      positiveText: language.lblYes,
-      onAccept: (c) {
-        startClick(status: status);
-      },
-    );
-  }
-
-  void _handleResumeClick({required BookingDetailResponse status}) {
-    showConfirmDialogCustom(
-      context,
-      dialogType: DialogType.CONFIRMATION,
-      primaryColor: context.primaryColor,
-      negativeText: language.lblNo,
-      positiveText: language.lblYes,
-      title: language.lblConFirmResumeService,
-      onAccept: (c) async {
-        Map request = {
-          CommonKeys.id: status.bookingDetail!.id.validate(),
-          BookingUpdateKeys.startAt: formatBookingDate(
-              DateTime.now().toString(),
-              format: BOOKING_SAVE_FORMAT,
-              isLanguageNeeded: false),
-          // BookingUpdateKeys.endAt: status.bookingDetail!.endAt.validate(),
-          // BookingUpdateKeys.durationDiff: status.bookingDetail!.durationDiff.toInt(),
-          BookingUpdateKeys.reason: "",
-          CommonKeys.status: BookingStatusKeys.inProgress,
-          BookingUpdateKeys.paymentStatus:
-              status.bookingDetail!.isAdvancePaymentDone
-                  ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
-                  : status.bookingDetail!.paymentStatus.validate(),
-        };
-
-        appStore.setLoading(true);
-
-        await updateBooking(request).then((res) async {
-          toast(res.message!);
-          commonStartTimer(
-              isHourlyService: status.bookingDetail!.isHourlyService,
-              status: BookingStatusKeys.inProgress,
-              timeInSec: status.bookingDetail!.durationDiff.validate().toInt());
-          init();
-          setState(() {});
-        }).catchError((e) {
-          appStore.setLoading(false);
-          toast(e.toString(), print: true);
-        });
-      },
-    );
-  }
-
-  void _handleHoldClick({required BookingDetailResponse status}) {
-    if (status.bookingDetail!.status == BookingStatusKeys.inProgress) {
-      showInDialog(
-        context,
-        contentPadding: EdgeInsets.zero,
-        backgroundColor: context.scaffoldBackgroundColor,
-        builder: (context) {
-          return AppCommonDialog(
-            title: language.lblConfirmService,
-            child: ReasonDialog(
-                status: status, currentStatus: BookingStatusKeys.hold),
-          );
-        },
-      ).then((value) async {
-        if (value != null) {
-          init();
-          setState(() {});
-        }
-      });
-    }
-  }
 
   void _handleCancelClick(
       {required BookingDetailResponse status, required bool isDurationMode}) {
+    // Only allow cancellation before provider starts (pending or accept status)
     if (status.bookingDetail!.status == BookingStatusKeys.pending ||
-        status.bookingDetail!.status == BookingStatusKeys.accept ||
-        status.bookingDetail!.status == BookingStatusKeys.hold) {
+        status.bookingDetail!.status == BookingStatusKeys.accept) {
       showInDialog(
         context,
         contentPadding: EdgeInsets.zero,

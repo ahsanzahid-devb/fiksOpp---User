@@ -123,54 +123,7 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                         setState(() {});
                       },
                     ),
-                    Observer(
-                      builder: (context) {
-                        return AppButton(
-                          padding: EdgeInsets.all(0),
-                          width: context.width(),
-                          child: Container(
-                            padding: EdgeInsets.all(16),
-                            decoration:
-                                boxDecorationDefault(color: context.cardColor),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                ic_location.iconImage(
-                                    color: appStore.isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                    size: 24),
-                                8.width,
-                                Text(
-                                  appStore.isCurrentLocation
-                                      ? getStringAsync(CURRENT_ADDRESS)
-                                      : language.lblLocationOff,
-                                  style: secondaryTextStyle(),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ).expand(),
-                                8.width,
-                                Icon(Icons.keyboard_arrow_down,
-                                    size: 24,
-                                    color: appStore.isCurrentLocation
-                                        ? primaryColor
-                                        : context.iconColor),
-                              ],
-                            ),
-                          ),
-                          onTap: () async {
-                            locationWiseService(context, () {
-                              appStore.setLoading(true);
-
-                              init();
-                              setState(() {});
-                            });
-                          },
-                        ).cornerRadiusWithClipRRect(28);
-                      },
-                    ).paddingSymmetric(horizontal: 16),
-                    24.height,
-                    // SliderDashboardComponent3(sliderList: snap.slider.validate()),
+                     // SliderDashboardComponent3(sliderList: snap.slider.validate()),
 
                     // CategoryListDashboardComponent3(
                     //     categoryList: snap.category.validate(),

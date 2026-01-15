@@ -9,10 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../component/base_scaffold_widget.dart';
 import '../../component/empty_error_state_widget.dart';
-
 class MyPostRequestListScreen extends StatefulWidget {
   @override
   _MyPostRequestListScreenState createState() =>
@@ -73,14 +71,15 @@ class _MyPostRequestListScreenState extends State<MyPostRequestListScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       appBarTitle: language.myPostJobList,
-      child: Stack(
-        children: [
-          SnapHelperWidget<List<PostJobData>>(
-            future: future,
-            onSuccess: (data) {
-              return AnimatedListView(
-                itemCount: data.length,
-                padding: EdgeInsets.only(top: 12, bottom: 70),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            SnapHelperWidget<List<PostJobData>>(
+              future: future,
+              onSuccess: (data) {
+                return AnimatedListView(
+                  itemCount: data.length,
+                  padding: EdgeInsets.only(top: 12, bottom: 70),
                 listAnimationType: ListAnimationType.FadeIn,
                 fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
                 itemBuilder: (_, i) {
@@ -129,9 +128,10 @@ class _MyPostRequestListScreenState extends State<MyPostRequestListScreen> {
               );
             },
           ),
-          Observer(
-              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
-        ],
+            Observer(
+                builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          ],
+        ),
       ),
       bottomNavigationBar: AppButton(
         child: Text(language.requestNewJob, style: boldTextStyle(color: white)),

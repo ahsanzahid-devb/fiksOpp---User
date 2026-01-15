@@ -32,7 +32,7 @@ class JobRequestDashboardComponent2 extends StatelessWidget {
           16.height,
           Text(
             language.ifYouDidnTFind,
-            style: primaryTextStyle(size: 16, color: white),
+            style: primaryTextStyle(size: 14, color: black),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -44,7 +44,9 @@ class JobRequestDashboardComponent2 extends StatelessWidget {
               children: [
                 Icon(Icons.add, color: Colors.white),
                 4.width,
-                Text(language.newRequest, style: boldTextStyle(color: Colors.white)),
+                Text(language.newRequest,  style: boldTextStyle(
+                  color: Colors.white, decoration: TextDecoration.underline,decorationColor: Colors.white),
+          ),
               ],
             ),
             color: primaryColor,

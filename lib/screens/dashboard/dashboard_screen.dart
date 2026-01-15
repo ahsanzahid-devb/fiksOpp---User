@@ -107,109 +107,165 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return DoublePressBackWidget(
       message: language.lblBackPressMsg,
       child: Scaffold(
-        body: AnimatedOpacity(
-          opacity: 1,
-          duration: Duration(milliseconds: 500),
-          child: [
-            Observer(
-              builder: (context) {
-                if (appConfigurationStore.userDashboardType == DASHBOARD_1) {
-                  return DashboardFragment1();
-                } else if (appConfigurationStore.userDashboardType ==
-                    DASHBOARD_2) {
-                  return DashboardFragment2();
-                } else if (appConfigurationStore.userDashboardType ==
-                    DASHBOARD_3) {
-                  return DashboardFragment3();
-                } else if (appConfigurationStore.userDashboardType ==
-                    DASHBOARD_4) {
-                  return DashboardFragment4();
-                } else {
-                  return DashboardFragment();
-                }
-              },
-            ),
-            Observer(
-                builder: (context) => appStore.isLoggedIn
-                    ? BookingFragment()
-                    : SignInScreen(isFromDashboard: true)),
-            if (appConfigurationStore.isEnableChat)
+        body: SafeArea(
+          child: AnimatedOpacity(
+            opacity: 1,
+            duration: Duration(milliseconds: 500),
+            child: [
+              Observer(
+                builder: (context) {
+                  if (appConfigurationStore.userDashboardType == DASHBOARD_1) {
+                    return DashboardFragment1();
+                  } else if (appConfigurationStore.userDashboardType ==
+                      DASHBOARD_2) {
+                    return DashboardFragment2();
+                  } else if (appConfigurationStore.userDashboardType ==
+                      DASHBOARD_3) {
+                    return DashboardFragment3();
+                  } else if (appConfigurationStore.userDashboardType ==
+                      DASHBOARD_4) {
+                    return DashboardFragment4();
+                  } else {
+                    return DashboardFragment();
+                  }
+                },
+              ),
               Observer(
                   builder: (context) => appStore.isLoggedIn
-                      ? ChatListScreen()
+                      ? BookingFragment()
                       : SignInScreen(isFromDashboard: true)),
-            Observer(
-                builder: (context) => appStore.isLoggedIn
-                    ? ProfileFragment()
-                    : SignInScreen(isFromDashboard: true)) 
-          ][currentIndex],
-        ),
-        bottomNavigationBar: Blur(
-          blur: 30,
-          borderRadius: radius(0),
-          child: NavigationBarTheme(
-            data: NavigationBarThemeData(
-              backgroundColor: context.primaryColor.withValues(alpha: 0.02),
-              indicatorColor: context.primaryColor.withValues(alpha: 0.1),
-              labelTextStyle:
-                  WidgetStateProperty.all(primaryTextStyle(size: 12)),
-              surfaceTintColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-            ),
-            child: NavigationBar(
-              selectedIndex: currentIndex,
-              destinations: [
-                NavigationDestination(
-                  icon: ic_home.iconImage(color: appTextSecondaryColor),
-                  selectedIcon: ic_home.iconImage(color: context.primaryColor),
-                  label: language.home,
-                ),
-                NavigationDestination(
-                  icon: ic_ticket.iconImage(color: appTextSecondaryColor),
-                  selectedIcon:
-                      ic_ticket.iconImage(color: context.primaryColor),
-                  label: language.booking,
-                ),
-                // NavigationDestination(
-                //   icon: ic_category.iconImage(color: appTextSecondaryColor),
-                //   selectedIcon: ic_category.iconImage(color: context.primaryColor),
-                //   label: language.category,
-                // ),
-                if (appConfigurationStore.isEnableChat)
-                  NavigationDestination(
-                    icon: ic_chat.iconImage(color: appTextSecondaryColor),
-                    selectedIcon:
-                        ic_chat.iconImage(color: context.primaryColor),
-                    label: language.lblChat,
-                  ),
+              if (appConfigurationStore.isEnableChat)
                 Observer(
-                  builder: (context) {
-                    return NavigationDestination(
-                      icon: (appStore.isLoggedIn &&
-                              appStore.userProfileImage.isNotEmpty)
-                          ? IgnorePointer(
-                              ignoring: true,
-                              child: ImageBorder(
-                                  src: appStore.userProfileImage, height: 26))
-                          : ic_profile2.iconImage(color: appTextSecondaryColor),
-                      selectedIcon: (appStore.isLoggedIn &&
-                              appStore.userProfileImage.isNotEmpty)
-                          ? IgnorePointer(
-                              ignoring: true,
-                              child: ImageBorder(
-                                  src: appStore.userProfileImage, height: 26))
-                          : ic_profile2.iconImage(color: context.primaryColor),
-                      label: language.profile,
-                    );
+                    builder: (context) => appStore.isLoggedIn
+                        ? ChatListScreen()
+                        : SignInScreen(isFromDashboard: true)),
+              Observer(
+                  builder: (context) => appStore.isLoggedIn
+                      ? ProfileFragment()
+                      : SignInScreen(isFromDashboard: true)) 
+            ][currentIndex],
+          ),
+        ),
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Address search bar at the bottom - only show when on HOME tab (index 0)
+            if (currentIndex == 0)
+              Observer(
+                builder: (context) {
+                  return AppButton(
+                    padding: EdgeInsets.all(0),
+                    width: context.width(),
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration:
+                          boxDecorationDefault(color: context.cardColor),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ic_location.iconImage(
+                              color: appStore.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
+                              size: 24),
+                          8.width,
+                          Text(
+                            appStore.isCurrentLocation
+                                ? getStringAsync(CURRENT_ADDRESS)
+                                : language.lblLocationOff,
+                            style: secondaryTextStyle(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ).expand(),
+                          8.width,
+                          Icon(Icons.keyboard_arrow_down,
+                              size: 24,
+                              color: appStore.isCurrentLocation
+                                  ? primaryColor
+                                  : context.iconColor),
+                        ],
+                      ),
+                    ),
+                    onTap: () async {
+                      locationWiseService(context, () {
+                        appStore.setLoading(true);
+
+                        init();
+                        setState(() {});
+                      });
+                    },
+                  ).cornerRadiusWithClipRRect(28);
+                },
+              ).paddingSymmetric(horizontal: 16),
+            16.height,  
+            Blur(
+              blur: 30,
+              borderRadius: radius(0),
+              child: NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  backgroundColor: context.primaryColor.withValues(alpha: 0.02),
+                  indicatorColor: context.primaryColor.withValues(alpha: 0.1),
+                  labelTextStyle:
+                      WidgetStateProperty.all(primaryTextStyle(size: 12)),
+                  surfaceTintColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
+                child: NavigationBar(
+                  selectedIndex: currentIndex,
+                  destinations: [
+                    NavigationDestination(
+                      icon: ic_home.iconImage(color: appTextSecondaryColor),
+                      selectedIcon: ic_home.iconImage(color: context.primaryColor),
+                      label: language.home,
+                    ),
+                    NavigationDestination(
+                      icon: ic_ticket.iconImage(color: appTextSecondaryColor),
+                      selectedIcon:
+                          ic_ticket.iconImage(color: context.primaryColor),
+                      label: language.booking,
+                    ),
+                    // NavigationDestination(
+                    //   icon: ic_category.iconImage(color: appTextSecondaryColor),
+                    //   selectedIcon: ic_category.iconImage(color: context.primaryColor),
+                    //   label: language.category,
+                    // ),
+                    if (appConfigurationStore.isEnableChat)
+                      NavigationDestination(
+                        icon: ic_chat.iconImage(color: appTextSecondaryColor),
+                        selectedIcon:
+                            ic_chat.iconImage(color: context.primaryColor),
+                        label: language.lblChat,
+                      ),
+                    Observer(
+                      builder: (context) {
+                        return NavigationDestination(
+                          icon: (appStore.isLoggedIn &&
+                                  appStore.userProfileImage.isNotEmpty)
+                              ? IgnorePointer(
+                                  ignoring: true,
+                                  child: ImageBorder(
+                                      src: appStore.userProfileImage, height: 26))
+                              : ic_profile2.iconImage(color: appTextSecondaryColor),
+                          selectedIcon: (appStore.isLoggedIn &&
+                                  appStore.userProfileImage.isNotEmpty)
+                              ? IgnorePointer(
+                                  ignoring: true,
+                                  child: ImageBorder(
+                                      src: appStore.userProfileImage, height: 26))
+                              : ic_profile2.iconImage(color: context.primaryColor),
+                          label: language.profile,
+                        );
+                      },
+                    ),
+                  ],
+                  onDestinationSelected: (index) {
+                    currentIndex = index;
+                    setState(() {});
                   },
                 ),
-              ],
-              onDestinationSelected: (index) {
-                currentIndex = index;
-                setState(() {});
-              },
+              ),
             ),
-          ),
+          ],
         ),
         bottomSheet: Observer(builder: (context) {
           return VoiceSearchComponent().visible(appStore.isSpeechActivated);

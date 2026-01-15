@@ -14,6 +14,9 @@ class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   @override
   Future<BaseLanguage> load(Locale locale) async {
     switch (locale.languageCode) {
+      case 'no':
+        // Temporarily use English strings for Norwegian locale until full Norwegian translations are added.
+        return LanguageEn();
       case 'en':
         return LanguageEn();
       case 'ar':
@@ -34,5 +37,5 @@ class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   bool isSupported(Locale locale) => LanguageDataModel.languages().contains(locale.languageCode);
 
   @override
-  bool shouldReload(LocalizationsDelegate<BaseLanguage> old) => false;
+  bool shouldReload(LocalizationsDelegate<BaseLanguage> old) => true;
 }

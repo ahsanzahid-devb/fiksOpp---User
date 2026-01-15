@@ -125,72 +125,66 @@ class _BookingItemComponentState extends State<BookingItemComponent> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Wrap(
+                    spacing: 5,
+                    runSpacing: 5,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                            margin: EdgeInsets.only(left: 4),
-                            decoration: BoxDecoration(
-                              color: context.primaryColor.withValues(alpha:0.1),
-                              borderRadius: radius(16),
-                              border: Border.all(color: context.primaryColor),
-                            ),
-                            child: Text(
-                              '#${widget.bookingData.id.validate()}',
-                              style: boldTextStyle(color: context.primaryColor, size: 12),
-                            ),
-                          ).flexible(),
-                          5.width,
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: widget.bookingData.status.validate().getPaymentStatusBackgroundColor.withValues(alpha:0.1),
-                              borderRadius: radius(16),
-                              border: Border.all(color: widget.bookingData.status.validate().getPaymentStatusBackgroundColor),
-                            ),
-                            child: Marquee(
-                              child: Text(
-                                widget.bookingData.status.validate().toBookingStatus(),
-                                style: boldTextStyle(
-                                  color: widget.bookingData.status.validate().getPaymentStatusBackgroundColor,
-                                  size: 12,
-                                ),
-                              ),
-                            ),
-                          ).flexible(),
-                          if (widget.bookingData.isPostJob)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                              margin: EdgeInsets.only(left: 4),
-                              decoration: BoxDecoration(
-                                color: context.primaryColor.withValues(alpha:0.1),
-                                border: Border.all(color: context.primaryColor),
-                                borderRadius: radius(16),
-                              ),
-                              child: Text(
-                                language.postJob,
-                                style: boldTextStyle(color: context.primaryColor, size: 12),
-                              ),
-                            ),
-                          if (widget.bookingData.isPackageBooking)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                              margin: EdgeInsets.only(left: 4),
-                              decoration: BoxDecoration(
-                                color: context.primaryColor.withValues(alpha:0.1),
-                                border: Border.all(color: context.primaryColor),
-                                borderRadius: radius(16),
-                              ),
-                              child: Text(
-                                language.package,
-                                style: boldTextStyle(color: context.primaryColor, size: 12),
-                              ),
-                            ),
-                        ],
-                      ).flexible(),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        margin: EdgeInsets.only(left: 4),
+                        decoration: BoxDecoration(
+                          color: context.primaryColor.withValues(alpha:0.1),
+                          borderRadius: radius(16),
+                          border: Border.all(color: context.primaryColor),
+                        ),
+                        child: Text(
+                          '#${widget.bookingData.id.validate()}',
+                          style: boldTextStyle(color: context.primaryColor, size: 12),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: widget.bookingData.status.validate().getPaymentStatusBackgroundColor.withValues(alpha:0.1),
+                          borderRadius: radius(16),
+                          border: Border.all(color: widget.bookingData.status.validate().getPaymentStatusBackgroundColor),
+                        ),
+                        child: Text(
+                          widget.bookingData.status.validate().toBookingStatus(),
+                          style: boldTextStyle(
+                            color: whiteColor,  size: 12,
+                          ),
+                        ),
+                      ),
+                      if (widget.bookingData.isPostJob)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          margin: EdgeInsets.only(left: 4),
+                          decoration: BoxDecoration(
+                            color: context.primaryColor.withValues(alpha:0.1),
+                            border: Border.all(color: context.primaryColor),
+                            borderRadius: radius(16),
+                          ),
+                          child: Text(
+                            language.postJob,
+                            style: boldTextStyle(color: context.primaryColor, size: 12),
+                          ),
+                        ),
+                      if (widget.bookingData.isPackageBooking)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          margin: EdgeInsets.only(left: 4),
+                          decoration: BoxDecoration(
+                            color: context.primaryColor.withValues(alpha:0.1),
+                            border: Border.all(color: context.primaryColor),
+                            borderRadius: radius(16),
+                          ),
+                          child: Text(
+                            language.package,
+                            style: boldTextStyle(color: context.primaryColor, size: 12),
+                          ),
+                        ),
                     ],
                   ),
                   12.height,
@@ -435,6 +429,15 @@ class _BookingItemComponentState extends State<BookingItemComponent> {
         ],
       ),
     );
+  }
+
+  Color _getDarkerColor(Color color) {
+    // Darken the color for better contrast with border while maintaining visibility
+    final hsl = HSLColor.fromColor(color);
+    // Reduce lightness to 50% - darker than border but still clearly visible
+    // Keep saturation high for good color distinction
+    final darkerLightness = (hsl.lightness * 0.5).clamp(0.3, 0.6);
+    return hsl.withLightness(darkerLightness).toColor();
   }
 
   bool get isDateTimeAfterNow {

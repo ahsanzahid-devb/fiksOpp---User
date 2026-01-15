@@ -727,6 +727,8 @@ abstract class BaseLanguage {
 
   String get published;
 
+  String get publish => 'Publish';
+
   String get clearChatMessage;
 
   String get deleteMessage;

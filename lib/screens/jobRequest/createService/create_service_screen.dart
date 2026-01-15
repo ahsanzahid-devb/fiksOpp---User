@@ -56,7 +56,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   bool isServiceUpdated = false;
 
   Map<String, MultiLanguageRequest> translations = {};
-  MultiLanguageRequest enTranslations = MultiLanguageRequest();
+  MultiLanguageRequest defaultLanguageTranslations = MultiLanguageRequest();
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     if (isUpdate) {
       if (widget.data?.translations?.isNotEmpty ?? false) {
         translations = await widget.data!.translations!;
-        enTranslations = await translations[DEFAULT_LANGUAGE]!;
+        defaultLanguageTranslations = await translations[DEFAULT_LANGUAGE]!;
       }
 
       serviceNameCont.text =
@@ -202,9 +202,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     MultipartRequest multiPartRequest =
         await getMultiPartRequest('service-save');
     multiPartRequest.fields[CreateService.name] =
-        enTranslations.name.validate();
+        defaultLanguageTranslations.name.validate();
     multiPartRequest.fields[CreateService.description] =
-        enTranslations.description.validate();
+        defaultLanguageTranslations.description.validate();
     multiPartRequest.fields[CreateService.type] = SERVICE_TYPE_FIXED;
     multiPartRequest.fields[CreateService.price] = '0';
     multiPartRequest.fields[CreateService.addedBy] =
@@ -272,7 +272,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
               description: descriptionCont.text.validate(),
             );
       } else {
-        enTranslations = enTranslations.copyWith(
+        defaultLanguageTranslations = defaultLanguageTranslations.copyWith(
           name: serviceNameCont.text.validate(),
           description: descriptionCont.text.validate(),
         );
@@ -284,8 +284,8 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   void getTranslation() {
     final languageCode = appStore.selectedLanguage.languageCode;
     if (languageCode == DEFAULT_LANGUAGE) {
-      serviceNameCont.text = enTranslations.name.validate();
-      descriptionCont.text = enTranslations.description.validate();
+      serviceNameCont.text = defaultLanguageTranslations.name.validate();
+      descriptionCont.text = defaultLanguageTranslations.description.validate();
     } else {
       final translation = translations[languageCode] ?? MultiLanguageRequest();
       serviceNameCont.text = translation.name.validate();

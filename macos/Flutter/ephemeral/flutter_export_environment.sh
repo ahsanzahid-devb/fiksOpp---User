@@ -1,11 +1,11 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=C:\Users\Rimsha\flutter"
-export "FLUTTER_APPLICATION_PATH=C:\Users\Rimsha\user"
+export "FLUTTER_APPLICATION_PATH=C:\Users\Rimsha\fiksOpp---User"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=11.14.3"
-export "FLUTTER_BUILD_NUMBER=108"
+export "FLUTTER_BUILD_NUMBER=110"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

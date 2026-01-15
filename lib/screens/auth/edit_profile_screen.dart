@@ -415,6 +415,25 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 ),
                 16.height,
+                // Preferred app language selection
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    language.language,
+                    style: boldTextStyle(),
+                  ),
+                ),
+                8.height,
+                MultiLanguageWidget(
+                  onTap: (languageDetails) async {
+                    // Update app language and persist selection
+                    await appStore.setLanguage(languageDetails.languageCode.validate());
+                    appStore.setSelectedLanguage(languageDetails);
+                    // Rebuild app with new locale
+                    RestartAppWidget.init(context);
+                  },
+                ),
+                16.height,
                 AppTextField(
                   textFieldType: TextFieldType.NAME,
                   controller: fNameCont,

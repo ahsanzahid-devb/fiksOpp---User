@@ -11,12 +11,13 @@ const defaultPrimaryColor = Color(0xFF008080);
 const DOMAIN_URL = "https://fiksopp.inoor.buzz";
 const BASE_URL = '$DOMAIN_URL/api/';
 
-const DEFAULT_LANGUAGE = 'en';
+// Default app language (Norwegian as primary)
+const DEFAULT_LANGUAGE = 'no';
 
 /// You can change this to your Provider App package name
 /// This will be used in Registered As Partner in Sign In Screen where your users can redirect to the Play/App Store for Provider App
 /// You can specify in Admin Panel, These will be used if you don't specify in Admin Panel
-const PROVIDER_PACKAGE_NAME = 'fiksopp.inoor.buzz';
+const PROVIDER_PACKAGE_NAME = 'fiksopp.inoor.buzz.provider';
 const IOS_LINK_FOR_PARTNER = "";
 
 const IOS_LINK_FOR_USER = '';

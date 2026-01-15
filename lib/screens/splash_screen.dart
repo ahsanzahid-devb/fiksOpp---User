@@ -30,7 +30,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> init() async {
-    await appStore.setLanguage(getStringAsync(SELECTED_LANGUAGE_CODE, defaultValue: DEFAULT_LANGUAGE));
+    // Load saved language or use default
+    String savedLanguage = getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
+    await appStore.setLanguage(savedLanguage);
 
     // Sync new configurations when app is open
     await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);

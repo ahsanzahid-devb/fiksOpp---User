@@ -30,10 +30,19 @@ class LanguagesScreenState extends State<LanguagesScreen> {
       appBarTitle: language.language,
       child: LanguageListWidget(
         widgetType: WidgetType.LIST,
-        onLanguageChange: (v) {
-          appStore.setLanguage(v.languageCode!);
+        onLanguageChange: (v) async {
+          // Save language and wait for it to complete
+          await appStore.setLanguage(v.languageCode!);
+          // Ensure the language is persisted before restarting (setLanguage already saves it, but double-check)
+          await setValue('selected_language_code', v.languageCode!);
           setState(() {});
           finish(context, true);
+          // Small delay to ensure language is fully saved
+          await Future.delayed(Duration(milliseconds: 200));
+          // Restart app to apply language changes
+          if (mounted) {
+            RestartAppWidget.init(context);
+          }
         },
       ),
     );

@@ -1126,6 +1126,9 @@ class LanguageEn extends BaseLanguage {
   String get published => 'Published';
 
   @override
+  String get publish => 'Publish';
+
+  @override
   String get clearChatMessage => 'Do you want to clear this chat?';
 
   @override
