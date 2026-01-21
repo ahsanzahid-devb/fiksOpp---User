@@ -52,7 +52,7 @@ android {
         applicationId 'buzz.inoor.fiksopp'
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
-        versionCode 111
+        versionCode 112
         versionName '11.14.3'
     }
 
