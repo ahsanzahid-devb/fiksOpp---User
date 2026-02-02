@@ -14,7 +14,10 @@ class ServiceListDashboardComponent3 extends StatelessWidget {
   final String serviceListTitle;
   final bool isFeatured;
 
-  ServiceListDashboardComponent3({required this.serviceList, this.serviceListTitle = '', this.isFeatured = false});
+  ServiceListDashboardComponent3(
+      {required this.serviceList,
+      this.serviceListTitle = '',
+      this.isFeatured = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +31,11 @@ class ServiceListDashboardComponent3 extends StatelessWidget {
           list: serviceList,
           trailingTextStyle: boldTextStyle(color: primaryColor, size: 12),
           onTap: () {
-            ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '').launch(context).then((value) {
-              setStatusBarColor(Colors.transparent, statusBarIconBrightness: Brightness.dark);
+            ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '')
+                .launch(context)
+                .then((value) {
+              setStatusBarColor(Colors.transparent,
+                  statusBarIconBrightness: Brightness.dark);
             });
           },
         ).paddingSymmetric(horizontal: 16),

@@ -793,6 +793,9 @@ class LanguageFr extends BaseLanguage {
   String get myPostJobList => "Ma demande de travail personnalisée";
 
   @override
+  String get lblMyJobs => "Mes emplois";
+
+  @override
   String get requestNewJob => "Demander un nouvel emploi";
 
   @override

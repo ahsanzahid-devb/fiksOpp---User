@@ -791,6 +791,9 @@ String get lblNoServicesFound => "Keine Dienste in Ihrer Zone gefunden";
   String get myPostJobList => "Meine individuelle Jobanfrage";
 
   @override
+  String get lblMyJobs => "Meine Jobs";
+
+  @override
   String get requestNewJob => "Fordern Sie einen neuen Job an";
 
   @override

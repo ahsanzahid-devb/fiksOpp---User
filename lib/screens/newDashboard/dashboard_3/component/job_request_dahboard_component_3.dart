@@ -11,7 +11,7 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: context.width(),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
       decoration: BoxDecoration(
         color: primaryColor,
         image: DecorationImage(image: AssetImage(grid)),
@@ -19,11 +19,11 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          14.height,
+          // 14.height,
           // Image.asset(people),
-          14.height,
+          // 14.height,
           Text(
             language.ifYouDidnTFind,
             style: boldTextStyle(color: black, size: 14),

@@ -791,6 +791,9 @@ String get lblNoServicesFound => "لا توجد خدمات في منطقتك";
   String get myPostJobList => "طلب الوظيفة المخصص لي";
 
   @override
+  String get lblMyJobs => "وظائفي";
+
+  @override
   String get requestNewJob => "طلب وظيفة جديدة";
 
   @override

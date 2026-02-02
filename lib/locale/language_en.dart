@@ -809,6 +809,9 @@ class LanguageEn extends BaseLanguage {
   String get myPostJobList => "My Custom Job Request";
 
   @override
+  String get lblMyJobs => "My Jobs";
+
+  @override
   String get requestNewJob => "Request New Job";
 
   @override

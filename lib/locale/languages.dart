@@ -529,6 +529,8 @@ abstract class BaseLanguage {
 
   String get myPostJobList;
 
+  String get lblMyJobs;
+
   String get requestNewJob;
 
   String get noNotifications;

@@ -814,6 +814,9 @@ class LanguageHi extends BaseLanguage {
   String get myPostJobList => "मेरी कस्टम जॉब लिस्ट";
 
   @override
+  String get lblMyJobs => "मेरी नौकरियां";
+
+  @override
   String get requestNewJob => "नई नौकरी का अनुरोध करें";
 
   @override

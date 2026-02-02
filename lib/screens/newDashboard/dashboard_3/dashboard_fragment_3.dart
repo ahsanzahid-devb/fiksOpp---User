@@ -112,7 +112,6 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                       return await 2.seconds.delay;
                     },
                     children: [
-                      (context.statusBarHeight).toInt().height,
                       AppbarDashboardComponent3(
                         featuredList: snap.featuredServices.validate(),
                         callback: () async {
@@ -122,18 +121,18 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                           setState(() {});
                         },
                       ),
-                    // SliderDashboardComponent3(sliderList: snap.slider.validate()),
+                      // SliderDashboardComponent3(sliderList: snap.slider.validate()),
 
-                    // CategoryListDashboardComponent3(
-                    //     categoryList: snap.category.validate(),
-                    //     listTiTle: language.category),
-                    // if (snap.promotionalBanner.validate().isNotEmpty &&
-                    //     appConfigurationStore.isPromotionalBanner)
-                    //   PromotionalBannerSliderComponent(
-                    //     promotionalBannerList:
-                    //         snap.promotionalBanner.validate(),
-                    //   ).paddingTop(16),
-                    // 16.height,
+                      // CategoryListDashboardComponent3(
+                      //     categoryList: snap.category.validate(),
+                      //     listTiTle: language.category),
+                      // if (snap.promotionalBanner.validate().isNotEmpty &&
+                      //     appConfigurationStore.isPromotionalBanner)
+                      //   PromotionalBannerSliderComponent(
+                      //     promotionalBannerList:
+                      //         snap.promotionalBanner.validate(),
+                      //   ).paddingTop(16),
+                      // 16.height,
                       ServiceListDashboardComponent3(
                           serviceList: snap.service.validate(),
                           serviceListTitle: language.popularServices),
@@ -143,7 +142,7 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                         serviceListTitle: language.featuredServices,
                         isFeatured: true,
                       ),
-                      16.height,
+                      // 16.height,
                       if (appConfigurationStore.jobRequestStatus)
                         JobRequestDashboardComponent3(),
                       UpcomingBookingDashboardComponent3(

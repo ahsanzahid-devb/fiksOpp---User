@@ -5,6 +5,7 @@ import 'package:booking_system_flutter/screens/chat/chat_list_screen.dart';
 import 'package:booking_system_flutter/screens/dashboard/fragment/booking_fragment.dart';
 import 'package:booking_system_flutter/screens/dashboard/fragment/dashboard_fragment.dart';
 import 'package:booking_system_flutter/screens/dashboard/fragment/profile_fragment.dart';
+import 'package:booking_system_flutter/screens/jobRequest/my_post_request_list_screen.dart';
 import 'package:booking_system_flutter/utils/colors.dart';
 import 'package:booking_system_flutter/utils/common.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
@@ -38,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     if (widget.redirectToBooking.validate(value: false)) {
-      currentIndex = 1;
+      currentIndex = 2; // Booking is now at index 2 (after Home, My Jobs)
     }
 
     afterBuildCreated(() async {
@@ -59,27 +60,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     /// Handle Firebase Notification click and redirect to that Service & BookDetail screen
     LiveStream().on(LIVESTREAM_FIREBASE, (value) {
       if (value == 3) {
-        currentIndex = 3;
+        // Chat at 3 when enabled, else Profile at 3
+        currentIndex = appConfigurationStore.isEnableChat ? 4 : 3;
         setState(() {});
       }
     });
-
-    // Firebase.initializeApp().then((value) {
-    //   //When the app is in the background and opened directly from the push notification.
-    //   FirebaseMessaging.onMessageOpenedApp.listen((message) async {
-    //     //Handle onClick Notification
-    //     log("data 1 ==> ${message.data}");
-    //     handleNotificationClick(message);
-    //   });
-    //
-    //   FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
-    //     //Handle onClick Notification
-    //     if (message != null) {
-    //       log("data 2 ==> ${message.data}");
-    //       handleNotificationClick(message);
-    //     }
-    //   });
-    // }).catchError(onError);
 
     init();
   }
@@ -132,6 +117,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               Observer(
                   builder: (context) => appStore.isLoggedIn
+                      ? MyPostRequestListScreen(isFromDashboard: true)
+                      : SignInScreen(isFromDashboard: true)),
+              Observer(
+                  builder: (context) => appStore.isLoggedIn
                       ? BookingFragment()
                       : SignInScreen(isFromDashboard: true)),
               if (appConfigurationStore.isEnableChat)
@@ -142,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Observer(
                   builder: (context) => appStore.isLoggedIn
                       ? ProfileFragment()
-                      : SignInScreen(isFromDashboard: true)) 
+                      : SignInScreen(isFromDashboard: true))
             ][currentIndex],
           ),
         ),
@@ -197,7 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ).cornerRadiusWithClipRRect(28);
                 },
               ).paddingSymmetric(horizontal: 16),
-            16.height,  
+            16.height,
             Blur(
               blur: 30,
               borderRadius: radius(0),
@@ -215,8 +204,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   destinations: [
                     NavigationDestination(
                       icon: ic_home.iconImage(color: appTextSecondaryColor),
-                      selectedIcon: ic_home.iconImage(color: context.primaryColor),
+                      selectedIcon:
+                          ic_home.iconImage(color: context.primaryColor),
                       label: language.home,
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.work_outline,
+                          color: appTextSecondaryColor),
+                      selectedIcon:
+                          Icon(Icons.work, color: context.primaryColor),
+                      label: language.lblMyJobs,
                     ),
                     NavigationDestination(
                       icon: ic_ticket.iconImage(color: appTextSecondaryColor),
@@ -224,11 +221,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ic_ticket.iconImage(color: context.primaryColor),
                       label: language.booking,
                     ),
-                    // NavigationDestination(
-                    //   icon: ic_category.iconImage(color: appTextSecondaryColor),
-                    //   selectedIcon: ic_category.iconImage(color: context.primaryColor),
-                    //   label: language.category,
-                    // ),
                     if (appConfigurationStore.isEnableChat)
                       NavigationDestination(
                         icon: ic_chat.iconImage(color: appTextSecondaryColor),
@@ -244,15 +236,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ? IgnorePointer(
                                   ignoring: true,
                                   child: ImageBorder(
-                                      src: appStore.userProfileImage, height: 26))
-                              : ic_profile2.iconImage(color: appTextSecondaryColor),
+                                      src: appStore.userProfileImage,
+                                      height: 26))
+                              : ic_profile2.iconImage(
+                                  color: appTextSecondaryColor),
                           selectedIcon: (appStore.isLoggedIn &&
                                   appStore.userProfileImage.isNotEmpty)
                               ? IgnorePointer(
                                   ignoring: true,
                                   child: ImageBorder(
-                                      src: appStore.userProfileImage, height: 26))
-                              : ic_profile2.iconImage(color: context.primaryColor),
+                                      src: appStore.userProfileImage,
+                                      height: 26))
+                              : ic_profile2.iconImage(
+                                  color: context.primaryColor),
                           label: language.profile,
                         );
                       },

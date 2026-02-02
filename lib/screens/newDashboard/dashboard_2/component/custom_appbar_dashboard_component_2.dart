@@ -22,17 +22,20 @@ class CustomAppbarDashboardComponent2 extends StatefulWidget {
   CustomAppbarDashboardComponent2({this.callback, this.featuredList});
 
   @override
-  State<CustomAppbarDashboardComponent2> createState() => _CustomAppbarDashboardComponent2State();
+  State<CustomAppbarDashboardComponent2> createState() =>
+      _CustomAppbarDashboardComponent2State();
 }
 
-class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardComponent2> {
+class _CustomAppbarDashboardComponent2State
+    extends State<CustomAppbarDashboardComponent2> {
   SpeechToText speech = SpeechToText();
   String lastWords = '';
   String lastError = '';
   String lastStatus = '';
 
   void startListening() async {
-    bool available = await speech.initialize(onStatus: statusListener, onError: errorListener);
+    bool available = await speech.initialize(
+        onStatus: statusListener, onError: errorListener);
 
     if (available) {
       speech.listen(onResult: resultListener);
@@ -71,7 +74,8 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
     appStore.setSpeechStatus(false);
     if (result.finalResult) {
       lastWords = result.recognizedWords;
-      SearchServiceScreen(search: lastWords, featuredList: widget.featuredList).launch(context);
+      SearchServiceScreen(search: lastWords, featuredList: widget.featuredList)
+          .launch(context);
     }
     log("LastWords: $lastWords");
   }
@@ -128,10 +132,13 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
                           ic_location.iconImage(color: Colors.white, size: 22),
                           8.width,
                           Text(
-                            appStore.isCurrentLocation ? getStringAsync(CITY_NAME) : language.helloGuest,
+                            appStore.isCurrentLocation
+                                ? getStringAsync(CITY_NAME)
+                                : language.helloGuest,
                             style: boldTextStyle(color: white),
                           ),
-                          if (!appStore.isCurrentLocation) Image.asset(ic_hi, height: 20, fit: BoxFit.cover),
+                          if (!appStore.isCurrentLocation)
+                            Image.asset(ic_hi, height: 20, fit: BoxFit.cover),
                         ],
                       ),
                       Row(
@@ -139,14 +146,17 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
                         children: [
                           Marquee(
                             child: Text(
-                              appStore.isCurrentLocation ? getStringAsync(CURRENT_ADDRESS) : language.lblLocationOff,
+                              appStore.isCurrentLocation
+                                  ? getStringAsync(CURRENT_ADDRESS)
+                                  : language.lblLocationOff,
                               style: secondaryTextStyle(color: Colors.white),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ).expand(),
                           IconButton(
-                            icon: Icon(Icons.keyboard_arrow_down_outlined, size: 20),
+                            icon: Icon(Icons.keyboard_arrow_down_outlined,
+                                size: 20),
                             color: Colors.white,
                             onPressed: () {
                               locationWiseService(context, () {
@@ -172,7 +182,8 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          ic_notification.iconImage(size: 24, color: Colors.white),
+                          ic_notification.iconImage(
+                              size: 24, color: Colors.white),
                           Observer(
                             builder: (context) {
                               return Positioned(
@@ -182,9 +193,15 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
                                     ? Container(
                                         padding: EdgeInsets.all(6),
                                         child: FittedBox(
-                                          child: Text(appStore.unreadCount.toString(), style: primaryTextStyle(size: 12, color: Colors.white)),
+                                          child: Text(
+                                              appStore.unreadCount.toString(),
+                                              style: primaryTextStyle(
+                                                  size: 12,
+                                                  color: Colors.white)),
                                         ),
-                                        decoration: boxDecorationDefault(color: Colors.red, shape: BoxShape.circle),
+                                        decoration: boxDecorationDefault(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle),
                                       )
                                     : Offstage(),
                               );
@@ -209,12 +226,15 @@ class _CustomAppbarDashboardComponent2State extends State<CustomAppbarDashboardC
                 textFieldType: TextFieldType.NAME,
                 readOnly: true,
                 onTap: () {
-                  SearchServiceScreen(featuredList: widget.featuredList).launch(context);
+                  SearchServiceScreen(featuredList: widget.featuredList)
+                      .launch(context);
                 },
                 decoration: inputDecoration(
                   context,
                   hintText: language.eGCleaningPlumberPest,
-                  prefixIcon: ic_search.iconImage(size: 10, color: context.iconColor).paddingAll(14),
+                  prefixIcon: ic_search
+                      .iconImage(size: 10, color: context.iconColor)
+                      .paddingAll(14),
                 ),
                 suffix: IconButton(
                   icon: appStore.isSpeechActivated
