@@ -414,6 +414,9 @@ class LanguageDe extends BaseLanguage {
   String get lblDate => "Datum";
 
   @override
+  String get lblEstimatedDate => "Geschätztes Datum";
+
+  @override
   String get lblAboutHandyman => "Über Handwerker.";
 
   @override

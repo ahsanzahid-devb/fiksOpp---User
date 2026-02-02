@@ -1,5 +1,6 @@
 import 'package:booking_system_flutter/component/back_widget.dart';
 import 'package:booking_system_flutter/component/loader_widget.dart';
+import 'package:booking_system_flutter/component/responsive_container.dart';
 import 'package:booking_system_flutter/component/selected_item_widget.dart';
 import 'package:booking_system_flutter/main.dart';
 import 'package:booking_system_flutter/model/user_data_model.dart';
@@ -220,7 +221,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Widget _buildFormWidget() {
     setState(() {});
-    return Column(
+    return ResponsiveContainer(
+      child: Column(
       children: [
         32.height,
         AppTextField(
@@ -345,7 +347,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           text: language.signUp,
           color: primaryColor,
           textColor: Colors.white,
-          width: context.width() - context.navigationBarHeight,
+          width: context.width() >= 600
+              ? 400
+              : context.width() - context.navigationBarHeight,
           onTap: () {
             if (widget.isOTPLogin) {
               registerWithOTP();
@@ -355,6 +359,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
         ),
       ],
+    ),
     );
   }
 

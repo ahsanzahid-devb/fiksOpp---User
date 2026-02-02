@@ -5,7 +5,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../../../main.dart';
 import '../../../../utils/images.dart';
 import '../../../auth/sign_in_screen.dart';
-import '../../../jobRequest/my_post_request_list_screen.dart';
+import '../../../jobRequest/createService/create_service_screen.dart';
 
 class JobRequestDashboardComponent2 extends StatelessWidget {
   @override
@@ -15,7 +15,8 @@ class JobRequestDashboardComponent2 extends StatelessWidget {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
-        image: DecorationImage(image: AssetImage(grid), fit: BoxFit.cover, opacity: 0.3),
+        image: DecorationImage(
+            image: AssetImage(grid), fit: BoxFit.cover, opacity: 0.3),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -44,22 +45,28 @@ class JobRequestDashboardComponent2 extends StatelessWidget {
               children: [
                 Icon(Icons.add, color: Colors.white),
                 4.width,
-                Text(language.newRequest,  style: boldTextStyle(
-                  color: Colors.white, decoration: TextDecoration.underline,decorationColor: Colors.white),
-          ),
+                Text(
+                  language.newRequest,
+                  style: boldTextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.white),
+                ),
               ],
             ),
             color: primaryColor,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             onTap: () async {
               if (appStore.isLoggedIn) {
-                MyPostRequestListScreen().launch(context);
+                CreateServiceScreen().launch(context);
               } else {
-                setStatusBarColor(Colors.white, statusBarIconBrightness: Brightness.dark);
-                bool? res = await SignInScreen(isFromDashboard: true).launch(context);
+                setStatusBarColor(Colors.white,
+                    statusBarIconBrightness: Brightness.dark);
+                bool? res =
+                    await SignInScreen(isFromDashboard: true).launch(context);
 
                 if (res ?? false) {
-                  MyPostRequestListScreen().launch(context);
+                  CreateServiceScreen().launch(context);
                 }
               }
             },

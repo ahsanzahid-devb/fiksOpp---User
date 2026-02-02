@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../component/base_scaffold_widget.dart';
+import '../../../component/responsive_container.dart';
 import '../../../main.dart';
 import '../../../model/bank_list_response.dart';
 import '../../../model/base_response_model.dart';
@@ -47,18 +48,21 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
   Future<void> update() async {
     MultipartRequest multiPartRequest = await getMultiPartRequest('save-bank');
-    multiPartRequest.fields[UserKeys.id] = isUpdate ? widget.data!.id.toString() : "";
+    multiPartRequest.fields[UserKeys.id] =
+        isUpdate ? widget.data!.id.toString() : "";
     multiPartRequest.fields[UserKeys.providerId] = appStore.userId.toString();
     multiPartRequest.fields[BankServiceKey.bankName] = bankNameCont.text;
     multiPartRequest.fields[BankServiceKey.branchName] = branchNameCont.text;
     multiPartRequest.fields[BankServiceKey.accountNo] = accNumberCont.text;
     multiPartRequest.fields[BankServiceKey.ifscNo] = ifscCodeCont.text;
     multiPartRequest.fields[BankServiceKey.mobileNo] = contactNumberCont.text;
-    multiPartRequest.fields[BankServiceKey.aadharNo] = aadharCardNumberCont.text;
+    multiPartRequest.fields[BankServiceKey.aadharNo] =
+        aadharCardNumberCont.text;
     multiPartRequest.fields[BankServiceKey.panNo] = panNumberCont.text;
     multiPartRequest.fields[BankServiceKey.bankAttachment] = '';
     multiPartRequest.fields[UserKeys.status] = getStatusValue().toString();
-    multiPartRequest.fields[UserKeys.isDefault] = widget.data?.isDefault.toString() ?? "0";
+    multiPartRequest.fields[UserKeys.isDefault] =
+        widget.data?.isDefault.toString() ?? "0";
 
     multiPartRequest.headers.addAll(buildHeaderTokens());
 
@@ -71,7 +75,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
         if (data != null) {
           print(data);
           if ((data as String).isJson()) {
-            BaseResponseModel res = BaseResponseModel.fromJson(jsonDecode(data));
+            BaseResponseModel res =
+                BaseResponseModel.fromJson(jsonDecode(data));
             finish(context, [true, bankNameCont.text]);
             snackBar(context, title: res.message!);
           }
@@ -139,69 +144,84 @@ class _AddBankScreenState extends State<AddBankScreen> {
               },
               child: Form(
                 key: formKey,
-                child: AnimatedScrollView(
+                child: ResponsiveContainer(
                   padding: EdgeInsets.all(16),
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppTextField(
-                      textFieldType: TextFieldType.NAME,
-                      controller: bankNameCont,
-                      focus: bankNameFocus,
-                      nextFocus: branchNameFocus,
-                      decoration: inputDecoration(context, hintText: language.bankName),
-                      suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
-                    ),
-                    16.height,
-                    AppTextField(
-                      textFieldType: TextFieldType.NAME,
-                      controller: branchNameCont,
-                      focus: branchNameFocus,
-                      nextFocus: accNumberFocus,
-                      decoration: inputDecoration(context, hintText: language.fullNameOnBankAccount),
-                      suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
-                    ),
-                    16.height,
-                    AppTextField(
-                      textFieldType: TextFieldType.NAME,
-                      controller: accNumberCont,
-                      focus: accNumberFocus,
-                      nextFocus: ifscCodeFocus,
-                      decoration: inputDecoration(context, hintText: language.accountNumber),
-                      suffix: ic_password.iconImage(size: 10, fit: BoxFit.contain).paddingAll(14),
-                    ),
-                    16.height,
-                    AppTextField(
-                      textFieldType: TextFieldType.NAME,
-                      controller: ifscCodeCont,
-                      focus: ifscCodeFocus,
-                      nextFocus: contactNumberFocus,
-                      decoration: inputDecoration(context, hintText: language.iFSCCode, counter: false),
-                      suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-                      isValidationRequired: false,
-                    ),
-                    16.height,
-                    DropdownButtonFormField<StaticDataModel>(
-                      isExpanded: true,
-                      dropdownColor: context.cardColor,
-                      value: blogStatusModel != null ? blogStatusModel : statusListStaticData.first,
-                      items: statusListStaticData.map((StaticDataModel data) {
-                        return DropdownMenuItem<StaticDataModel>(
-                          value: data,
-                          child: Text(data.value.validate(), style: primaryTextStyle()),
-                        );
-                      }).toList(),
-                      decoration: inputDecoration(context, hintText: language.lblStatus),
-                      onChanged: (StaticDataModel? value) async {
-                        bankStatus = value!.key.validate();
-                        setState(() {});
-                      },
-                      validator: (value) {
-                        if (value == null) return errorThisFieldRequired;
-                        return null;
-                      },
-                    ),
-                    100.height,
-                  ],
+                  maxWidth: 600,
+                  child: AnimatedScrollView(
+                    padding: EdgeInsets.zero,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppTextField(
+                        textFieldType: TextFieldType.NAME,
+                        controller: bankNameCont,
+                        focus: bankNameFocus,
+                        nextFocus: branchNameFocus,
+                        decoration:
+                            inputDecoration(context, hintText: language.bankName),
+                        suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
+                      ),
+                      16.height,
+                      AppTextField(
+                        textFieldType: TextFieldType.NAME,
+                        controller: branchNameCont,
+                        focus: branchNameFocus,
+                        nextFocus: accNumberFocus,
+                        decoration: inputDecoration(context,
+                            hintText: language.fullNameOnBankAccount),
+                        suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
+                      ),
+                      16.height,
+                      AppTextField(
+                        textFieldType: TextFieldType.NAME,
+                        controller: accNumberCont,
+                        focus: accNumberFocus,
+                        nextFocus: ifscCodeFocus,
+                        decoration: inputDecoration(context,
+                            hintText: language.accountNumber),
+                        suffix: ic_password
+                            .iconImage(size: 10, fit: BoxFit.contain)
+                            .paddingAll(14),
+                      ),
+                      16.height,
+                      AppTextField(
+                        textFieldType: TextFieldType.NAME,
+                        controller: ifscCodeCont,
+                        focus: ifscCodeFocus,
+                        nextFocus: contactNumberFocus,
+                        decoration: inputDecoration(context,
+                            hintText: language.iFSCCode, counter: false),
+                        suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+                        isValidationRequired: false,
+                      ),
+                      16.height,
+                      DropdownButtonFormField<StaticDataModel>(
+                        isExpanded: true,
+                        dropdownColor: context.cardColor,
+                        initialValue: blogStatusModel != null
+                            ? blogStatusModel
+                            : statusListStaticData.first,
+                        items:
+                            statusListStaticData.map((StaticDataModel data) {
+                          return DropdownMenuItem<StaticDataModel>(
+                            value: data,
+                            child: Text(data.value.validate(),
+                                style: primaryTextStyle()),
+                          );
+                        }).toList(),
+                        decoration: inputDecoration(context,
+                            hintText: language.lblStatus),
+                        onChanged: (StaticDataModel? value) async {
+                          bankStatus = value!.key.validate();
+                          setState(() {});
+                        },
+                        validator: (value) {
+                          if (value == null) return errorThisFieldRequired;
+                          return null;
+                        },
+                      ),
+                      100.height,
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -213,7 +233,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
                 text: language.btnSave,
                 color: primaryColor,
                 textStyle: boldTextStyle(color: white),
-                width: context.width(),
+                width: context.width() >= 600 ? 400 : context.width(),
                 onTap: () {
                   if (formKey.currentState!.validate()) {
                     update();

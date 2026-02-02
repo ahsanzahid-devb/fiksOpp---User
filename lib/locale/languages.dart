@@ -277,6 +277,8 @@ abstract class BaseLanguage {
 
   String get lblDate;
 
+  String get lblEstimatedDate;
+
   String get lblAboutHandyman;
 
   String get lblAboutProvider;

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Handyman Service User</string>
+	<string>FiksOpp</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Handyman Service User</string>
+	<string>FiksOpp</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -33,13 +33,13 @@
 			</array>
 		</dict>
 		<dict>
-            <key>CFBundleURLName</key>
-            <string>com.PhonePe-iOS-Intent-SDK-Integration</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>iOSIntentIntegration</string>
-            </array>
-        </dict>
+			<key>CFBundleURLName</key>
+			<string>com.PhonePe-iOS-Intent-SDK-Integration</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>iOSIntentIntegration</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -72,10 +72,10 @@
 	<string>Handyman Service app needs access to your device's location at all times to ensure seamless service delivery tailored to your precise location, even when the app is running in the background.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Handyman Service app requires access to your device's microphone when recording your speech using the "Mic" button.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-    <string>Handyman Service app requires access to Speech recognition when you will be used to determine which words you speak into this device microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Handyman Service app requires access to your device's photo library to enable you to upload your profile photo.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Handyman Service app requires access to Speech recognition when you will be used to determine which words you speak into this device microphone.</string>
 	<key>Privacy-Location Usage Description</key>
 	<string>Handyman Service app requires access to your device's location to enhance your experience by providing personalized service recommendations and finding nearby service providers based on your current location.</string>
 	<key>SKAdNetworkItems</key>
@@ -96,18 +96,18 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

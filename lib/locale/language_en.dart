@@ -422,6 +422,9 @@ class LanguageEn extends BaseLanguage {
   String get lblDate => "Date";
 
   @override
+  String get lblEstimatedDate => "Estimated Date";
+
+  @override
   String get lblAboutHandyman => "About Handyman";
 
   @override

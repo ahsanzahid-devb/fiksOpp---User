@@ -5,7 +5,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../../../main.dart';
 import '../../../../utils/images.dart';
 import '../../../auth/sign_in_screen.dart';
-import '../../../jobRequest/my_post_request_list_screen.dart';
+import '../../../jobRequest/createService/create_service_screen.dart';
 
 class NewJobRequestDashboardComponent1 extends StatelessWidget {
   const NewJobRequestDashboardComponent1({Key? key}) : super(key: key);
@@ -15,7 +15,8 @@ class NewJobRequestDashboardComponent1 extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: boxDecorationWithRoundedCorners(
-        decorationImage: DecorationImage(image: AssetImage(imgNewPostJob1), fit: BoxFit.cover),
+        decorationImage: DecorationImage(
+            image: AssetImage(imgNewPostJob1), fit: BoxFit.cover),
         borderRadius: BorderRadius.all(Radius.zero),
       ),
       width: context.width(),
@@ -34,20 +35,23 @@ class NewJobRequestDashboardComponent1 extends StatelessWidget {
               children: [
                 Icon(Icons.add, color: Colors.white),
                 4.width,
-                Text(language.newRequest, style: boldTextStyle(color: Colors.white, size: 14)),
+                Text(language.newRequest,
+                    style: boldTextStyle(color: Colors.white, size: 14)),
               ],
             ),
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             color: primaryColor,
             onTap: () async {
               if (appStore.isLoggedIn) {
-                MyPostRequestListScreen().launch(context);
+                CreateServiceScreen().launch(context);
               } else {
-                setStatusBarColor(Colors.white, statusBarIconBrightness: Brightness.dark);
-                bool? res = await SignInScreen(isFromDashboard: true).launch(context);
+                setStatusBarColor(Colors.white,
+                    statusBarIconBrightness: Brightness.dark);
+                bool? res =
+                    await SignInScreen(isFromDashboard: true).launch(context);
 
                 if (res ?? false) {
-                  MyPostRequestListScreen().launch(context);
+                  CreateServiceScreen().launch(context);
                 }
               }
             },

@@ -3,7 +3,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../../main.dart';
 import '../../auth/sign_in_screen.dart';
-import '../../jobRequest/my_post_request_list_screen.dart';
+import '../../jobRequest/createService/create_service_screen.dart';
 
 class NewJobRequestComponent extends StatelessWidget {
   const NewJobRequestComponent({Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ class NewJobRequestComponent extends StatelessWidget {
                     : context.primaryColor),
             onTap: () async {
               if (appStore.isLoggedIn) {
-                MyPostRequestListScreen().launch(context);
+                CreateServiceScreen().launch(context);
               } else {
                 setStatusBarColor(Colors.white,
                     statusBarIconBrightness: Brightness.dark);
@@ -56,7 +56,7 @@ class NewJobRequestComponent extends StatelessWidget {
                     await SignInScreen(returnExpected: true).launch(context);
 
                 if (res ?? false) {
-                  MyPostRequestListScreen().launch(context);
+                  CreateServiceScreen().launch(context);
                 }
               }
             },

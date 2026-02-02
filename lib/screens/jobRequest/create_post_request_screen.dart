@@ -13,11 +13,22 @@ import 'package:booking_system_flutter/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:intl/intl.dart';
-
 import '../../component/chat_gpt_loder.dart';
 import '../../component/empty_error_state_widget.dart';
 
 class CreatePostRequestScreen extends StatefulWidget {
+  /// Optional pre-filled values when navigating from another screen (e.g. Screen A).
+  final String? jobTitle;
+  final String? jobDescription;
+  final String? jobDate;
+
+  const CreatePostRequestScreen({
+    Key? key,
+    this.jobTitle,
+    this.jobDescription,
+    this.jobDate,
+  }) : super(key: key);
+
   @override
   _CreatePostRequestScreenState createState() =>
       _CreatePostRequestScreenState();
@@ -55,44 +66,61 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
   void initState() {
     super.initState();
     priceCont.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    
+
+    // Pre-fill from navigation parameters when provided (e.g. from Screen A)
+    if (widget.jobTitle != null && widget.jobTitle!.trim().isNotEmpty) {
+      postTitleCont.text = widget.jobTitle!.trim();
+    }
+    if (widget.jobDescription != null &&
+        widget.jobDescription!.trim().isNotEmpty) {
+      descriptionCont.text = widget.jobDescription!.trim();
+    }
+    if (widget.jobDate != null && widget.jobDate!.trim().isNotEmpty) {
+      priceCont.text = widget.jobDate!.trim();
+    }
+
     // Store initial values
+    initialTitle = postTitleCont.text;
+    initialDescription = descriptionCont.text;
     initialDate = priceCont.text;
-    
+
     // Add listeners to detect changes
     postTitleCont.addListener(_checkForChanges);
     descriptionCont.addListener(_checkForChanges);
     priceCont.addListener(_checkForChanges);
-    
+
     init();
   }
 
   void _checkForChanges() {
     bool changed = false;
-    
+
     // Check title
     if (postTitleCont.text != initialTitle) {
       changed = true;
     }
-    
+
     // Check description
     if (descriptionCont.text != initialDescription) {
       changed = true;
     }
-    
+
     // Check date
     if (priceCont.text != initialDate) {
       changed = true;
     }
-    
+
     // Check selected services
-    List<int> currentServiceIds = selectedServiceList.map((e) => e.id.validate()).toList();
+    List<int> currentServiceIds =
+        selectedServiceList.map((e) => e.id.validate()).toList();
     if (currentServiceIds.length != initialSelectedServiceIds.length ||
-        !currentServiceIds.every((id) => initialSelectedServiceIds.contains(id)) ||
-        !initialSelectedServiceIds.every((id) => currentServiceIds.contains(id))) {
+        !currentServiceIds
+            .every((id) => initialSelectedServiceIds.contains(id)) ||
+        !initialSelectedServiceIds
+            .every((id) => currentServiceIds.contains(id))) {
       changed = true;
     }
-    
+
     if (hasChanges != changed) {
       setState(() {
         hasChanges = changed;
@@ -138,12 +166,13 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
       if (value.userServices != null) {
         myServiceList = value.userServices.validate();
       }
-      
+
       // Store initial values after data is loaded
       initialTitle = postTitleCont.text;
       initialDescription = descriptionCont.text;
       initialDate = priceCont.text;
-      initialSelectedServiceIds = selectedServiceList.map((e) => e.id.validate()).toList();
+      initialSelectedServiceIds =
+          selectedServiceList.map((e) => e.id.validate()).toList();
       hasChanges = false;
     }).catchError((e) {
       appStore.setLoading(false);

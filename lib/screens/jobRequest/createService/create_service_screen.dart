@@ -16,15 +16,27 @@ import 'package:booking_system_flutter/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 import '../../../component/chat_gpt_loder.dart';
 import '../../../model/multi_language_request_model.dart';
 import '../../../utils/configs.dart';
+import '../../../component/responsive_container.dart';
 
 class CreateServiceScreen extends StatefulWidget {
   final ServiceData? data;
 
-  CreateServiceScreen({this.data});
+  /// Optional pre-filled job request fields when opened from "New Request".
+  final String? jobTitle;
+  final String? jobDescription;
+  final String? jobDate;
+
+  CreateServiceScreen({
+    this.data,
+    this.jobTitle,
+    this.jobDescription,
+    this.jobDate,
+  });
 
   @override
   _CreateServiceScreenState createState() => _CreateServiceScreenState();
@@ -38,9 +50,15 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
 
   TextEditingController serviceNameCont = TextEditingController();
   TextEditingController descriptionCont = TextEditingController();
+  TextEditingController jobTitleCont = TextEditingController();
+  TextEditingController jobDescriptionCont = TextEditingController();
+  TextEditingController jobDateCont = TextEditingController();
 
   FocusNode serviceNameFocus = FocusNode();
   FocusNode descriptionFocus = FocusNode();
+  FocusNode jobTitleFocus = FocusNode();
+  FocusNode jobDescriptionFocus = FocusNode();
+  FocusNode jobDateFocus = FocusNode();
 
   List<XFile> imageFiles = [];
   List<Attachments> attachmentsArray = [];
@@ -61,6 +79,17 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   @override
   void initState() {
     super.initState();
+    jobDateCont.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    if (widget.jobTitle != null && widget.jobTitle!.trim().isNotEmpty) {
+      jobTitleCont.text = widget.jobTitle!.trim();
+    }
+    if (widget.jobDescription != null &&
+        widget.jobDescription!.trim().isNotEmpty) {
+      jobDescriptionCont.text = widget.jobDescription!.trim();
+    }
+    if (widget.jobDate != null && widget.jobDate!.trim().isNotEmpty) {
+      jobDateCont.text = widget.jobDate!.trim();
+    }
     init();
     appStore.setSelectedLanguage(languageList().first);
   }
@@ -182,7 +211,34 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
         req,
         onSuccess: (data) async {
           appStore.setLoading(false);
-          toast(jsonDecode(data)['message'], print: true);
+          final decoded = jsonDecode(data);
+          toast(decoded['message']?.toString() ?? language.save, print: true);
+
+          // If this was a new service and job request fields are filled, create post job
+          if (!isUpdate && jobTitleCont.text.trim().isNotEmpty) {
+            // API may return service_id (root), data.id, or id
+            final rawId = decoded['service_id'] ??
+                decoded['data']?['id'] ??
+                decoded['id'];
+            final serviceId =
+                rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
+            if (serviceId != null && serviceId > 0) {
+              try {
+                final request = {
+                  PostJob.postTitle: jobTitleCont.text.validate(),
+                  PostJob.description: jobDescriptionCont.text.validate(),
+                  PostJob.serviceId: [serviceId],
+                  PostJob.price: jobDateCont.text.validate(),
+                  PostJob.status: JOB_REQUEST_STATUS_REQUESTED,
+                  PostJob.latitude: appStore.latitude,
+                  PostJob.longitude: appStore.longitude,
+                };
+                await savePostJob(request);
+              } catch (e) {
+                toast(e.toString(), print: true);
+              }
+            }
+          }
           finish(context, true);
         },
         onError: (error) {
@@ -259,22 +315,26 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   void updateTranslation() {
     appStore.setLoading(true);
     final languageCode = appStore.selectedLanguage.languageCode.validate();
-    if (serviceNameCont.text.isEmpty && descriptionCont.text.isEmpty) {
+    // Use job title/description when service name/description are empty (fields removed from UI)
+    final name = serviceNameCont.text.trim().isEmpty
+        ? jobTitleCont.text.validate()
+        : serviceNameCont.text.validate();
+    final description = descriptionCont.text.trim().isEmpty
+        ? jobDescriptionCont.text.validate()
+        : descriptionCont.text.validate();
+    if (name.isEmpty && description.isEmpty) {
       translations.remove(languageCode);
     } else {
       if (languageCode != DEFAULT_LANGUAGE) {
         translations[languageCode] = translations[languageCode]?.copyWith(
-              name: serviceNameCont.text.validate(),
-              description: descriptionCont.text.validate(),
+              name: name,
+              description: description,
             ) ??
-            MultiLanguageRequest(
-              name: serviceNameCont.text.validate(),
-              description: descriptionCont.text.validate(),
-            );
+            MultiLanguageRequest(name: name, description: description);
       } else {
         defaultLanguageTranslations = defaultLanguageTranslations.copyWith(
-          name: serviceNameCont.text.validate(),
-          description: descriptionCont.text.validate(),
+          name: name,
+          description: description,
         );
       }
     }
@@ -334,6 +394,17 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   }
 
   @override
+  void dispose() {
+    jobTitleCont.dispose();
+    jobDescriptionCont.dispose();
+    jobDateCont.dispose();
+    jobTitleFocus.dispose();
+    jobDescriptionFocus.dispose();
+    jobDateFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
@@ -342,184 +413,211 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       },
       child: AppScaffold(
         appBarTitle: language.createServiceRequest,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            8.height,
-            Form(
-              key: formKey,
-              child: SingleChildScrollView(
-                key: formWidgetKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: context.width(),
-                      height: 120,
-                      child: DottedBorderWidget(
-                        color: primaryColor.withValues(alpha: 0.6),
-                        strokeWidth: 1,
-                        gap: 6,
-                        radius: 12,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(selectImage,
-                                height: 25,
-                                width: 25,
-                                color: appStore.isDarkMode ? white : gray),
-                            8.height,
-                            Text(language.chooseImages, style: boldTextStyle()),
-                          ],
-                        ).center().onTap(borderRadius: radius(), () async {
-                          getMultipleFile();
-                        }),
-                      ),
-                    ),
-                    HorizontalList(
-                      itemCount: imageFiles.length,
-                      itemBuilder: (context, i) {
-                        return Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            if (imageFiles[i].path.contains("https"))
-                              CachedImageWidget(
-                                      url: imageFiles[i].path,
-                                      height: 90,
-                                      fit: BoxFit.cover)
-                                  .cornerRadiusWithClipRRect(16)
-                            else
-                              Image.file(File(imageFiles[i].path),
-                                      width: 90, height: 90, fit: BoxFit.cover)
-                                  .cornerRadiusWithClipRRect(16),
-                            Container(
-                              decoration: boxDecorationWithRoundedCorners(
-                                  boxShape: BoxShape.circle,
-                                  backgroundColor: primaryColor),
-                              margin: EdgeInsets.only(right: 8, top: 4),
-                              padding: EdgeInsets.all(4),
-                              child: Icon(Icons.close, size: 16, color: white),
-                            ).onTap(() {
-                              imageFiles.removeAt(i);
-                              setState(() {});
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              8.height,
+              Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  key: formWidgetKey,
+                  child: ResponsiveContainer(
+                    padding: EdgeInsets.all(16),
+                    maxWidth: 700,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: context.width(),
+                          height: 120,
+                          child: DottedBorderWidget(
+                            color: primaryColor.withValues(alpha: 0.6),
+                            strokeWidth: 1,
+                            gap: 6,
+                            radius: 12,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(selectImage,
+                                    height: 25,
+                                    width: 25,
+                                    color: appStore.isDarkMode ? white : gray),
+                                8.height,
+                                Text(language.chooseImages,
+                                    style: boldTextStyle()),
+                              ],
+                            ).center().onTap(borderRadius: radius(), () async {
+                              getMultipleFile();
                             }),
-                          ],
-                        );
-                      },
-                    ).paddingBottom(16).visible(imageFiles.isNotEmpty),
-                    20.height,
+                          ),
+                        ),
+                        HorizontalList(
+                          itemCount: imageFiles.length,
+                          itemBuilder: (context, i) {
+                            return Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                if (imageFiles[i].path.contains("https"))
+                                  CachedImageWidget(
+                                          url: imageFiles[i].path,
+                                          height: 90,
+                                          fit: BoxFit.cover)
+                                      .cornerRadiusWithClipRRect(16)
+                                else
+                                  Image.file(File(imageFiles[i].path),
+                                          width: 90,
+                                          height: 90,
+                                          fit: BoxFit.cover)
+                                      .cornerRadiusWithClipRRect(16),
+                                Container(
+                                  decoration: boxDecorationWithRoundedCorners(
+                                      boxShape: BoxShape.circle,
+                                      backgroundColor: primaryColor),
+                                  margin: EdgeInsets.only(right: 8, top: 4),
+                                  padding: EdgeInsets.all(4),
+                                  child:
+                                      Icon(Icons.close, size: 16, color: white),
+                                ).onTap(() {
+                                  imageFiles.removeAt(i);
+                                  setState(() {});
+                                }),
+                              ],
+                            );
+                          },
+                        ).paddingBottom(16).visible(imageFiles.isNotEmpty),
+                        20.height,
 
-                    /// CATEGORY
-                    DropdownButtonFormField<CategoryData>(
-                      decoration: inputDecoration(context,
-                          labelText: language.lblCategory),
-                      hint: Text(language.selectCategory,
-                          style: secondaryTextStyle()),
-                      value: selectedCategory,
-                      validator: (value) {
-                        if (value == null) return errorThisFieldRequired;
-                        return null;
-                      },
-                      dropdownColor: context.scaffoldBackgroundColor,
-                      items: categoryList.map((data) {
-                        return DropdownMenuItem<CategoryData>(
-                          value: data,
-                          child: Text(data.name.validate(),
-                              style: primaryTextStyle()),
-                        );
-                      }).toList(),
-                      onChanged: isUpdate
-                          ? null
-                          : (CategoryData? value) async {
-                              selectedCategory = value!;
-                              selectedSubCategory = null;
-                              subCategoryList.clear();
+                        /// Job request fields (when opened from "New Request")
+                        AppTextField(
+                          controller: jobTitleCont,
+                          textFieldType: TextFieldType.NAME,
+                          nextFocus: jobDescriptionFocus,
+                          decoration: inputDecoration(context,
+                              labelText: language.postJobTitle),
+                        ),
+                        16.height,
+                        AppTextField(
+                          controller: jobDescriptionCont,
+                          textFieldType: TextFieldType.MULTILINE,
+                          maxLines: 2,
+                          focus: jobDescriptionFocus,
+                          nextFocus: jobDateFocus,
+                          enableChatGPT: appConfigurationStore.chatGPTStatus,
+                          promptFieldInputDecorationChatGPT:
+                              inputDecoration(context).copyWith(
+                            hintText: language.writeHere,
+                            fillColor: context.scaffoldBackgroundColor,
+                            filled: true,
+                          ),
+                          testWithoutKeyChatGPT:
+                              appConfigurationStore.testWithoutKey,
+                          loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
+                          decoration: inputDecoration(context,
+                              labelText: language.postJobDescription),
+                        ),
+                        16.height,
+                        AppTextField(
+                          controller: jobDateCont,
+                          textFieldType: TextFieldType.OTHER,
+                          focus: jobDateFocus,
+                          decoration: inputDecoration(context,
+                              labelText: language.lblEstimatedDate),
+                          keyboardType: TextInputType.text,
+                          validator: (s) {
+                            if (s == null || s.isEmpty) return null;
+                            final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                            if (dateRegex.hasMatch(s)) {
+                              try {
+                                DateFormat('yyyy-MM-dd').parseStrict(s);
+                              } catch (e) {
+                                return "Please enter a valid date (YYYY-MM-DD)";
+                              }
+                            }
+                            return null;
+                          },
+                        ),
+                        20.height,
 
-                              // ✅ Call new Laravel API function here
-                              await getSubCategoryData(
-                                  selectedCategory!.id.validate());
+                        /// CATEGORY
+                        DropdownButtonFormField<CategoryData>(
+                          decoration: inputDecoration(context,
+                              labelText: language.lblCategory),
+                          hint: Text(language.selectCategory,
+                              style: secondaryTextStyle()),
+                          initialValue: selectedCategory,
+                          validator: (value) {
+                            if (value == null) return errorThisFieldRequired;
+                            return null;
+                          },
+                          dropdownColor: context.scaffoldBackgroundColor,
+                          items: categoryList.map((data) {
+                            return DropdownMenuItem<CategoryData>(
+                              value: data,
+                              child: Text(data.name.validate(),
+                                  style: primaryTextStyle()),
+                            );
+                          }).toList(),
+                          onChanged: isUpdate
+                              ? null
+                              : (CategoryData? value) async {
+                                  selectedCategory = value!;
+                                  selectedSubCategory = null;
+                                  subCategoryList.clear();
 
-                              setState(() {});
-                            },
+                                  // ✅ Call new Laravel API function here
+                                  await getSubCategoryData(
+                                      selectedCategory!.id.validate());
+
+                                  setState(() {});
+                                },
+                        ),
+
+                        16.height,
+
+                        /// SUBCATEGORY
+                        16.height,
+                        DropdownButtonFormField<CategoryData>(
+                          decoration: inputDecoration(context,
+                              labelText: 'Subcategory'),
+                          hint: Text('Select Subcategory',
+                              style: secondaryTextStyle()),
+                          initialValue: selectedSubCategory,
+                          validator: (value) {
+                            if (value == null) return errorThisFieldRequired;
+                            return null;
+                          },
+                          dropdownColor: context.scaffoldBackgroundColor,
+                          items: subCategoryList.map((data) {
+                            return DropdownMenuItem<CategoryData>(
+                              value: data,
+                              child: Text(data.name.validate(),
+                                  style: primaryTextStyle()),
+                            );
+                          }).toList(),
+                          onChanged: (CategoryData? value) {
+                            selectedSubCategory = value!;
+                            setState(() {});
+                          },
+                        ).visible(subCategoryList.isNotEmpty),
+
+                        16.height,
+                        AppButton(
+                          text:
+                              isUpdate ? language.lblUpdate : language.publish,
+                          color: context.primaryColor,
+                          width: context.width() >= 600 ? 400 : context.width(),
+                          onTap: () {
+                            checkValidation(isSave: true);
+                          },
+                        )
+                      ],
                     ),
-
-                    16.height,
-
-                    /// SUBCATEGORY
-                    16.height,
-                    DropdownButtonFormField<CategoryData>(
-                      decoration:
-                          inputDecoration(context, labelText: 'Subcategory'),
-                      hint: Text('Select Subcategory',
-                          style: secondaryTextStyle()),
-                      value: selectedSubCategory,
-                      validator: (value) {
-                        if (value == null) return errorThisFieldRequired;
-                        return null;
-                      },
-                      dropdownColor: context.scaffoldBackgroundColor,
-                      items: subCategoryList.map((data) {
-                        return DropdownMenuItem<CategoryData>(
-                          value: data,
-                          child: Text(data.name.validate(),
-                              style: primaryTextStyle()),
-                        );
-                      }).toList(),
-                      onChanged: (CategoryData? value) {
-                        selectedSubCategory = value!;
-                        setState(() {});
-                      },
-                    ).visible(subCategoryList.isNotEmpty),
-
-                    16.height,
-                    AppTextField(
-                      controller: serviceNameCont,
-                      textFieldType: TextFieldType.NAME,
-                      nextFocus: descriptionFocus,
-                      errorThisFieldRequired: language.requiredText,
-                      isValidationRequired: checkValidationLanguage(),
-                      decoration: inputDecoration(context,
-                          labelText: language.serviceName),
-                    ),
-                    16.height,
-                    AppTextField(
-                      controller: descriptionCont,
-                      textFieldType: TextFieldType.MULTILINE,
-                      errorThisFieldRequired: language.requiredText,
-                      maxLines: 2,
-                      focus: descriptionFocus,
-                      enableChatGPT: appConfigurationStore.chatGPTStatus,
-                      isValidationRequired: checkValidationLanguage(),
-                      promptFieldInputDecorationChatGPT:
-                          inputDecoration(context).copyWith(
-                        hintText: language.writeHere,
-                        fillColor: context.scaffoldBackgroundColor,
-                        filled: true,
-                      ),
-                      testWithoutKeyChatGPT:
-                          appConfigurationStore.testWithoutKey,
-                      loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
-                      decoration: inputDecoration(context,
-                          labelText: language.serviceDescription),
-                      validator: (value) {
-                        if (value!.isEmpty) return language.requiredText;
-                        return null;
-                      },
-                    ),
-                    16.height,
-                    AppButton(
-                      text: isUpdate ? language.lblUpdate : language.save,
-                      color: context.primaryColor,
-                      width: context.width(),
-                      onTap: () {
-                        checkValidation(isSave: true);
-                      },
-                    )
-                  ],
+                  ),
                 ),
               ),
-            ).paddingAll(16).expand(),
-          ],
+            ],
+          ),
         ),
       ),
     );

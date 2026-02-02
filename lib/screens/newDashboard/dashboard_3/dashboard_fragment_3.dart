@@ -1,26 +1,21 @@
 import 'dart:async';
 
-import 'package:booking_system_flutter/screens/dashboard/component/promotional_banner_slider_component.dart';
 import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/appbar_dashboard_component_3.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/category_list_dashboard_component_3.dart';
 import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/job_request_dahboard_component_3.dart';
 import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/service_list_dashboard_component_3.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/slider_dashboard_component_3.dart';
 import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/shimmer/dashboard_shimmer_3.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../component/empty_error_state_widget.dart';
 import '../../../component/loader_widget.dart';
+import '../../../component/responsive_container.dart';
 import '../../../main.dart';
 import '../../../model/dashboard_model.dart';
 import '../../../network/rest_apis.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/common.dart';
 import '../../../utils/constant.dart';
-import '../../../utils/images.dart';
 import 'component/upcoming_booking_dashboard_component_3.dart';
 
 class DashboardFragment3 extends StatefulWidget {
@@ -99,31 +94,35 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
             loadingWidget: DashboardShimmer3(),
             onSuccess: (snap) {
               return Observer(builder: (context) {
-                return AnimatedScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  listAnimationType: ListAnimationType.FadeIn,
-                  fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-                  onSwipeRefresh: () async {
-                    appStore.setLoading(true);
+                return ResponsiveContainer(
+                  padding: EdgeInsets.zero,
+                  maxWidth: 900,
+                  child: AnimatedScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    listAnimationType: ListAnimationType.FadeIn,
+                    fadeInConfiguration:
+                        FadeInConfiguration(duration: 2.seconds),
+                    onSwipeRefresh: () async {
+                      appStore.setLoading(true);
 
-                    setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
-                    init();
-                    setState(() {});
+                      setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
+                      init();
+                      setState(() {});
 
-                    return await 2.seconds.delay;
-                  },
-                  children: [
-                    (context.statusBarHeight).toInt().height,
-                    AppbarDashboardComponent3(
-                      featuredList: snap.featuredServices.validate(),
-                      callback: () async {
-                        appStore.setLoading(true);
+                      return await 2.seconds.delay;
+                    },
+                    children: [
+                      (context.statusBarHeight).toInt().height,
+                      AppbarDashboardComponent3(
+                        featuredList: snap.featuredServices.validate(),
+                        callback: () async {
+                          appStore.setLoading(true);
 
-                        init();
-                        setState(() {});
-                      },
-                    ),
-                     // SliderDashboardComponent3(sliderList: snap.slider.validate()),
+                          init();
+                          setState(() {});
+                        },
+                      ),
+                    // SliderDashboardComponent3(sliderList: snap.slider.validate()),
 
                     // CategoryListDashboardComponent3(
                     //     categoryList: snap.category.validate(),
@@ -135,22 +134,23 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                     //         snap.promotionalBanner.validate(),
                     //   ).paddingTop(16),
                     // 16.height,
-                    ServiceListDashboardComponent3(
-                        serviceList: snap.service.validate(),
-                        serviceListTitle: language.popularServices),
-                    14.height,
-                    ServiceListDashboardComponent3(
-                      serviceList: snap.featuredServices.validate(),
-                      serviceListTitle: language.featuredServices,
-                      isFeatured: true,
-                    ),
-                    16.height,
-                    if (appConfigurationStore.jobRequestStatus)
-                      JobRequestDashboardComponent3(),
-                    UpcomingBookingDashboardComponent3(
-                            upcomingBookingData: snap.upcomingData)
-                        .paddingTop(16),
-                  ],
+                      ServiceListDashboardComponent3(
+                          serviceList: snap.service.validate(),
+                          serviceListTitle: language.popularServices),
+                      14.height,
+                      ServiceListDashboardComponent3(
+                        serviceList: snap.featuredServices.validate(),
+                        serviceListTitle: language.featuredServices,
+                        isFeatured: true,
+                      ),
+                      16.height,
+                      if (appConfigurationStore.jobRequestStatus)
+                        JobRequestDashboardComponent3(),
+                      UpcomingBookingDashboardComponent3(
+                              upcomingBookingData: snap.upcomingData)
+                          .paddingTop(16),
+                    ],
+                  ),
                 );
               });
             },

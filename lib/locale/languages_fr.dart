@@ -415,6 +415,9 @@ class LanguageFr extends BaseLanguage {
   String get lblDate => "Date";
 
   @override
+  String get lblEstimatedDate => "Date estimée";
+
+  @override
   String get lblAboutHandyman => "À propos de Handyman";
 
   @override

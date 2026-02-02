@@ -19,6 +19,7 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../../component/empty_error_state_widget.dart';
 import '../../../store/filter_store.dart';
 import '../../booking_filter/booking_filter_screen.dart';
+import '../../../component/responsive_container.dart';
 
 class BookingFragment extends StatefulWidget {
   @override
@@ -32,12 +33,12 @@ class _BookingFragmentState extends State<BookingFragment> {
 
   Future<List<BookingData>>? future;
   List<BookingData> bookings = [];
-  
+
   // Post job requests
   List<PostJobData> postJobRequests = [];
   int postJobPage = 1;
   bool isPostJobLastPage = false;
-  
+
   // Map to store post job ID to PostJobData mapping for converted bookings
   Map<int, PostJobData> postJobMap = {};
 
@@ -99,26 +100,26 @@ class _BookingFragmentState extends State<BookingFragment> {
       },
     );
 
-     future = Future.wait([bookingsFuture, postJobsFuture]).then((results) {
-      List<BookingData> allBookings = List<BookingData>.from(results[0] as List<BookingData>);
+    future = Future.wait([bookingsFuture, postJobsFuture]).then((results) {
+      List<BookingData> allBookings =
+          List<BookingData>.from(results[0] as List<BookingData>);
       List<PostJobData> postJobs = results[1] as List<PostJobData>;
-      
+
       // Clear post job map only on first page
       if (postJobPage == 1) {
         postJobMap.clear();
       }
-      
+
       // Convert post job requests with status "requested" to BookingData format
       List<BookingData> convertedPostJobs = postJobs
           .where((postJob) => postJob.status == JOB_REQUEST_STATUS_REQUESTED)
           .map((postJob) {
-            // Store mapping for later retrieval
-            int postJobId = postJob.id?.toInt() ?? 0;
-            postJobMap[postJobId] = postJob;
-            return _convertPostJobToBooking(postJob);
-          })
-          .toList();
-      
+        // Store mapping for later retrieval
+        int postJobId = postJob.id?.toInt() ?? 0;
+        postJobMap[postJobId] = postJob;
+        return _convertPostJobToBooking(postJob);
+      }).toList();
+
       // Combine and sort by date (most recent first)
       allBookings.addAll(convertedPostJobs);
       allBookings.sort((a, b) {
@@ -126,7 +127,7 @@ class _BookingFragmentState extends State<BookingFragment> {
         String dateB = b.date ?? b.bookingDate ?? '';
         return dateB.compareTo(dateA); // Descending order
       });
-      
+
       return allBookings;
     });
   }
@@ -136,32 +137,35 @@ class _BookingFragmentState extends State<BookingFragment> {
     // Default values for post jobs without assigned providers
     String defaultProviderImage = '$DOMAIN_URL/images/user/user.png';
     String defaultProviderName = language.lblWaitingForProviderApproval;
-    
+
     // Extract provider information from service if available
-    ServiceData? firstService = postJob.service?.isNotEmpty == true ? postJob.service!.first : null;
-    
+    ServiceData? firstService =
+        postJob.service?.isNotEmpty == true ? postJob.service!.first : null;
+
     // Only show provider info if a provider has actually been assigned (providerId is set)
     // The service's providerName/providerImage might be the user's own info if they created the service
-    bool hasAssignedProvider = postJob.providerId != null && postJob.providerId! > 0;
-    
+    bool hasAssignedProvider =
+        postJob.providerId != null && postJob.providerId! > 0;
+
     String? providerName;
     String? providerImage;
     int? providerId;
-    
+
     if (hasAssignedProvider) {
       // Provider has been assigned, use provider info from service if available
       providerId = postJob.providerId?.toInt();
-      
+
       // Check if providerName looks like an email (contains @) - if so, don't use it
       String? serviceProviderName = firstService?.providerName?.validate();
-      bool isEmailFormat = serviceProviderName != null && serviceProviderName.contains('@');
-      
-      providerName = (serviceProviderName != null && 
-                     serviceProviderName.isNotEmpty && 
-                     !isEmailFormat)
+      bool isEmailFormat =
+          serviceProviderName != null && serviceProviderName.contains('@');
+
+      providerName = (serviceProviderName != null &&
+              serviceProviderName.isNotEmpty &&
+              !isEmailFormat)
           ? serviceProviderName
           : defaultProviderName;
-      
+
       providerImage = firstService?.providerImage?.validate().isNotEmpty == true
           ? firstService!.providerImage
           : defaultProviderImage;
@@ -171,20 +175,21 @@ class _BookingFragmentState extends State<BookingFragment> {
       providerName = defaultProviderName;
       providerImage = defaultProviderImage;
     }
-    
+
     // Extract category name from service or post job category
-    String? categoryName = firstService?.categoryName?.validate().isNotEmpty == true
-        ? firstService!.categoryName
-        : (postJob.category?.name?.validate().isNotEmpty == true
-            ? postJob.category!.name
-            : null);
-    
+    String? categoryName =
+        firstService?.categoryName?.validate().isNotEmpty == true
+            ? firstService!.categoryName
+            : (postJob.category?.name?.validate().isNotEmpty == true
+                ? postJob.category!.name
+                : null);
+
     // Build service name with category if available
     String serviceName = firstService?.name ?? postJob.title ?? '';
     if (categoryName != null && categoryName.isNotEmpty) {
       serviceName = '$serviceName • $categoryName';
     }
-    
+
     return BookingData(
       id: postJob.id?.toInt(),
       customerId: postJob.customerId?.toInt(),
@@ -203,8 +208,10 @@ class _BookingFragmentState extends State<BookingFragment> {
       providerId: providerId,
       providerName: providerName,
       providerImage: providerImage,
-      providerIsVerified: 0, // Can be updated if provider verification status is available in API
-      type: firstService?.type ?? SERVICE_TYPE_FIXED, // Use service type if available
+      providerIsVerified:
+          0, // Can be updated if provider verification status is available in API
+      type: firstService?.type ??
+          SERVICE_TYPE_FIXED, // Use service type if available
       paymentStatus: null, // Post jobs don't have payment status until booked
       paymentMethod: null,
     );
@@ -242,7 +249,9 @@ class _BookingFragmentState extends State<BookingFragment> {
                   IconButton(
                     icon: ic_filter.iconImage(color: white, size: 20),
                     onPressed: () async {
-                      BookingFilterScreen(showHandymanFilter: true).launch(context).then((value) {
+                      BookingFilterScreen(showHandymanFilter: true)
+                          .launch(context)
+                          .then((value) {
                         if (value != null) {
                           page = 1;
                           postJobPage = 1;
@@ -251,7 +260,9 @@ class _BookingFragmentState extends State<BookingFragment> {
                           appStore.setLoading(true);
                           init();
                           if (bookings.isNotEmpty) {
-                            scrollController.animateTo(0, duration: 1.seconds, curve: Curves.easeOutQuart);
+                            scrollController.animateTo(0,
+                                duration: 1.seconds,
+                                curve: Curves.easeOutQuart);
                           } else {
                             scrollController = ScrollController();
                             keyForList = UniqueKey();
@@ -268,9 +279,14 @@ class _BookingFragmentState extends State<BookingFragment> {
                       child: Container(
                         padding: EdgeInsets.all(5),
                         child: FittedBox(
-                          child: Text('$filterCount', style: TextStyle(color: white, fontSize: 10, fontWeight: FontWeight.bold)),
+                          child: Text('$filterCount',
+                              style: TextStyle(
+                                  color: white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold)),
                         ),
-                        decoration: boxDecorationDefault(color: Colors.red, shape: BoxShape.circle),
+                        decoration: boxDecorationDefault(
+                            color: Colors.red, shape: BoxShape.circle),
                       ),
                     ),
                 ],
@@ -279,9 +295,9 @@ class _BookingFragmentState extends State<BookingFragment> {
           ),
         ],
       ),
-      body: SizedBox(
-        width: context.width(),
-        height: context.height(),
+      body: ResponsiveContainer(
+        padding: EdgeInsets.zero,
+        maxWidth: 800,
         child: Stack(
           children: [
             SnapHelperWidget<List<BookingData>>(
@@ -310,7 +326,7 @@ class _BookingFragmentState extends State<BookingFragment> {
                   key: keyForList,
                   controller: scrollController,
                   physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.only(bottom: 60, top: 16, right: 16, left: 16),
+                  padding: EdgeInsets.only(bottom: 60, top: 16),
                   itemCount: list.length,
                   shrinkWrap: true,
                   disposeScrollController: true,
@@ -328,7 +344,7 @@ class _BookingFragmentState extends State<BookingFragment> {
                     return GestureDetector(
                       onTap: () {
                         // Check if it's a post job request (published job, not yet a booking)
-                        if (data.bookingType == BOOKING_TYPE_USER_POST_JOB && 
+                        if (data.bookingType == BOOKING_TYPE_USER_POST_JOB &&
                             data.status == JOB_REQUEST_STATUS_REQUESTED) {
                           // Find the original post job using the map
                           PostJobData? postJob = postJobMap[data.id];
@@ -349,15 +365,16 @@ class _BookingFragmentState extends State<BookingFragment> {
                             // Fallback: try to find in postJobRequests list
                             PostJobData? foundPostJob;
                             try {
-                              foundPostJob = postJobRequests.firstWhere(
-                                (p) => p.id?.toInt() == data.id && p.status == JOB_REQUEST_STATUS_REQUESTED
-                              );
+                              foundPostJob = postJobRequests.firstWhere((p) =>
+                                  p.id?.toInt() == data.id &&
+                                  p.status == JOB_REQUEST_STATUS_REQUESTED);
                             } catch (e) {
                               foundPostJob = null;
                             }
                             if (foundPostJob != null) {
                               MyPostDetailScreen(
-                                postRequestId: foundPostJob.id.validate().toInt(),
+                                postRequestId:
+                                    foundPostJob.id.validate().toInt(),
                                 callback: () {
                                   page = 1;
                                   postJobPage = 1;
@@ -371,7 +388,8 @@ class _BookingFragmentState extends State<BookingFragment> {
                             }
                           }
                         } else {
-                          BookingDetailScreen(bookingId: data.id.validate()).launch(context);
+                          BookingDetailScreen(bookingId: data.id.validate())
+                              .launch(context);
                         }
                       },
                       child: BookingItemComponent(bookingData: data),
@@ -406,7 +424,8 @@ class _BookingFragmentState extends State<BookingFragment> {
                 );
               },
             ),
-            Observer(builder: (_) => LoaderWidget().visible(appStore.isLoading)),
+            Observer(
+                builder: (_) => LoaderWidget().visible(appStore.isLoading)),
           ],
         ),
       ),

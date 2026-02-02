@@ -28,7 +28,6 @@ import 'package:booking_system_flutter/utils/common.dart';
 import 'package:booking_system_flutter/utils/configs.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:booking_system_flutter/utils/firebase_messaging_utils.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -43,6 +42,7 @@ import 'model/booking_status_model.dart';
 import 'model/category_model.dart';
 import 'model/coupon_list_model.dart';
 import 'model/dashboard_model.dart';
+
 //region Handle Background Firebase Message
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -120,7 +120,8 @@ void main() async {
   localeLanguageList = languageList();
 
   // Initialize language before app starts
-  String savedLanguageCode = getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
+  String savedLanguageCode =
+      getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
   language = await AppLocalizations().load(Locale(savedLanguageCode));
   appStore.selectedLanguageCode = savedLanguageCode;
 
@@ -136,7 +137,9 @@ void main() async {
       appStore.isDarkMode ? Colors.white : Colors.black;
   defaultToastTextColor = appStore.isDarkMode ? Colors.black : Colors.white;
 
-  runApp( MyApp(),);
+  runApp(
+    MyApp(),
+  );
 }
 
 class MyApp extends StatefulWidget {

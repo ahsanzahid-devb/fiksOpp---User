@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
+import 'package:booking_system_flutter/component/responsive_container.dart';
 import 'package:booking_system_flutter/component/cached_image_widget.dart';
 import 'package:booking_system_flutter/main.dart';
 import 'package:booking_system_flutter/model/city_list_model.dart';
@@ -79,6 +80,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     init();
   }
+
   Future<void> init() async {
     afterBuildCreated(() {
       appStore.setLoading(true);
@@ -99,7 +101,9 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     addressCont.text = appStore.address;
     selectedCountryCode = Country(
       countryCode: appStore.userContactNumber.split("-").last,
-      phoneCode: appStore.userContactNumber.split("-").first.isEmpty ? "91" : appStore.userContactNumber.split("-").first,
+      phoneCode: appStore.userContactNumber.split("-").first.isEmpty
+          ? "91"
+          : appStore.userContactNumber.split("-").first,
       e164Sc: 0,
       geographic: true,
       level: 1,
@@ -148,7 +152,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       countryList.addAll(value);
 
       if (value.any((element) => element.id == getIntAsync(COUNTRY_ID))) {
-        selectedCountry = value.firstWhere((element) => element.id == getIntAsync(COUNTRY_ID));
+        selectedCountry = value
+            .firstWhere((element) => element.id == getIntAsync(COUNTRY_ID));
       }
 
       setState(() {});
@@ -166,7 +171,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       stateList.addAll(value);
 
       if (value.any((element) => element.id == getIntAsync(STATE_ID))) {
-        selectedState = value.firstWhere((element) => element.id == getIntAsync(STATE_ID));
+        selectedState =
+            value.firstWhere((element) => element.id == getIntAsync(STATE_ID));
       }
 
       setState(() {});
@@ -187,7 +193,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       cityList.addAll(value);
 
       if (value.any((element) => element.id == getIntAsync(CITY_ID))) {
-        selectedCity = value.firstWhere((element) => element.id == getIntAsync(CITY_ID));
+        selectedCity =
+            value.firstWhere((element) => element.id == getIntAsync(CITY_ID));
       }
 
       setState(() {});
@@ -200,7 +207,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> update() async {
     hideKeyboard(context);
 
-    MultipartRequest multiPartRequest = await getMultiPartRequest('update-profile');
+    MultipartRequest multiPartRequest =
+        await getMultiPartRequest('update-profile');
     multiPartRequest.fields[UserKeys.id] = appStore.userId.toString();
     multiPartRequest.fields[UserKeys.firstName] = fNameCont.text;
     multiPartRequest.fields[UserKeys.lastName] = lNameCont.text;
@@ -212,9 +220,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     multiPartRequest.fields[UserKeys.stateId] = stateId.toString();
     multiPartRequest.fields[UserKeys.cityId] = cityId.toString();
     multiPartRequest.fields[CommonKeys.address] = addressCont.text;
-    multiPartRequest.fields[UserKeys.displayName] = '${fNameCont.text.validate() + " " + lNameCont.text.validate()}';
+    multiPartRequest.fields[UserKeys.displayName] =
+        '${fNameCont.text.validate() + " " + lNameCont.text.validate()}';
     if (imageFile != null) {
-      multiPartRequest.files.add(await MultipartFile.fromPath(UserKeys.profileImage, imageFile!.path));
+      multiPartRequest.files.add(
+          await MultipartFile.fromPath(UserKeys.profileImage, imageFile!.path));
     }
 
     multiPartRequest.headers.addAll(buildHeaderTokens());
@@ -335,13 +345,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withValues(alpha:0.2),
+              color: const Color(0xFF8C98A8).withValues(alpha: 0.2),
             ),
           ),
         ),
       ),
 
-      showPhoneCode: true, // optional. Shows phone code before the country name.
+      showPhoneCode:
+          true, // optional. Shows phone code before the country name.
       onSelect: (Country country) {
         selectedCountryCode = country;
         setState(() {});
@@ -365,19 +376,20 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           return await userDetailAPI();
         },
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16),
           physics: AlwaysScrollableScrollPhysics(),
-          child: Form(
-            key: formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+          child: ResponsiveContainer(
+            child: Form(
+              key: formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                 Stack(
                   children: [
                     Container(
                       decoration: boxDecorationDefault(
-                        border: Border.all(color: context.scaffoldBackgroundColor, width: 4),
+                        border: Border.all(
+                            color: context.scaffoldBackgroundColor, width: 4),
                         shape: BoxShape.circle,
                       ),
                       child: imageFile != null
@@ -407,7 +419,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                           backgroundColor: primaryColor,
                           border: Border.all(color: Colors.white),
                         ),
-                        child: Icon(AntDesign.camera, color: Colors.white, size: 12),
+                        child: Icon(AntDesign.camera,
+                            color: Colors.white, size: 12),
                       ).onTap(() async {
                         _showBottomSheet(context);
                       }),
@@ -427,7 +440,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 MultiLanguageWidget(
                   onTap: (languageDetails) async {
                     // Update app language and persist selection
-                    await appStore.setLanguage(languageDetails.languageCode.validate());
+                    await appStore
+                        .setLanguage(languageDetails.languageCode.validate());
                     appStore.setSelectedLanguage(languageDetails);
                     // Rebuild app with new locale
                     RestartAppWidget.init(context);
@@ -441,7 +455,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   errorThisFieldRequired: language.requiredText,
                   nextFocus: lNameFocus,
                   enabled: !isLoginTypeApple,
-                  decoration: inputDecoration(context, labelText: language.hintFirstNameTxt),
+                  decoration: inputDecoration(context,
+                      labelText: language.hintFirstNameTxt),
                   suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
                 ),
                 16.height,
@@ -452,7 +467,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   errorThisFieldRequired: language.requiredText,
                   nextFocus: userNameFocus,
                   enabled: !isLoginTypeApple,
-                  decoration: inputDecoration(context, labelText: language.hintLastNameTxt),
+                  decoration: inputDecoration(context,
+                      labelText: language.hintLastNameTxt),
                   suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
                 ),
                 16.height,
@@ -463,7 +479,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   enabled: false,
                   errorThisFieldRequired: language.requiredText,
                   nextFocus: emailFocus,
-                  decoration: inputDecoration(context, labelText: language.hintUserNameTxt),
+                  decoration: inputDecoration(context,
+                      labelText: language.hintUserNameTxt),
                   suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
                 ),
                 16.height,
@@ -473,7 +490,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   focus: emailFocus,
                   nextFocus: mobileFocus,
                   errorThisFieldRequired: language.requiredText,
-                  decoration: inputDecoration(context, labelText: language.hintEmailTxt),
+                  decoration: inputDecoration(context,
+                      labelText: language.hintEmailTxt),
                   suffix: ic_message.iconImage(size: 10).paddingAll(14),
                   autoFillHints: [AutofillHints.email],
                   onFieldSubmitted: (email) async {
@@ -487,8 +505,12 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Text(
-                        isEmailVerified ? language.verified : language.verifyEmail,
-                        style: isEmailVerified ? secondaryTextStyle(color: Colors.green) : secondaryTextStyle(),
+                        isEmailVerified
+                            ? language.verified
+                            : language.verifyEmail,
+                        style: isEmailVerified
+                            ? secondaryTextStyle(color: Colors.green)
+                            : secondaryTextStyle(),
                       ),
                       if (!isEmailVerified && !showRefresh)
                         ic_pending.iconImage(color: Colors.amber, size: 14)
@@ -530,12 +552,12 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 // ),
 
                 Row(
-                   crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Country code ...
                     Container(
                       height: 48.0,
-                       margin: EdgeInsets.only(bottom: context.height() * 0.032),
+                      margin: EdgeInsets.only(bottom: context.height() * 0.032),
                       decoration: BoxDecoration(
                         color: context.cardColor,
                         borderRadius: BorderRadius.circular(12.0),
@@ -559,13 +581,17 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     // Mobile number text field...
                     Expanded(
                       child: AppTextField(
-                        textFieldType: isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
+                        textFieldType: isAndroid
+                            ? TextFieldType.PHONE
+                            : TextFieldType.NAME,
                         controller: mobileCont,
                         focus: mobileFocus,
                         enabled: !isLoginTypeOTP,
                         isValidationRequired: false,
                         errorThisFieldRequired: language.requiredText,
-                        decoration: inputDecoration(context, hintText: '${language.hintContactNumberTxt}').copyWith(
+                        decoration: inputDecoration(context,
+                                hintText: '${language.hintContactNumberTxt}')
+                            .copyWith(
                           // hintText: '${selectedCountry.example}',
                           hintStyle: secondaryTextStyle(),
                         ),
@@ -579,9 +605,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 Row(
                   children: [
                     DropdownButtonFormField<CountryListResponse>(
-                      decoration: inputDecoration(context, labelText: language.selectCountry),
+                      decoration: inputDecoration(context,
+                          labelText: language.selectCountry),
                       isExpanded: true,
-                      value: selectedCountry,
+                      initialValue: selectedCountry,
                       dropdownColor: context.cardColor,
                       items: countryList.map((CountryListResponse e) {
                         return DropdownMenuItem<CountryListResponse>(
@@ -608,10 +635,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     8.width.visible(stateList.isNotEmpty),
                     if (stateList.isNotEmpty)
                       DropdownButtonFormField<StateListResponse>(
-                        decoration: inputDecoration(context, labelText: language.selectState),
+                        decoration: inputDecoration(context,
+                            labelText: language.selectState),
                         isExpanded: true,
                         dropdownColor: context.cardColor,
-                        value: selectedState,
+                        initialValue: selectedState,
                         items: stateList.map((StateListResponse e) {
                           return DropdownMenuItem<StateListResponse>(
                             value: e,
@@ -637,14 +665,18 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 16.height,
                 if (cityList.isNotEmpty)
                   DropdownButtonFormField<CityListResponse>(
-                    decoration: inputDecoration(context, labelText: language.selectCity),
+                    decoration: inputDecoration(context,
+                        labelText: language.selectCity),
                     isExpanded: true,
-                    value: selectedCity,
+                    initialValue: selectedCity,
                     dropdownColor: context.cardColor,
                     items: cityList.map((CityListResponse e) {
                       return DropdownMenuItem<CityListResponse>(
                         value: e,
-                        child: Text(e.name!, style: primaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        child: Text(e.name!,
+                            style: primaryTextStyle(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
                       );
                     }).toList(),
                     onChanged: (CityListResponse? value) async {
@@ -659,7 +691,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   controller: addressCont,
                   textFieldType: TextFieldType.MULTILINE,
                   maxLines: 5,
-                  decoration: inputDecoration(context, labelText: language.hintAddress),
+                  decoration:
+                      inputDecoration(context, labelText: language.hintAddress),
                   suffix: ic_location.iconImage(size: 10).paddingAll(14),
                   isValidationRequired: false,
                 ),
@@ -668,7 +701,9 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   text: language.save,
                   color: primaryColor,
                   textColor: white,
-                  width: context.width() - context.navigationBarHeight,
+                  width: context.width() >= 600
+                      ? 400
+                      : context.width() - context.navigationBarHeight,
                   onTap: () {
                     ifNotTester(() {
                       update();
@@ -678,6 +713,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 24.height,
               ],
             ),
+          ),
           ),
         ),
       ),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../../../main.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/images.dart';
 import '../../../auth/sign_in_screen.dart';
-import '../../../jobRequest/my_post_request_list_screen.dart';
+import '../../../jobRequest/createService/create_service_screen.dart';
 
 class JobRequestDashboardComponent3 extends StatelessWidget {
   @override
@@ -36,7 +35,7 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
           TextButton(
             onPressed: () async {
               if (appStore.isLoggedIn) {
-                MyPostRequestListScreen().launch(context);
+                CreateServiceScreen().launch(context);
               } else {
                 setStatusBarColor(transparentColor,
                     delayInMilliSeconds: 100,
@@ -47,14 +46,16 @@ class JobRequestDashboardComponent3 extends StatelessWidget {
                     await SignInScreen(isFromDashboard: true).launch(context);
 
                 if (res ?? false) {
-                  MyPostRequestListScreen().launch(context);
+                  CreateServiceScreen().launch(context);
                 }
               }
             },
             child: Text(
               language.newRequest,
               style: boldTextStyle(
-                  color: Colors.white, decoration: TextDecoration.underline,decorationColor: Colors.white),
+                  color: Colors.white,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.white),
             ),
           ),
         ],

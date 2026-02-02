@@ -415,6 +415,9 @@ class LanguageAr extends BaseLanguage {
   String get lblDate => "تاريخ";
 
   @override
+  String get lblEstimatedDate => "التاريخ المقدر";
+
+  @override
   String get lblAboutHandyman => "حول العمل اليدوي";
 
   @override

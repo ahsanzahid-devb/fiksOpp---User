@@ -20,7 +20,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:booking_system_flutter/screens/jobRequest/components/category_widget.dart';
 import '../../component/empty_error_state_widget.dart';
-import 'package:intl/intl.dart';
+import '../../component/responsive_container.dart';
 
 class MyPostDetailScreen extends StatefulWidget {
   final int postRequestId;
@@ -314,28 +314,31 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
         onSuccess: (data) {
           return Stack(
             children: [
-              AnimatedScrollView(
-                padding: EdgeInsets.only(bottom: 60),
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  postJobDetailWidget(data: data.postRequestDetail!)
-                      .paddingAll(16),
-                  if (data.postRequestDetail!.service.validate().isNotEmpty)
-                    postJobServiceWidget(
-                        serviceList:
-                            data.postRequestDetail!.service.validate()),
-                  if (data.postRequestDetail!.providerId != null)
-                    providerWidget(data.biderData.validate(),
-                        data.postRequestDetail!.providerId),
-                  if (data.biderData.validate().isNotEmpty)
-                    bidderWidget(data.biderData.validate(),
-                        postJobDetailResponse: data),
-                ],
-                onSwipeRefresh: () async {
-                  init();
-                  setState(() {});
-                  return await 2.seconds.delay;
-                },
+              ResponsiveContainer(
+                padding: EdgeInsets.only(bottom: 60, left: 16, right: 16),
+                maxWidth: 800,
+                child: AnimatedScrollView(
+                  padding: EdgeInsets.zero,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    postJobDetailWidget(data: data.postRequestDetail!),
+                    if (data.postRequestDetail!.service.validate().isNotEmpty)
+                      postJobServiceWidget(
+                          serviceList:
+                              data.postRequestDetail!.service.validate()),
+                    if (data.postRequestDetail!.providerId != null)
+                      providerWidget(data.biderData.validate(),
+                          data.postRequestDetail!.providerId),
+                    if (data.biderData.validate().isNotEmpty)
+                      bidderWidget(data.biderData.validate(),
+                          postJobDetailResponse: data),
+                  ],
+                  onSwipeRefresh: () async {
+                    init();
+                    setState(() {});
+                    return await 2.seconds.delay;
+                  },
+                ),
               ),
               if (data.postRequestDetail!.status == JOB_REQUEST_STATUS_ASSIGNED)
                 Positioned(
