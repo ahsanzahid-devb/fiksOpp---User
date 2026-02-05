@@ -799,6 +799,9 @@ class LanguageFr extends BaseLanguage {
   String get requestNewJob => "Demander un nouvel emploi";
 
   @override
+  String get postJobSuccess => "L'offre d'emploi a été publiée avec succès";
+
+  @override
   String get noNotifications => "Aucune notification";
 
   @override

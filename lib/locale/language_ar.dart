@@ -797,6 +797,9 @@ String get lblNoServicesFound => "لا توجد خدمات في منطقتك";
   String get requestNewJob => "طلب وظيفة جديدة";
 
   @override
+  String get postJobSuccess => "تم نشر الوظيفة بنجاح";
+
+  @override
   String get noNotifications => "لا إشعارات";
 
   @override
