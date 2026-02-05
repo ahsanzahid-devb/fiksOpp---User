@@ -93,6 +93,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       message: language.lblBackPressMsg,
       child: Scaffold(
         body: SafeArea(
+          top: false,
           child: AnimatedOpacity(
             opacity: 1,
             duration: Duration(milliseconds: 500),

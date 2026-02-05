@@ -97,6 +97,7 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                 return ResponsiveContainer(
                   padding: EdgeInsets.zero,
                   maxWidth: 900,
+                  safeAreaTop: false,
                   child: AnimatedScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
                     listAnimationType: ListAnimationType.FadeIn,

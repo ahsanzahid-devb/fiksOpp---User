@@ -100,8 +100,9 @@ class AuthService {
 
       try {
         AuthCredential emailAuthCredential = EmailAuthProvider.credential(email: user.email!, password: DEFAULT_FIREBASE_PASSWORD);
-        user.linkWithCredential(emailAuthCredential);
+        await user.linkWithCredential(emailAuthCredential);
       } catch (e) {
+        // provider-already-linked is normal for returning users; ignore
         log(e);
       }
 

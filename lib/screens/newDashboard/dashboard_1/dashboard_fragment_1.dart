@@ -115,15 +115,18 @@ class _DashboardFragment1State extends State<DashboardFragment1> {
                     return await 2.seconds.delay;
                   },
                   children: [
-                    SliderDashboardComponent1(
-                      sliderList: snap.slider.validate(),
-                      featuredList: snap.featuredServices.validate(),
-                      callback: () async {
-                        appStore.setLoading(true);
+                    Padding(
+                      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                      child: SliderDashboardComponent1(
+                        sliderList: snap.slider.validate(),
+                        featuredList: snap.featuredServices.validate(),
+                        callback: () async {
+                          appStore.setLoading(true);
 
-                        init();
-                        setState(() {});
-                      },
+                          init();
+                          setState(() {});
+                        },
+                      ),
                     ),
                     BookingConfirmedComponent1(upcomingConfirmedBooking: snap.upcomingData),
                     16.height,
