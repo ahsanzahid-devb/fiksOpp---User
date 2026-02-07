@@ -19,12 +19,19 @@ class ExtraChargesModel {
     this.updatedAt,
   });
 
+  static num? _parseNum(dynamic v) {
+    if (v == null) return null;
+    if (v is num) return v;
+    if (v is String) return num.tryParse(v);
+    return null;
+  }
+
   ExtraChargesModel.fromJson(dynamic json) {
-    id = json['id'];
-    bookingId = json['booking_id'];
+    id = _parseNum(json['id']);
+    bookingId = _parseNum(json['booking_id']);
     title = json['title'];
-    price = json['price'];
-    qty = json['qty'];
+    price = _parseNum(json['price']);
+    qty = _parseNum(json['qty']);
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

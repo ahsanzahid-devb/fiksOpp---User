@@ -62,6 +62,7 @@ Future<LoginResponse> loginUser(Map request,
             request: request, method: HttpMethodType.POST)));
 
     if (res.userData != null) {
+      // This app is for customers (user_type: user) only; provider/handyman accounts must use the provider app.
       if (res.userData!.userType != USER_TYPE_USER) {
         appStore.setLoading(false);
         throw language.lblNotValidUser;

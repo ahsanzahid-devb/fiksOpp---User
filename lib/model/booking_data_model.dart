@@ -151,27 +151,43 @@ class BookingData {
     this.refundStatus,
   });
 
+  /// Parse numeric API values that may be returned as String or num (e.g. after cancel/refund).
+  static num? _parseNum(dynamic v) {
+    if (v == null) return null;
+    if (v is num) return v;
+    if (v is String) return num.tryParse(v);
+    return null;
+  }
+
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
   factory BookingData.fromJson(Map<String, dynamic> json) {
     return BookingData(
       address: json['address'],
       bookingSlot: json['booking_slot'],
-      amount: json['amount'],
-      totalAmount: json['total_amount'],
-      bookingAddressId: json['booking_address_id'],
+      amount: _parseNum(json['amount']),
+      totalAmount: _parseNum(json['total_amount']),
+      bookingAddressId: _parseInt(json['booking_address_id']),
       couponData: json['coupon_data'] != null ? CouponData.fromJson(json['coupon_data']) : null,
-      customerId: json['customer_id'],
+      customerId: _parseInt(json['customer_id']),
       customerName: json['customer_name'],
       date: json['date'],
       description: json['description'],
-      discount: json['discount'],
-      durationDiff: json['duration_diff'],
-      durationDiffHour: json['duration_diff_hour'],
+      discount: _parseNum(json['discount']),
+      durationDiff: json['duration_diff']?.toString(),
+      durationDiffHour: json['duration_diff_hour']?.toString(),
       handyman: json['handyman'] != null ? (json['handyman'] as List).map((i) => Handyman.fromJson(i)).toList() : null,
-      id: json['id'],
-      paymentId: json['payment_id'],
+      id: _parseInt(json['id']),
+      paymentId: _parseInt(json['payment_id']),
       paymentMethod: json['payment_method'],
       paymentStatus: json['payment_status'],
-      providerId: json['provider_id'],
+      providerId: _parseInt(json['provider_id']),
       providerName: json['provider_name'],
       providerImage: json['provider_image'],
       providerIsVerified: json['provider_is_verified'] is bool
@@ -179,35 +195,35 @@ class BookingData {
               ? 1
               : 0
           : 0,
-      quantity: json['quantity'],
+      quantity: _parseInt(json['quantity']),
       serviceAttachments: json['service_attchments'] != null ? new List<String>.from(json['service_attchments']) : null,
-      serviceId: json['service_id'],
+      serviceId: _parseInt(json['service_id']),
       serviceName: json['service_name'],
       status: json['status'],
       statusLabel: json['status_label'],
       taxes: json['taxes'] != null ? (json['taxes'] as List).map((i) => TaxData.fromJson(i)).toList() : null,
       type: json['type'],
       reason: json['reason'],
-      totalReview: json['total_review'],
-      totalRating: json['total_rating'],
-      startAt: json['start_at'],
-      endAt: json['end_at'],
+      totalReview: _parseInt(json['total_review']),
+      totalRating: _parseNum(json['total_rating']),
+      startAt: json['start_at']?.toString(),
+      endAt: json['end_at']?.toString(),
       extraCharges: json['extra_charges'] != null ? (json['extra_charges'] as List).map((i) => ExtraChargesModel.fromJson(i)).toList() : null,
       bookingType: json['booking_type'],
       bookingPackage: json['booking_package'] != null ? BookingPackage.fromJson(json['booking_package']) : null,
-      paidAmount: json[AdvancePaymentKey.advancePaidAmount],
-      finalTotalServicePrice: json['final_total_service_price'],
-      finalTotalTax: json['final_total_tax'],
-      finalSubTotal: json['final_sub_total'],
-      finalDiscountAmount: json['final_discount_amount'],
-      finalCouponDiscountAmount: json['final_coupon_discount_amount'],
+      paidAmount: _parseNum(json[AdvancePaymentKey.advancePaidAmount]),
+      finalTotalServicePrice: _parseNum(json['final_total_service_price']),
+      finalTotalTax: _parseNum(json['final_total_tax']),
+      finalSubTotal: _parseNum(json['final_sub_total']),
+      finalDiscountAmount: _parseNum(json['final_discount_amount']),
+      finalCouponDiscountAmount: _parseNum(json['final_coupon_discount_amount']),
       txnId: json['txn_id'],
       serviceaddon: json['BookingAddonService'] != null ? (json['BookingAddonService'] as List).map((i) => Serviceaddon.fromJson(i)).toList() : null,
       bookingDate: json['booking_date'],
-      cancellationChargeHours: json['cancellation_charge_hours'],
-      cancellationCharges: json['cancellationcharges'],
-      cancellationChargeAmount: json['cancellation_charge_amount'],
-      refundAmount: json['refund_amount'],
+      cancellationChargeHours: _parseInt(json['cancellation_charge_hours']),
+      cancellationCharges: _parseNum(json['cancellationcharges']),
+      cancellationChargeAmount: _parseNum(json['cancellation_charge_amount']),
+      refundAmount: _parseNum(json['refund_amount']),
       refundStatus: json['refund_status'],
     );
   }

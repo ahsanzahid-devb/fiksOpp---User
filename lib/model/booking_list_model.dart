@@ -39,14 +39,22 @@ class Handyman {
 
   Handyman({this.bookingId, this.createdAt, this.deletedAt, this.handyman, this.handymanId, this.id, this.updatedAt});
 
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
   factory Handyman.fromJson(Map<String, dynamic> json) {
     return Handyman(
-      bookingId: json['booking_id'],
+      bookingId: _parseInt(json['booking_id']),
       createdAt: json['created_at'],
       deletedAt: json['deleted_at'],
       handyman: json['handyman'] != null ? UserData.fromJson(json['handyman']) : null,
-      handymanId: json['handyman_id'],
-      id: json['id'],
+      handymanId: _parseInt(json['handyman_id']),
+      id: _parseInt(json['id']),
       updatedAt: json['updated_at'],
     );
   }

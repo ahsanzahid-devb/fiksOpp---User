@@ -124,40 +124,40 @@ class _SettingScreenState extends State<SettingScreen> {
                 }),
               ),
             ),
-          SnapHelperWidget<bool>(
-            future: isAndroid12Above(),
-            onSuccess: (data) {
-              if (data) {
-                return SettingItemWidget(
-                  leading: ic_android_12.iconImage(size: SETTING_ICON_SIZE),
-                  title: language.lblMaterialTheme,
-                  titleTextStyle: primaryTextStyle(),
-                  trailing: Transform.scale(
-                    scale: 0.7,
-                    child: Switch.adaptive(
-                      value: appStore.useMaterialYouTheme,
-                      onChanged: (v) {
-                        showConfirmDialogCustom(
-                          context,
-                          onAccept: (_) {
-                            appStore.setUseMaterialYouTheme(v.validate());
+          // SnapHelperWidget<bool>(
+          //   future: isAndroid12Above(),
+          //   onSuccess: (data) {
+          //     if (data) {
+          //       return SettingItemWidget(
+          //         leading: ic_android_12.iconImage(size: SETTING_ICON_SIZE),
+          //         title: language.lblMaterialTheme,
+          //         titleTextStyle: primaryTextStyle(),
+          //         trailing: Transform.scale(
+          //           scale: 0.7,
+          //           child: Switch.adaptive(
+          //             value: appStore.useMaterialYouTheme,
+          //             onChanged: (v) {
+          //               showConfirmDialogCustom(
+          //                 context,
+          //                 onAccept: (_) {
+          //                   appStore.setUseMaterialYouTheme(v.validate());
 
-                            RestartAppWidget.init(context);
-                          },
-                          title: language.lblAndroid12Support,
-                          primaryColor: context.primaryColor,
-                          positiveText: language.lblYes,
-                          negativeText: language.lblCancel,
-                        );
-                      },
-                    ).withHeight(18),
-                  ),
-                  onTap: null,
-                );
-              }
-              return Offstage();
-            },
-          ),
+          //                   RestartAppWidget.init(context);
+          //                 },
+          //                 title: language.lblAndroid12Support,
+          //                 primaryColor: context.primaryColor,
+          //                 positiveText: language.lblYes,
+          //                 negativeText: language.lblCancel,
+          //               );
+          //             },
+          //           ).withHeight(18),
+          //         ),
+          //         onTap: null,
+          //       );
+          //     }
+          //     return Offstage();
+          //   },
+          // ),
         ],
       ),
     );
