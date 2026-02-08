@@ -32,7 +32,8 @@ if (flutterVersionName == null) {
 android {
     namespace "buzz.inoor.fiksopp"
     compileSdkVersion 36
-    ndkVersion = "27.0.12077973"
+    buildToolsVersion "36.1.0" // Using existing installed build tools
+    ndkVersion = "29.0.14206865" // Using existing installed NDK version
 
     compileOptions {
         coreLibraryDesugaringEnabled true
