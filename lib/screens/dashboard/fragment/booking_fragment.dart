@@ -102,8 +102,8 @@ class _BookingFragmentState extends State<BookingFragment> {
 
     future = Future.wait([bookingsFuture, postJobsFuture]).then((results) {
       List<BookingData> allBookings =
-          List<BookingData>.from(results[0] as List<BookingData>);
-      List<PostJobData> postJobs = results[1] as List<PostJobData>;
+          List<BookingData>.from(results[0]);
+      List<PostJobData> postJobs = results[1];
 
       // Clear post job map only on first page
       if (postJobPage == 1) {
