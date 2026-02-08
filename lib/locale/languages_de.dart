@@ -797,6 +797,9 @@ String get lblNoServicesFound => "Keine Dienste in Ihrer Zone gefunden";
   String get requestNewJob => "Fordern Sie einen neuen Job an";
 
   @override
+  String get postJobSuccess => "Der Job wurde erfolgreich gepostet";
+
+  @override
   String get noNotifications => "Keine Benachrichtigungen";
 
   @override

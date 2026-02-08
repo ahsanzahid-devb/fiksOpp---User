@@ -81,13 +81,29 @@ class TaxData {
 
   TaxData({this.id, this.providerId, this.title, this.type, this.value, this.totalCalculatedValue});
 
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
+  static num? _parseNum(dynamic v) {
+    if (v == null) return null;
+    if (v is num) return v;
+    if (v is String) return num.tryParse(v);
+    return null;
+  }
+
   factory TaxData.fromJson(Map<String, dynamic> json) {
     return TaxData(
-      id: json['id'],
-      providerId: json['provider_id'],
+      id: _parseInt(json['id']),
+      providerId: _parseInt(json['provider_id']),
       title: json['title'],
       type: json['type'],
-      value: json['value'],
+      value: _parseNum(json['value']),
+      totalCalculatedValue: _parseNum(json['total_calculated_value']),
     );
   }
 

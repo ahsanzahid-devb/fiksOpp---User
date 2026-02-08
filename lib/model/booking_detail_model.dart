@@ -105,16 +105,24 @@ class BookingActivity {
 
   BookingActivity({this.activityData, this.activityMessage, this.activityType, this.bookingId, this.createdAt, this.datetime, this.deletedAt, this.id, this.updatedAt});
 
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
   factory BookingActivity.fromJson(Map<String, dynamic> json) {
     return BookingActivity(
       activityData: json['activity_data'],
       activityMessage: json['activity_message'],
       activityType: json['activity_type'],
-      bookingId: json['booking_id'],
+      bookingId: _parseInt(json['booking_id']),
       createdAt: json['created_at'],
       datetime: json['datetime'],
       deletedAt: json['deleted_at'],
-      id: json['id'],
+      id: _parseInt(json['id']),
       updatedAt: json['updated_at'],
     );
   }
@@ -157,16 +165,24 @@ class ServiceProof {
     this.attachments,
   });
 
+  static int? _parseInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    if (v is String) return int.tryParse(v);
+    return null;
+  }
+
   ServiceProof.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = _parseInt(json['id']);
     title = json['title'];
     description = json['description'];
-    serviceId = json['service_id'];
-    bookingId = json['booking_id'];
-    userId = json['user_id'];
+    serviceId = _parseInt(json['service_id']);
+    bookingId = _parseInt(json['booking_id']);
+    userId = _parseInt(json['user_id']);
     handymanName = json['handyman_name'];
     serviceName = json['service_name'];
-    attachments = json['attachments'].cast<String>();
+    attachments = json['attachments'] != null ? List<String>.from(json['attachments']) : null;
   }
 
   Map<String, dynamic> toJson() {

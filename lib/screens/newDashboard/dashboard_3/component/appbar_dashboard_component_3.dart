@@ -33,6 +33,7 @@ class _AppbarDashboardComponent3State extends State<AppbarDashboardComponent3> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Row(
       children: [
         if (appStore.isLoggedIn)
@@ -104,6 +105,11 @@ class _AppbarDashboardComponent3State extends State<AppbarDashboardComponent3> {
           ),
         )
       ],
-    ).paddingSymmetric(horizontal: 16, vertical: 16);
+    ).paddingOnly(
+      left: 16,
+      right: 16,
+      top: 16 + topPadding,
+      bottom: 16,
+    );
   }
 }

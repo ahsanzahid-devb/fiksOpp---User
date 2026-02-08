@@ -1,6 +1,7 @@
 import 'package:booking_system_flutter/locale/language_ar.dart';
 import 'package:booking_system_flutter/locale/language_en.dart';
 import 'package:booking_system_flutter/locale/language_hi.dart';
+import 'package:booking_system_flutter/locale/language_no.dart';
 import 'package:booking_system_flutter/locale/languages.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -15,8 +16,7 @@ class AppLocalizations extends LocalizationsDelegate<BaseLanguage> {
   Future<BaseLanguage> load(Locale locale) async {
     switch (locale.languageCode) {
       case 'no':
-        // Temporarily use English strings for Norwegian locale until full Norwegian translations are added.
-        return LanguageEn();
+        return LanguageNo();
       case 'en':
         return LanguageEn();
       case 'ar':

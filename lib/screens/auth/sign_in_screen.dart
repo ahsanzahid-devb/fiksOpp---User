@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:booking_system_flutter/component/back_widget.dart';
 import 'package:booking_system_flutter/component/base_scaffold_body.dart';
 import 'package:booking_system_flutter/component/responsive_container.dart';
@@ -15,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../network/rest_apis.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -103,13 +103,29 @@ class _SignInScreenState extends State<SignInScreen> {
   void googleSignIn() async {
     if (!appStore.isLoading) {
       appStore.setLoading(true);
-      await authService.signInWithGoogle(context).then((googleUser) async {
+      try {
+        final googleUser = await authService
+            .signInWithGoogle(context)
+            .timeout(const Duration(seconds: 90), onTimeout: () {
+          throw TimeoutException('Google Sign-In timed out. Please try again.');
+        });
+        String displayName = googleUser.displayName.validate().trim();
         String firstName = '';
         String lastName = '';
-        if (googleUser.displayName.validate().split(' ').length >= 1)
-          firstName = googleUser.displayName.splitBefore(' ');
-        if (googleUser.displayName.validate().split(' ').length >= 2)
-          lastName = googleUser.displayName.splitAfter(' ');
+        if (displayName.isNotEmpty) {
+          final parts = displayName.split(' ');
+          if (parts.length >= 1) firstName = parts.first.trim();
+          if (parts.length >= 2) lastName = parts.sublist(1).join(' ').trim();
+        }
+        // Backend requires non-empty first_name/last_name (e.g. NOT NULL)
+        final emailLocal = googleUser.email
+                ?.splitBefore('@')
+                .replaceAll('.', '')
+                .toLowerCase() ??
+            'user';
+        if (firstName.isEmpty)
+          firstName = emailLocal.isNotEmpty ? emailLocal : 'User';
+        if (lastName.isEmpty) lastName = 'User';
 
         Map<String, dynamic> request = {
           'first_name': firstName,
@@ -119,7 +135,6 @@ class _SignInScreenState extends State<SignInScreen> {
               .splitBefore('@')
               .replaceAll('.', '')
               .toLowerCase(),
-          // 'password': passwordCont.text.trim(),
           'social_image': googleUser.photoURL,
           'login_type': LOGIN_TYPE_GOOGLE,
         };
@@ -133,12 +148,20 @@ class _SignInScreenState extends State<SignInScreen> {
         authService.verifyFirebaseUser();
 
         onLoginSuccessRedirection();
-        appStore.setLoading(false);
-      }).catchError((e) {
-        appStore.setLoading(false);
+      } catch (e) {
         log(e.toString());
-        toast(e.toString());
-      });
+        if (e is PlatformException &&
+            e.code == 'sign_in_failed' &&
+            (e.message ?? '').contains('ApiException: 10')) {
+          toast(
+            'Google Sign-In is not configured. Add this app\'s SHA-1 in Firebase Console (see GOOGLE_SIGNIN_SETUP.md).',
+          );
+        } else {
+          toast(e.toString());
+        }
+      } finally {
+        appStore.setLoading(false);
+      }
     }
   }
 

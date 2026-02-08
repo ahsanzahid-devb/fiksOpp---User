@@ -234,6 +234,12 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                   PostJob.longitude: appStore.longitude,
                 };
                 await savePostJob(request);
+
+                /// Show a localized top snackbar-style toast once the job is successfully posted
+                toast(
+                  language.postJobSuccess,
+                  gravity: ToastGravity.TOP,
+                );
               } catch (e) {
                 toast(e.toString(), print: true);
               }

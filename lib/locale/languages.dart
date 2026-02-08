@@ -533,6 +533,9 @@ abstract class BaseLanguage {
 
   String get requestNewJob;
 
+  /// Shown as a toast when a job has been successfully posted
+  String get postJobSuccess;
+
   String get noNotifications;
 
   String get noNotificationsSubTitle;

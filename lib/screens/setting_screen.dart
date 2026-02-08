@@ -67,21 +67,21 @@ class _SettingScreenState extends State<SettingScreen> {
               );
             },
           ),
-          SettingItemWidget(
-            leading: ic_slider_status.iconImage(size: SETTING_ICON_SIZE),
-            title: language.lblAutoSliderStatus,
-            titleTextStyle: primaryTextStyle(),
-            trailing: Transform.scale(
-              scale: 0.7,
-              child: Switch.adaptive(
-                value: getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true),
-                onChanged: (v) {
-                  setValue(AUTO_SLIDER_STATUS, v);
-                  setState(() {});
-                },
-              ).withHeight(18),
-            ),
-          ),
+          // SettingItemWidget(
+          //   leading: ic_slider_status.iconImage(size: SETTING_ICON_SIZE),
+          //   title: language.lblAutoSliderStatus,
+          //   titleTextStyle: primaryTextStyle(),
+          //   trailing: Transform.scale(
+          //     scale: 0.7,
+          //     child: Switch.adaptive(
+          //       value: getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true),
+          //       onChanged: (v) {
+          //         setValue(AUTO_SLIDER_STATUS, v);
+          //         setState(() {});
+          //       },
+          //     ).withHeight(18),
+          //   ),
+          // ),
           SettingItemWidget(
             leading: ic_check_update.iconImage(size: SETTING_ICON_SIZE),
             title: language.lblOptionalUpdateNotify,
@@ -106,7 +106,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 scale: 0.7,
                 child: Observer(builder: (context) {
                   return Switch.adaptive(
-                    value: FirebaseAuth.instance.currentUser != null && appStore.isSubscribedForPushNotification,
+                    value: FirebaseAuth.instance.currentUser != null &&
+                        appStore.isSubscribedForPushNotification,
                     onChanged: (v) async {
                       if (appStore.isLoading) return;
                       appStore.setLoading(true);
@@ -123,40 +124,40 @@ class _SettingScreenState extends State<SettingScreen> {
                 }),
               ),
             ),
-          SnapHelperWidget<bool>(
-            future: isAndroid12Above(),
-            onSuccess: (data) {
-              if (data) {
-                return SettingItemWidget(
-                  leading: ic_android_12.iconImage(size: SETTING_ICON_SIZE),
-                  title: language.lblMaterialTheme,
-                  titleTextStyle: primaryTextStyle(),
-                  trailing: Transform.scale(
-                    scale: 0.7,
-                    child: Switch.adaptive(
-                      value: appStore.useMaterialYouTheme,
-                      onChanged: (v) {
-                        showConfirmDialogCustom(
-                          context,
-                          onAccept: (_) {
-                            appStore.setUseMaterialYouTheme(v.validate());
+          // SnapHelperWidget<bool>(
+          //   future: isAndroid12Above(),
+          //   onSuccess: (data) {
+          //     if (data) {
+          //       return SettingItemWidget(
+          //         leading: ic_android_12.iconImage(size: SETTING_ICON_SIZE),
+          //         title: language.lblMaterialTheme,
+          //         titleTextStyle: primaryTextStyle(),
+          //         trailing: Transform.scale(
+          //           scale: 0.7,
+          //           child: Switch.adaptive(
+          //             value: appStore.useMaterialYouTheme,
+          //             onChanged: (v) {
+          //               showConfirmDialogCustom(
+          //                 context,
+          //                 onAccept: (_) {
+          //                   appStore.setUseMaterialYouTheme(v.validate());
 
-                            RestartAppWidget.init(context);
-                          },
-                          title: language.lblAndroid12Support,
-                          primaryColor: context.primaryColor,
-                          positiveText: language.lblYes,
-                          negativeText: language.lblCancel,
-                        );
-                      },
-                    ).withHeight(18),
-                  ),
-                  onTap: null,
-                );
-              }
-              return Offstage();
-            },
-          ),
+          //                   RestartAppWidget.init(context);
+          //                 },
+          //                 title: language.lblAndroid12Support,
+          //                 primaryColor: context.primaryColor,
+          //                 positiveText: language.lblYes,
+          //                 negativeText: language.lblCancel,
+          //               );
+          //             },
+          //           ).withHeight(18),
+          //         ),
+          //         onTap: null,
+          //       );
+          //     }
+          //     return Offstage();
+          //   },
+          // ),
         ],
       ),
     );

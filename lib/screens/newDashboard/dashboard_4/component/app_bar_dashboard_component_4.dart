@@ -112,6 +112,7 @@ class _AppBarDashboardComponent4State extends State<AppBarDashboardComponent4> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -119,7 +120,7 @@ class _AppBarDashboardComponent4State extends State<AppBarDashboardComponent4> {
           width: context.width(),
           height: context.height() * 0.18,
           decoration: boxDecorationDefault(color: primaryColor),
-          padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+          padding: EdgeInsets.only(top: 16 + topPadding, left: 16, right: 16, bottom: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

@@ -815,6 +815,9 @@ class LanguageEn extends BaseLanguage {
   String get requestNewJob => "Request New Job";
 
   @override
+  String get postJobSuccess => "Job has been posted successfully";
+
+  @override
   String get noNotifications => "No Notifications";
 
   @override

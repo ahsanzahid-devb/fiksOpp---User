@@ -820,6 +820,9 @@ class LanguageHi extends BaseLanguage {
   String get requestNewJob => "नई नौकरी का अनुरोध करें";
 
   @override
+  String get postJobSuccess => "नौकरी सफलतापूर्वक पोस्ट हो गई है";
+
+  @override
   String get noNotifications => "कोई सूचनाएं नहीं";
 
   @override

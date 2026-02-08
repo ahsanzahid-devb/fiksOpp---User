@@ -114,7 +114,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           borderRadius: radius(),
                           backgroundColor: appStore.isDarkMode
                               ? context.cardColor
-                              : lightPrimaryColor,
+                              : primaryColor.withOpacity(0.1),
                           border: Border.all(color: primaryColor),
                         ),
                         child: Column(
