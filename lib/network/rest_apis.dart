@@ -824,7 +824,12 @@ Future<BookingDetailResponse> getBookingDetail(Map<String, dynamic> request,
     return bookingDetailResponse;
   } catch (e) {
     appStore.setLoading(false);
-
+    // Show user-friendly message when server fails (e.g. "payment on null" backend bug)
+    String message = e.toString();
+    if (message.contains('payment') && message.contains('null') ||
+        message == language.internalServerError) {
+      throw 'Booking could not be loaded. Please try again or contact support.';
+    }
     throw e;
   }
 }

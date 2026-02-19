@@ -79,8 +79,19 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
     );
   }
 
-  /// ✅ Updated Section
+  /// Post job detail card: all sections always visible with default values for null/empty.
   Widget postJobDetailWidget({required PostJobData data}) {
+    String title = data.title.validate().isNotEmpty ? data.title! : '—';
+    String description = data.description.validate().isNotEmpty ? data.description! : '—';
+    String? categoryName = data.service.validate().isNotEmpty
+        ? (data.service!.first.categoryName.validate().isNotEmpty ? data.service!.first.categoryName : null)
+        : null;
+    String? subCategoryName = data.service.validate().isNotEmpty
+        ? (data.service!.first.subCategoryName.validate().isNotEmpty ? data.service!.first.subCategoryName : null)
+        : null;
+    num jobPrice = data.jobPrice ?? 0;
+    String datePriceInfo = (data.price.validate().isNotEmpty && data.price != "0") ? data.price! : '—';
+
     return Container(
       padding: EdgeInsets.all(16),
       width: context.width(),
@@ -91,158 +102,201 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (data.title.validate().isNotEmpty)
-            titleWidget(
-              title: language.postJobTitle,
-              detail: data.title.validate(),
-              detailTextStyle: boldTextStyle(),
-            ),
-          if (data.description.validate().isNotEmpty)
-            titleWidget(
-              title: language.postJobDescription,
-              detail: data.description.validate(),
-              detailTextStyle: primaryTextStyle(),
-              isReadMore: true,
-            ),
-          if (data.service != null && data.service!.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(language.category, style: secondaryTextStyle()),
-                4.height,
-                CategoryWidget(
-                  categoryName: data.service!.first.categoryName,
-                  subCategoryName: data.service!.first.subCategoryName,
-                ),
-                20.height,
-              ],
-            ),
-          if (data.jobPrice != null && data.jobPrice != 0)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(language.jobPrice, style: secondaryTextStyle()),
-                4.height,
-                PriceWidget(
-                  price: data.jobPrice!,
-                  isHourlyService: false,
-                  color: textPrimaryColorGlobal,
-                  isFreeService: false,
-                  size: 14,
-                ),
-                20.height,
-              ],
-            ),
-
-          /// ✅ Display price (as string) if available
-          /// ✅ Display price (as string) if available
-          if (data.price != null && data.price!.isNotEmpty && data.price != "0")
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Date / Price Info", style: secondaryTextStyle()),
-                4.height,
-                Text(
-                  data.price!, // <-- this will show your input text
-                  style: boldTextStyle(size: 14),
-                ),
-                20.height,
-              ],
-            ),
+          titleWidget(
+            title: language.postJobTitle,
+            detail: title,
+            detailTextStyle: boldTextStyle(),
+          ),
+          titleWidget(
+            title: language.postJobDescription,
+            detail: description,
+            detailTextStyle: primaryTextStyle(),
+            isReadMore: description.length > 80,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(language.category, style: secondaryTextStyle()),
+              4.height,
+              CategoryWidget(
+                categoryName: categoryName ?? '—',
+                subCategoryName: subCategoryName ?? '—',
+              ),
+              20.height,
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(language.jobPrice, style: secondaryTextStyle()),
+              4.height,
+              jobPrice > 0
+                  ? PriceWidget(
+                      price: jobPrice,
+                      isHourlyService: false,
+                      color: textPrimaryColorGlobal,
+                      isFreeService: false,
+                      size: 14,
+                    )
+                  : Text('—', style: boldTextStyle(size: 14)),
+              20.height,
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Date / Price Info", style: secondaryTextStyle()),
+              4.height,
+              Text(datePriceInfo, style: boldTextStyle(size: 14)),
+              20.height,
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget postJobServiceWidget({required List<ServiceData> serviceList}) {
+    final list = serviceList.validate();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(language.services, style: boldTextStyle(size: LABEL_TEXT_SIZE))
             .paddingOnly(left: 16, right: 16),
         8.height,
-        AnimatedListView(
-          itemCount: serviceList.length,
-          padding: EdgeInsets.all(8),
-          shrinkWrap: true,
-          listAnimationType: ListAnimationType.FadeIn,
-          fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemBuilder: (_, i) {
-            ServiceData data = serviceList[i];
-
-            return Container(
-              width: context.width(),
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.all(8),
-              decoration: boxDecorationWithRoundedCorners(
-                backgroundColor: context.cardColor,
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+        list.isEmpty
+            ? Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'No services added',
+                  style: secondaryTextStyle(),
+                ),
+              )
+            : AnimatedListView(
+                itemCount: list.length,
+                padding: EdgeInsets.all(8),
+                shrinkWrap: true,
+                listAnimationType: ListAnimationType.FadeIn,
+                fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                itemBuilder: (_, i) {
+                  ServiceData data = list[i];
+                  return Container(
+                    width: context.width(),
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8),
+                    decoration: boxDecorationWithRoundedCorners(
+                      backgroundColor: context.cardColor,
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: Row(
+                      children: [
+                        CachedImageWidget(
+                          url: data.attachments.validate().isNotEmpty
+                              ? data.attachments!.first.validate()
+                              : "",
+                          fit: BoxFit.cover,
+                          height: 50,
+                          width: 50,
+                          radius: defaultRadius,
+                        ),
+                        16.width,
+                        Text(
+                          data.name.validate().isNotEmpty ? data.name! : '—',
+                          style: primaryTextStyle(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ).expand(),
+                      ],
+                    ),
+                  );
+                },
               ),
-              child: Row(
-                children: [
-                  CachedImageWidget(
-                    url: data.attachments.validate().isNotEmpty
-                        ? data.attachments!.first.validate()
-                        : "",
-                    fit: BoxFit.cover,
-                    height: 50,
-                    width: 50,
-                    radius: defaultRadius,
-                  ),
-                  16.width,
-                  Text(
-                    data.name.validate(),
-                    style: primaryTextStyle(),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ).expand(),
-                ],
-              ),
-            );
-          },
-        ),
       ],
     );
   }
 
   Widget bidderWidget(List<BidderData> bidderList,
       {required PostJobDetailResponse postJobDetailResponse}) {
+    final list = bidderList.validate();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ViewAllLabel(
           label: language.bidder,
-          list: bidderList,
+          list: list,
           onTap: () {},
         ).paddingSymmetric(horizontal: 16),
-        AnimatedListView(
-          itemCount: bidderList.length > 4
-              ? bidderList.take(4).length
-              : bidderList.length,
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          listAnimationType: ListAnimationType.FadeIn,
-          fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-          itemBuilder: (_, i) {
-            return BidderItemComponent(
-              data: bidderList[i],
-              postRequestId: widget.postRequestId.validate(),
-              postJobData: postJobDetailResponse.postRequestDetail!,
-              postJobDetailResponse: postJobDetailResponse,
-            );
-          },
-        ),
+        list.isEmpty
+            ? Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'No bidders yet',
+                  style: secondaryTextStyle(),
+                ),
+              )
+            : AnimatedListView(
+                itemCount: list.length > 4 ? list.take(4).length : list.length,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                listAnimationType: ListAnimationType.FadeIn,
+                fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                itemBuilder: (_, i) {
+                  return BidderItemComponent(
+                    data: list[i],
+                    postRequestId: widget.postRequestId.validate(),
+                    postJobData: postJobDetailResponse.postRequestDetail!,
+                    postJobDetailResponse: postJobDetailResponse,
+                  );
+                },
+              ),
       ],
     );
   }
 
   Widget providerWidget(List<BidderData> bidderList, num? providerId) {
+    if (providerId == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          16.height,
+          Text(language.assignedProvider,
+              style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+          16.height,
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: boxDecorationWithRoundedCorners(
+              backgroundColor: context.cardColor,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: Text('Not assigned', style: secondaryTextStyle()),
+          ),
+        ],
+      ).paddingOnly(left: 16, right: 16);
+    }
     try {
       BidderData? bidderData =
           bidderList.firstWhere((element) => element.providerId == providerId);
       UserData? user = bidderData.provider;
-
+      if (user == null) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            16.height,
+            Text(language.assignedProvider,
+                style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+            16.height,
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: boxDecorationWithRoundedCorners(
+                backgroundColor: context.cardColor,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              child: Text('—', style: secondaryTextStyle()),
+            ),
+          ],
+        ).paddingOnly(left: 16, right: 16);
+      }
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -264,7 +318,9 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
               child: Row(
                 children: [
                   CachedImageWidget(
-                    url: user!.profileImage.validate(),
+                    url: user.profileImage.validate().isNotEmpty
+                        ? user.profileImage!
+                        : "",
                     fit: BoxFit.cover,
                     height: 60,
                     width: 60,
@@ -274,7 +330,11 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.displayName.validate(), style: boldTextStyle()),
+                      Text(
+                          user.displayName.validate().isNotEmpty
+                              ? user.displayName!
+                              : '—',
+                          style: boldTextStyle()),
                       4.height,
                       if (user.email.validate().isNotEmpty)
                         Text(user.email.validate(),
@@ -295,7 +355,23 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
       ).paddingOnly(left: 16, right: 16);
     } catch (e) {
       log(e);
-      return Offstage();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          16.height,
+          Text(language.assignedProvider,
+              style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+          16.height,
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: boxDecorationWithRoundedCorners(
+              backgroundColor: context.cardColor,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: Text('—', style: secondaryTextStyle()),
+          ),
+        ],
+      ).paddingOnly(left: 16, right: 16);
     }
   }
 
@@ -322,16 +398,14 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     postJobDetailWidget(data: data.postRequestDetail!),
-                    if (data.postRequestDetail!.service.validate().isNotEmpty)
-                      postJobServiceWidget(
-                          serviceList:
-                              data.postRequestDetail!.service.validate()),
-                    if (data.postRequestDetail!.providerId != null)
-                      providerWidget(data.biderData.validate(),
-                          data.postRequestDetail!.providerId),
-                    if (data.biderData.validate().isNotEmpty)
-                      bidderWidget(data.biderData.validate(),
-                          postJobDetailResponse: data),
+                    postJobServiceWidget(
+                        serviceList:
+                            data.postRequestDetail!.service.validate()),
+                    providerWidget(
+                        data.biderData.validate(),
+                        data.postRequestDetail!.providerId),
+                    bidderWidget(data.biderData.validate(),
+                        postJobDetailResponse: data),
                   ],
                   onSwipeRefresh: () async {
                     init();

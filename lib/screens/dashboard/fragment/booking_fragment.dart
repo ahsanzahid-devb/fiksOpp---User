@@ -8,7 +8,6 @@ import 'package:booking_system_flutter/network/rest_apis.dart';
 import 'package:booking_system_flutter/screens/booking/booking_detail_screen.dart';
 import 'package:booking_system_flutter/screens/booking/component/booking_item_component.dart';
 import 'package:booking_system_flutter/screens/booking/shimmer/booking_shimmer.dart';
-import 'package:booking_system_flutter/screens/jobRequest/my_post_detail_screen.dart';
 import 'package:booking_system_flutter/utils/configs.dart'; // For DOMAIN_URL
 import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:booking_system_flutter/utils/images.dart';
@@ -101,8 +100,7 @@ class _BookingFragmentState extends State<BookingFragment> {
     );
 
     future = Future.wait([bookingsFuture, postJobsFuture]).then((results) {
-      List<BookingData> allBookings =
-          List<BookingData>.from(results[0]);
+      List<BookingData> allBookings = List<BookingData>.from(results[0]);
       List<PostJobData> postJobs = List<PostJobData>.from(results[1]);
 
       // Clear post job map only on first page
@@ -343,54 +341,9 @@ class _BookingFragmentState extends State<BookingFragment> {
 
                     return GestureDetector(
                       onTap: () {
-                        // Check if it's a post job request (published job, not yet a booking)
-                        if (data.bookingType == BOOKING_TYPE_USER_POST_JOB &&
-                            data.status == JOB_REQUEST_STATUS_REQUESTED) {
-                          // Find the original post job using the map
-                          PostJobData? postJob = postJobMap[data.id];
-                          if (postJob != null) {
-                            MyPostDetailScreen(
-                              postRequestId: postJob.id.validate().toInt(),
-                              callback: () {
-                                page = 1;
-                                postJobPage = 1;
-                                postJobRequests.clear();
-                                postJobMap.clear();
-                                appStore.setLoading(true);
-                                init();
-                                setState(() {});
-                              },
-                            ).launch(context);
-                          } else {
-                            // Fallback: try to find in postJobRequests list
-                            PostJobData? foundPostJob;
-                            try {
-                              foundPostJob = postJobRequests.firstWhere((p) =>
-                                  p.id?.toInt() == data.id &&
-                                  p.status == JOB_REQUEST_STATUS_REQUESTED);
-                            } catch (e) {
-                              foundPostJob = null;
-                            }
-                            if (foundPostJob != null) {
-                              MyPostDetailScreen(
-                                postRequestId:
-                                    foundPostJob.id.validate().toInt(),
-                                callback: () {
-                                  page = 1;
-                                  postJobPage = 1;
-                                  postJobRequests.clear();
-                                  postJobMap.clear();
-                                  appStore.setLoading(true);
-                                  init();
-                                  setState(() {});
-                                },
-                              ).launch(context);
-                            }
-                          }
-                        } else {
-                          BookingDetailScreen(bookingId: data.id.validate())
-                              .launch(context);
-                        }
+                        // Always open booking detail screen when user taps a card
+                        BookingDetailScreen(bookingId: data.id.validate())
+                            .launch(context);
                       },
                       child: BookingItemComponent(bookingData: data),
                     );
