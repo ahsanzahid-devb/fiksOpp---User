@@ -3,7 +3,7 @@
 ## App Information Summary
 
 **App Name:** FiksOpp  
-**Package Name:** com.iqonic.servicebooking (Android)  
+**Package Name:** com.fiksopp.fiksopp (Android)  
 **Current Version:** 11.14.3 (Build 110)  
 **App Type:** Service Booking/Handyman Platform  
 **Pricing:** Free

@@ -19,7 +19,7 @@
   "dependencies": {
     "Flutter": [],
     "Firebase/CoreOnly": [
-      "11.8.0"
+      "11.15.0"
     ]
   },
   "static_framework": true,

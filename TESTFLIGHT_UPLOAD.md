@@ -4,7 +4,7 @@
 
 - **Apple Developer account** (enrolled in Apple Developer Program, $99/year)
 - **Mac** with Xcode installed (latest stable recommended)
-- App configured in **App Store Connect** with the same bundle ID: `buzz.inoor.bookingSystemFlutter`
+- App configured in **App Store Connect** with the same bundle ID: `com.fiksopp.fiksopp`
 
 ---
 
@@ -12,7 +12,7 @@
 
 1. Go to [App Store Connect](https://appstoreconnect.apple.com) → **My Apps**.
 2. Click **+** → **New App**.
-3. Choose **iOS**, enter **App Name**, **Primary Language**, **Bundle ID** = `buzz.inoor.bookingSystemFlutter`, **SKU** (e.g. `fiksopp-user-ios`).
+3. Choose **iOS**, enter **App Name**, **Primary Language**, **Bundle ID** = `com.fiksopp.fiksopp`, **SKU** (e.g. `fiksopp-user-ios`).
 4. Create the app. You do **not** need to submit for review to use TestFlight.
 
 ---
@@ -49,7 +49,7 @@ If `flutter build ipa` fails with signing errors:
 2. Select the **Runner** project in the left sidebar → **Signing & Capabilities**.
 3. Check **Automatically manage signing**.
 4. Select your **Team** (your Apple Developer team).
-5. Ensure **Bundle Identifier** is `buzz.inoor.bookingSystemFlutter` and matches App Store Connect.
+5. Ensure **Bundle Identifier** is `com.fiksopp.fiksopp` and matches App Store Connect.
 6. Repeat for the **Runner** target if needed.
 
 Then run again:
@@ -98,7 +98,7 @@ flutter build ipa
 
 ## Quick checklist
 
-- [ ] App created in App Store Connect with bundle ID `buzz.inoor.bookingSystemFlutter`
+- [ ] App created in App Store Connect with bundle ID `com.fiksopp.fiksopp`
 - [ ] `flutter build ipa` succeeds
 - [ ] IPA uploaded via Xcode Organizer or Transporter
 - [ ] Build processed in TestFlight
@@ -110,6 +110,7 @@ flutter build ipa
 
 | Issue | What to do |
 |-------|------------|
+| **No such module 'Flutter'** or **Unable to find Google Maps** | Always open **ios/Runner.xcworkspace** (never Runner.xcodeproj). Then from project root run: `flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter build ios --no-codesign`. After that succeeds, open `ios/Runner.xcworkspace` in Xcode and use **Product → Archive**. |
 | **Code signing errors** | Open `ios/Runner.xcworkspace` in Xcode, set Team and “Automatically manage signing” for Runner. |
 | **“No valid signing identity”** | In Xcode: **Xcode** → **Settings** → **Accounts** → select Apple ID → **Download Manual Profiles**. |
 | **“Bundle ID already in use”** | Create the app in App Store Connect with this bundle ID, or change the bundle ID in Xcode to match an existing app. |

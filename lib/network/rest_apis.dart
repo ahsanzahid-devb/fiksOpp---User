@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:booking_system_flutter/main.dart';
 import 'package:booking_system_flutter/model/base_response_model.dart';
 import 'package:booking_system_flutter/model/booking_data_model.dart';
@@ -36,7 +35,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../model/bank_list_response.dart';
 import '../model/coupon_list_model.dart';
 import '../model/payment_gateway_response.dart';
