@@ -209,6 +209,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       appStore.setLoading(true);
       await sendMultiPartRequest(
         req,
+        retryRequestBuilder: _buildServiceRequest,
         onSuccess: (data) async {
           appStore.setLoading(false);
           final decoded = jsonDecode(data);

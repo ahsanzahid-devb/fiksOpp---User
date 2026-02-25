@@ -172,7 +172,13 @@ Future<MultipartRequest> getMultiPartRequest(String endPoint, {String? baseUrl})
   return MultipartRequest('POST', Uri.parse(url));
 }
 
-Future<void> sendMultiPartRequest(MultipartRequest multiPartRequest, {Function(dynamic)? onSuccess, Function(dynamic)? onError}) async {
+Future<void> sendMultiPartRequest(
+  MultipartRequest multiPartRequest, {
+  Function(dynamic)? onSuccess,
+  Function(dynamic)? onError,
+  /// Optional builder to rebuild the request with fresh auth headers after 401 (token refresh). Used for one retry only.
+  Future<MultipartRequest> Function()? retryRequestBuilder,
+}) async {
   try {
     http.Response response = await http.Response.fromStream(await multiPartRequest.send());
     apiPrint(
@@ -187,18 +193,40 @@ Future<void> sendMultiPartRequest(MultipartRequest multiPartRequest, {Function(d
 
     if (response.statusCode.isSuccessful()) {
       onSuccess?.call(response.body);
-    } else {
+      return;
+    }
+
+    // On 401 Unauthenticated: refresh token and retry once if caller provided a request builder (same as buildHttpResponse)
+    if (response.statusCode == 401 &&
+        appStore.isLoggedIn &&
+        retryRequestBuilder != null &&
+        multiPartRequest.url.toString().startsWith(BASE_URL)) {
       try {
-        if (response.body.isJson()) {
-          var body = jsonDecode(response.body);
-          onError?.call(body['message'] ?? errorSomethingWentWrong);
-        } else {
-          onError?.call(errorSomethingWentWrong);
-        }
-      } on Exception catch (e) {
+        await reGenerateToken();
+        final newRequest = await retryRequestBuilder();
+        return sendMultiPartRequest(
+          newRequest,
+          onSuccess: onSuccess,
+          onError: onError,
+          retryRequestBuilder: null, // only one retry
+        );
+      } catch (e) {
         log(e);
+      }
+      // fall through to onError if retry failed or reGenerateToken failed
+    }
+
+    try {
+      if (response.body.isJson()) {
+        var body = jsonDecode(response.body) as Map?;
+        final message = body?['error'] ?? body?['message'] ?? errorSomethingWentWrong;
+        onError?.call(message);
+      } else {
         onError?.call(errorSomethingWentWrong);
       }
+    } on Exception catch (e) {
+      log(e);
+      onError?.call(errorSomethingWentWrong);
     }
   } on SocketException catch (e) {
     log(e.toString());
