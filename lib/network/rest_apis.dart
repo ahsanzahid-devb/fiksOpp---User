@@ -236,7 +236,7 @@ Future<void> logout(BuildContext context) async {
                       cachedWalletHistoryList!.clear();
 
                     appStore.setLoading(false);
-                    DashboardScreen().launch(context,
+                    DashboardScreen(initialTabIndex: 0).launch(context,
                         isNewTask: true,
                         pageRouteAnimation: PageRouteAnimation.Fade);
                   } else {
@@ -842,6 +842,13 @@ Future<BaseResponseModel> updateBooking(Map request) async {
 }
 
 Future<BookingDetailResponse> saveBooking(Map request) async {
+  return await _saveBookingInternal(request).timeout(
+    Duration(seconds: BOOKING_API_TIMEOUT_SECONDS),
+    onTimeout: () => throw TimeoutException('Request took too long. Please try again.'),
+  );
+}
+
+Future<BookingDetailResponse> _saveBookingInternal(Map request) async {
   var res = await handleResponse(await buildHttpResponse('booking-save',
       request: request, method: HttpMethodType.POST));
 
@@ -885,7 +892,9 @@ Future<List<PaymentSetting>> getPaymentGateways(
   try {
     Iterable it = await handleResponse(await buildHttpResponse(
         'payment-gateways$isAddWalletStatus',
-        method: HttpMethodType.GET));
+        method: HttpMethodType.GET)
+        .timeout(Duration(seconds: BOOKING_API_TIMEOUT_SECONDS),
+            onTimeout: () => throw TimeoutException('Payment options took too long. Please try again.')));
     List<PaymentSetting> res =
         it.map((e) => PaymentSetting.fromJson(e)).toList();
 

@@ -114,7 +114,7 @@ class _WalkThroughScreenState extends State<WalkThroughScreen> {
                         padding: WidgetStateProperty.all(EdgeInsets.zero)),
                     onPressed: () async {
                       await setValue(IS_FIRST_TIME, false);
-                      DashboardScreen().launch(context,
+                      DashboardScreen(initialTabIndex: 0).launch(context,
                           isNewTask: true,
                           pageRouteAnimation: PageRouteAnimation.Fade);
                     },
@@ -137,7 +137,7 @@ class _WalkThroughScreenState extends State<WalkThroughScreen> {
                     onPressed: () async {
                       if (currentPosition == pages.length) {
                         await setValue(IS_FIRST_TIME, false);
-                        DashboardScreen().launch(context,
+                        DashboardScreen(initialTabIndex: 0).launch(context,
                             isNewTask: true,
                             pageRouteAnimation: PageRouteAnimation.Fade);
                       } else {

@@ -23,9 +23,12 @@ import '../newDashboard/dashboard_3/dashboard_fragment_3.dart';
 import '../newDashboard/dashboard_4/dashboard_fragment_4.dart';
 
 class DashboardScreen extends StatefulWidget {
+  /// When true, open on Bookings tab (index 2).
   final bool? redirectToBooking;
+  /// Force initial tab (0=Home, 1=My Jobs, 2=Bookings, …). Used after login/signup to always land on Home.
+  final int? initialTabIndex;
 
-  DashboardScreen({this.redirectToBooking});
+  DashboardScreen({this.redirectToBooking, this.initialTabIndex});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -34,13 +37,21 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
   bool isInterNetConnect = true;
+  /// Ignore LIVESTREAM_FIREBASE tab switch briefly after launch (avoids stray notification switching tab after login).
+  bool _ignoreFirebaseStreamUntil = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.redirectToBooking.validate(value: false)) {
+    if (widget.initialTabIndex != null) {
+      currentIndex = widget.initialTabIndex!.clamp(0, 4);
+    } else if (widget.redirectToBooking.validate(value: false)) {
       currentIndex = 2; // Booking is now at index 2 (after Home, My Jobs)
     }
+    _ignoreFirebaseStreamUntil = true;
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) _ignoreFirebaseStreamUntil = false;
+    });
 
     afterBuildCreated(() async {
       /// Changes System theme when changed
@@ -59,6 +70,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     /// Handle Firebase Notification click and redirect to that Service & BookDetail screen
     LiveStream().on(LIVESTREAM_FIREBASE, (value) {
+      if (_ignoreFirebaseStreamUntil) return;
       if (value == 3) {
         // Chat at 3 when enabled, else Profile at 3
         currentIndex = appConfigurationStore.isEnableChat ? 4 : 3;

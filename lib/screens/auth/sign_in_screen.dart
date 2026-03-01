@@ -150,11 +150,15 @@ class _SignInScreenState extends State<SignInScreen> {
         onLoginSuccessRedirection();
       } catch (e) {
         log(e.toString());
-        if (e is PlatformException &&
+        final String msg = e is PlatformException ? (e.message ?? '') : e.toString();
+        final bool isShaError = e is PlatformException &&
             e.code == 'sign_in_failed' &&
-            (e.message ?? '').contains('ApiException: 10')) {
+            (msg.contains('ApiException: 10') ||
+                msg.contains(': 10') && msg.contains('ApiException') ||
+                msg.contains('DEVELOPER_ERROR'));
+        if (isShaError) {
           toast(
-            'Google Sign-In is not configured. Add this app\'s SHA-1 in Firebase Console (see GOOGLE_SIGNIN_SETUP.md).',
+            'Add SHA-1 in Firebase: Project settings → Your apps → Android → Add fingerprint. Get SHA-1: cd android && ./gradlew signingReport',
           );
         } else {
           toast(e.toString());
@@ -226,7 +230,8 @@ class _SignInScreenState extends State<SignInScreen> {
           finish(context, true);
         }
       } else {
-        DashboardScreen().launch(context,
+        // Always open on Home tab (index 0) after login
+        DashboardScreen(initialTabIndex: 0).launch(context,
             isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       }
     });

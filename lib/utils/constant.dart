@@ -22,6 +22,8 @@ const APP_BAR_TEXT_SIZE = 18;
 const MARK_AS_READ = 'markas_read';
 const IS_CURRENT_LOCATION = 'CURRENT_LOCATION';
 const GET_LOCATION_API_TIMEOUT_SECOND = 15;
+/// Max seconds for booking save + booking detail and other heavy flows (avoids endless loading).
+const BOOKING_API_TIMEOUT_SECONDS = 45;
 
 //region Dashboard Type
 const DEFAULT_USER_DASHBOARD = 'dashboard';

@@ -69,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (getBoolAsync(IS_FIRST_TIME, defaultValue: true)) {
           WalkThroughScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
         } else {
-          DashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+          DashboardScreen(initialTabIndex: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
         }
       }
     }

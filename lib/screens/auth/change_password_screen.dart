@@ -60,7 +60,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
       await changeUserPassword(request).then((res) async {
         toast(res.message.validate());
         await setValue(USER_PASSWORD, newPasswordCont.text);
-        DashboardScreen().launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        DashboardScreen(initialTabIndex: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       }).catchError((e) {
         toast(e.toString(), print: true);
       });

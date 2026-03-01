@@ -524,6 +524,30 @@ const PROMOTIONAL_BANNER = 'PROMOTIONAL_BANNER';
 
 //region Models
 
+/// Parses API value (int 0/1 or bool) to bool?; null if input is null.
+bool? _jsonToBool(dynamic v) {
+  if (v == null) return null;
+  if (v is bool) return v;
+  if (v is int) return v == 1;
+  return null;
+}
+
+/// Parses API value (int 0/1 or bool) to bool; defaults to false if null.
+bool _jsonToBoolStrict(dynamic v) {
+  if (v == null) return false;
+  if (v is bool) return v;
+  if (v is int) return v == 1;
+  return false;
+}
+
+/// Parses API value (int, bool, or null) to int; defaults to 0 if null.
+int _jsonToInt(dynamic v) {
+  if (v == null) return 0;
+  if (v is int) return v;
+  if (v is bool) return v ? 1 : 0;
+  return 0;
+}
+
 class AppConfigurationModel {
   RolesAndPermissionModel? roleAndPermission;
   String? siteName;
@@ -601,7 +625,7 @@ class AppConfigurationModel {
         timeZone = map["time_zone"],
         distanceType = map["distance_type"],
         radius = map["radius"],
-        isUserAuthorized = map["is_user_authorized"],
+        isUserAuthorized = _jsonToBool(map["is_user_authorized"]),
         playStoreUrl = map["playstore_url"],
         appstoreUrl = map["appstore_url"],
         providerAppstoreUrl = map["provider_appstore_url"],
@@ -648,9 +672,9 @@ class AppConfigurationModel {
         helpAndSupport = map["help_support"],
         refundPolicy = map["refund_policy"],
         aboutUs = map["about_us"],
-        promotional_banner = map["promotional_banner"],
+        promotional_banner = _jsonToBoolStrict(map["promotional_banner"]),
         roleAndPermission = map["role_and_permission"] != null ? RolesAndPermissionModel.fromJsonMap(map["role_and_permission"]) : null,
-        enable_chat = map["enable_chat"];
+        enable_chat = _jsonToInt(map["enable_chat"]);
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

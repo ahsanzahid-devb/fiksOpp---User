@@ -93,14 +93,21 @@ List<(int bookingId, BookingDetailResponse list)?> cachedBookingDetailList = [];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp().then((value) {
-    /// Firebase Notification
+
+  // Firebase: do not block app launch if init fails (e.g. in review/sandbox)
+  try {
+    await Firebase.initializeApp();
     initFirebaseMessaging();
     if (kReleaseMode) {
       FlutterError.onError =
           FirebaseCrashlytics.instance.recordFlutterFatalError;
     }
-  });
+  } catch (e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('Firebase init failed: $e');
+    }
+  }
 
   passwordLengthGlobal = 6;
   appButtonBackgroundColorGlobal = primaryColor;
@@ -116,14 +123,29 @@ void main() async {
   textPrimarySizeGlobal = 14;
   textSecondarySizeGlobal = 12;
 
-  await initialize();
+  try {
+    await initialize();
+  } catch (e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('initialize() failed: $e');
+    }
+  }
+
   localeLanguageList = languageList();
 
   // Initialize language before app starts
-  String savedLanguageCode =
-      getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
-  language = await AppLocalizations().load(Locale(savedLanguageCode));
-  appStore.selectedLanguageCode = savedLanguageCode;
+  try {
+    String savedLanguageCode =
+        getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
+    language = await AppLocalizations().load(Locale(savedLanguageCode));
+    appStore.selectedLanguageCode = savedLanguageCode;
+  } catch (e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('Language load failed: $e');
+    }
+  }
 
   int themeModeIndex =
       getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
@@ -137,9 +159,8 @@ void main() async {
       appStore.isDarkMode ? Colors.white : Colors.black;
   defaultToastTextColor = appStore.isDarkMode ? Colors.black : Colors.white;
 
-  runApp(
-    MyApp(),
-  );
+  // Always run app so user never sees a blank white screen
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -148,6 +169,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  /// Cached so FutureBuilder is not reset on every rebuild (avoids blank screen).
+  late final Future<Color> _materialYouFuture = getMaterialYouData();
+
   @override
   void initState() {
     super.initState();
@@ -163,15 +187,17 @@ class _MyAppState extends State<MyApp> {
     return RestartAppWidget(
       child: Observer(
         builder: (_) => FutureBuilder<Color>(
-          future: getMaterialYouData(),
+          future: _materialYouFuture,
           builder: (_, snap) {
+            // Always use a valid color so first frame is never blank (App Review fix).
+            final color = snap.data ?? defaultPrimaryColor;
             return Observer(
               builder: (_) => MaterialApp(
                 debugShowCheckedModeBanner: false,
                 navigatorKey: navigatorKey,
                 home: SplashScreen(),
-                theme: AppTheme.lightTheme(color: snap.data),
-                darkTheme: AppTheme.darkTheme(color: snap.data),
+                theme: AppTheme.lightTheme(color: color),
+                darkTheme: AppTheme.darkTheme(color: color),
                 themeMode:
                     appStore.isDarkMode ? ThemeMode.dark : ThemeMode.light,
                 title: APP_NAME,

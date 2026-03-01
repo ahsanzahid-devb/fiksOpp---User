@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
@@ -234,12 +235,21 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                   PostJob.latitude: appStore.latitude,
                   PostJob.longitude: appStore.longitude,
                 };
-                await savePostJob(request);
+                await savePostJob(request).timeout(
+                  const Duration(seconds: 30),
+                  onTimeout: () => throw TimeoutException('Post job request timed out'),
+                );
 
                 /// Show a localized top snackbar-style toast once the job is successfully posted
                 toast(
                   language.postJobSuccess,
                   gravity: ToastGravity.TOP,
+                );
+              } on TimeoutException {
+                toast(
+                  'Service saved. Posting job timed out – try again from My Jobs.',
+                  gravity: ToastGravity.TOP,
+                  print: true,
                 );
               } catch (e) {
                 toast(e.toString(), print: true);
