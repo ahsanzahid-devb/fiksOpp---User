@@ -844,7 +844,8 @@ Future<BaseResponseModel> updateBooking(Map request) async {
 Future<BookingDetailResponse> saveBooking(Map request) async {
   return await _saveBookingInternal(request).timeout(
     Duration(seconds: BOOKING_API_TIMEOUT_SECONDS),
-    onTimeout: () => throw TimeoutException('Request took too long. Please try again.'),
+    onTimeout: () =>
+        throw TimeoutException('Request took too long. Please try again.'),
   );
 }
 
@@ -891,10 +892,11 @@ Future<List<PaymentSetting>> getPaymentGateways(
 
   try {
     Iterable it = await handleResponse(await buildHttpResponse(
-        'payment-gateways$isAddWalletStatus',
-        method: HttpMethodType.GET)
+            'payment-gateways$isAddWalletStatus',
+            method: HttpMethodType.GET)
         .timeout(Duration(seconds: BOOKING_API_TIMEOUT_SECONDS),
-            onTimeout: () => throw TimeoutException('Payment options took too long. Please try again.')));
+            onTimeout: () => throw TimeoutException(
+                'Payment options took too long. Please try again.')));
     List<PaymentSetting> res =
         it.map((e) => PaymentSetting.fromJson(e)).toList();
 
