@@ -357,7 +357,7 @@ class _SignInScreenState extends State<SignInScreen> {
           20.height,
           if ((appConfigurationStore.googleLoginStatus ||
                   appConfigurationStore.otpLoginStatus) ||
-              (isIOS && appConfigurationStore.appleLoginStatus))
+              (isIOS && (appConfigurationStore.appleLoginStatus || appConfigurationStore.googleLoginStatus)))
             Row(
               children: [
                 Divider(color: context.dividerColor, thickness: 2).expand(),
@@ -427,7 +427,7 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           if (appConfigurationStore.otpLoginStatus) 16.height,
           if (isIOS)
-            if (appConfigurationStore.appleLoginStatus)
+            if (appConfigurationStore.appleLoginStatus || appConfigurationStore.googleLoginStatus)
               AppButton(
                 text: '',
                 color: context.cardColor,

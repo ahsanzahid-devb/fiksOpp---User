@@ -76,3 +76,27 @@ Copy the **SHA1** and **SHA-256** lines from the output and add them as fingerpr
 - **ApiException: 10** = Google doesn’t recognise your app’s certificate.
 - Fix: run `cd android && ./gradlew signingReport`, then add the shown **SHA-1** and **SHA-256** in Firebase → Project settings → Your apps → Android app → **Add fingerprint**.
 - Use the **debug** variant fingerprints when testing with `flutter run`, and **release** when testing a signed release/Play build.
+
+---
+
+## iOS: Fix “Sign In With Google” crash on App Store review
+
+If the app **crashes when tapping “Sign In With Google”** on iPhone/iPad (e.g. crash in `GIDSignIn signInWithOptions:`), do the following.
+
+### 1. Add GoogleService-Info.plist (required)
+
+1. In [Firebase Console](https://console.firebase.google.com/) → your project → **Project settings**.
+2. Under **Your apps**, select your **iOS** app (bundle ID `com.fiksopp.fiksopp` or whatever your iOS bundle ID is). If you don’t have an iOS app, click **Add app** → **iOS**, register the bundle ID, then download the config.
+3. Download **GoogleService-Info.plist**.
+4. Put it in: **`ios/Runner/GoogleService-Info.plist`** (same folder as `Info.plist`).
+5. In Xcode: right‑click **Runner** → **Add Files to "Runner"** → select `GoogleService-Info.plist` and ensure **Copy items if needed** and **Runner** target are checked.
+
+### 2. Set the URL scheme in Info.plist
+
+1. Open **GoogleService-Info.plist** and find the key **`REVERSED_CLIENT_ID`** (or `CLIENT_ID`; the scheme is the reversed client ID, e.g. `com.googleusercontent.apps.123456-xxxx.apps.googleusercontent.com` → use the value as in the plist).
+2. Open **`ios/Runner/Info.plist`**.
+3. Find **`CFBundleURLTypes`** → **`CFBundleURLSchemes`** → the string that looks like `com.googleusercontent.apps.REPLACE_WITH_YOUR_IOS_CLIENT_ID`.
+4. **Replace** that string with the **exact** value of **`REVERSED_CLIENT_ID`** from **GoogleService-Info.plist** (e.g. `com.googleusercontent.apps.123456789-abcdefg`).
+5. Save and rebuild: `flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter run`.
+
+Without step 1 and 2, Google Sign-In on iOS will crash as soon as the user taps “Sign In With Google”.
