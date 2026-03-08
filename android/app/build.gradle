@@ -53,8 +53,8 @@ android {
         applicationId 'buzz.inoor.fiksopp'
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
-        versionCode 117
-        versionName '11.14.3'
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     signingConfigs {
