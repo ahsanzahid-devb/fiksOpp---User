@@ -148,7 +148,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       if (response.categoryList != null && response.categoryList!.isNotEmpty) {
         subCategoryList.addAll(response.categoryList.validate());
       } else {
-        toast('No subcategories found');
+        toast(language.noSubcategoriesFound);
       }
     } catch (e) {
       toast(e.toString(), print: true);
@@ -247,7 +247,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                 );
               } on TimeoutException {
                 toast(
-                  'Service saved. Posting job timed out – try again from My Jobs.',
+                  language.postJobTimedOutTryFromMyJobs,
                   gravity: ToastGravity.TOP,
                   print: true,
                 );
@@ -548,7 +548,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                               try {
                                 DateFormat('yyyy-MM-dd').parseStrict(s);
                               } catch (e) {
-                                return "Please enter a valid date (YYYY-MM-DD)";
+                                return language.pleaseEnterValidDate;
                               }
                             }
                             return null;
@@ -596,8 +596,8 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                         16.height,
                         DropdownButtonFormField<CategoryData>(
                           decoration: inputDecoration(context,
-                              labelText: 'Subcategory'),
-                          hint: Text('Select Subcategory',
+                              labelText: language.subcategory),
+                          hint: Text(language.selectSubcategory,
                               style: secondaryTextStyle()),
                           initialValue: selectedSubCategory,
                           validator: (value) {

@@ -2126,5 +2126,50 @@ String get lblNoServicesFound => "لا توجد خدمات في منطقتك";
   @override
   String get chooseWithdrawalMethod => "اختر طريقة السحب";
 
+  @override
+  String get datePriceInfo => "معلومات التاريخ / السعر";
+  @override
+  String get notAssigned => "غير معين";
+  @override
+  String get noBiddersYet => "لا يوجد مقدمي عروض بعد";
+  @override
+  String get noSubcategoriesFound => "لم يتم العثور على فئات فرعية";
+  @override
+  String get subcategory => "الفئة الفرعية";
+  @override
+  String get selectSubcategory => "اختر الفئة الفرعية";
+  @override
+  String get pleaseEnterValidDate => "يرجى إدخال تاريخ صالح (YYYY-MM-DD)";
+  @override
+  String get postJobTimedOutTryFromMyJobs => "تم حفظ الخدمة. انتهت مهلة النشر. حاول من وظائفي.";
+  @override
+  String get serviceIncludedInThisPackage => "الخدمة مشمولة في هذه الحزمة";
+  @override
+  String get lblPurchase => "شراء";
+  @override
+  String get whatAreYouLookingFor => "ماذا تبحث؟";
+  @override
+  String get startSearchingYourService => "ابدأ البحث عن خدمتك";
+  @override
+  String get postJobDataNotFound => "لم يتم العثور على بيانات الوظيفة.";
+  @override
+  String get failedToSendMessage => "فشل إرسال الرسالة";
+  @override
+  String get lblFrom => "من";
+  @override
+  String get lblTo => "إلى";
+  @override
+  String get fileSizeShouldBeLessThan => "يجب أن يكون حجم الملف أقل من";
+  @override
+  String get upiApps => "تطبيقات UPI";
+  @override
+  String get categoryLabel => "الفئة";
+  @override
+  String get subCategoryLabel => "الفئة الفرعية";
+  @override
+  String get payWithUpiApps => "الدفع عبر تطبيقات UPI";
+  @override
+  String get payWithCard => "الدفع بالبطاقة";
+
   String bookingCompleted(int count) => count > 1 ? '$count حجوزات مكتملة' : '$count حجز مكتمل';
 }

@@ -71,7 +71,7 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
   }
 
   String get setSearchString {
-    return "What you are looking for?";
+    return language.whatAreYouLookingFor;
   }
 
   bool get isFilterApplied {
@@ -240,7 +240,7 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
                               )
                             else
                               NoDataWidget(
-                                title: 'Start searching your service',
+                                title: language.startSearchingYourService,
                                 imageWidget: EmptyStateWidget(),
                               ),
                           ],

@@ -2227,6 +2227,51 @@ class LanguageHi extends BaseLanguage {
   @override
   String get chooseWithdrawalMethod => "निकासी विधि चुनें";
 
+  @override
+  String get datePriceInfo => "तारीख / कीमत जानकारी";
+  @override
+  String get notAssigned => "असाइन नहीं";
+  @override
+  String get noBiddersYet => "अभी तक कोई बोली लगाने वाले नहीं";
+  @override
+  String get noSubcategoriesFound => "कोई उपश्रेणी नहीं मिली";
+  @override
+  String get subcategory => "उपश्रेणी";
+  @override
+  String get selectSubcategory => "उपश्रेणी चुनें";
+  @override
+  String get pleaseEnterValidDate => "कृपया मान्य तारीख दर्ज करें (YYYY-MM-DD)";
+  @override
+  String get postJobTimedOutTryFromMyJobs => "सेवा सहेजी गई। पोस्ट जॉब टाइमआउट – माई जॉब्स से पुनः प्रयास करें।";
+  @override
+  String get serviceIncludedInThisPackage => "इस पैकेज में सेवा शामिल है";
+  @override
+  String get lblPurchase => "खरीदें";
+  @override
+  String get whatAreYouLookingFor => "आप क्या ढूंढ रहे हैं?";
+  @override
+  String get startSearchingYourService => "अपनी सेवा खोजना शुरू करें";
+  @override
+  String get postJobDataNotFound => "पोस्ट जॉब डेटा नहीं मिला।";
+  @override
+  String get failedToSendMessage => "संदेश भेजने में विफल";
+  @override
+  String get lblFrom => "से";
+  @override
+  String get lblTo => "तक";
+  @override
+  String get fileSizeShouldBeLessThan => "फ़ाइल का आकार इससे कम होना चाहिए";
+  @override
+  String get upiApps => "UPI ऐप्स";
+  @override
+  String get categoryLabel => "श्रेणी";
+  @override
+  String get subCategoryLabel => "उप श्रेणी";
+  @override
+  String get payWithUpiApps => "UPI ऐप्स से भुगतान करें";
+  @override
+  String get payWithCard => "कार्ड से भुगतान करें";
+
   String bookingCompleted(int count) =>
       '$count बुकिंग${count > 1 ? 'ें' : ''} पूरी हुई';
 }

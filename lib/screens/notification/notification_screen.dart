@@ -112,7 +112,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             callback: () {},
                           ).launch(context);
                         } else {
-                          toast("Post job data not found.");
+                          toast(language.postJobDataNotFound);
                         }
                       }).catchError((e) {
                         toast(e.toString());

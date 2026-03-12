@@ -351,7 +351,7 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     } catch (e, stackTrace) {
       log("🔴 [CHAT DEBUG] ❌ Error adding message: ${e.toString()}");
       log("🔴 [CHAT DEBUG] Stack Trace: $stackTrace");
-      toast("Failed to send message: ${e.toString()}");
+      toast("${language.failedToSendMessage}: ${e.toString()}");
     }
   }
 

@@ -2222,6 +2222,74 @@ class LanguageEn extends BaseLanguage {
   String get chooseWithdrawalMethod => "Choose Withdrawal Method";
 
   @override
+  String get datePriceInfo => "Date / Price Info";
+
+  @override
+  String get notAssigned => "Not assigned";
+
+  @override
+  String get noBiddersYet => "No bidders yet";
+
+  @override
+  String get noSubcategoriesFound => "No subcategories found";
+
+  @override
+  String get subcategory => "Subcategory";
+
+  @override
+  String get selectSubcategory => "Select Subcategory";
+
+  @override
+  String get pleaseEnterValidDate => "Please enter a valid date (YYYY-MM-DD)";
+
+  @override
+  String get postJobTimedOutTryFromMyJobs =>
+      "Service saved. Posting job timed out – try again from My Jobs.";
+
+  @override
+  String get serviceIncludedInThisPackage =>
+      "Service included in this package";
+
+  @override
+  String get lblPurchase => "Purchase";
+
+  @override
+  String get whatAreYouLookingFor => "What you are looking for?";
+
+  @override
+  String get startSearchingYourService => "Start searching your service";
+
+  @override
+  String get postJobDataNotFound => "Post job data not found.";
+
+  @override
+  String get failedToSendMessage => "Failed to send message";
+
+  @override
+  String get lblFrom => "From";
+
+  @override
+  String get lblTo => "To";
+
+  @override
+  String get fileSizeShouldBeLessThan => "File size should be less than";
+
+  @override
+  String get upiApps => "UPI Apps";
+
+  @override
+  String get categoryLabel => "Category";
+
+  @override
+  String get subCategoryLabel => "Sub Category";
+
+  @override
+  String get payWithUpiApps => "Pay With UPI Apps";
+
+  @override
+  String get payWithCard => "Pay with Card";
+
+  @override
   String bookingCompleted(int count) =>
       '$count Booking${count > 1 ? 's' : ''} Completed';
 }

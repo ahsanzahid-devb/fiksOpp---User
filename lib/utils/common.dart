@@ -437,7 +437,7 @@ Future<List<File>> pickFiles({
             _filePath.add(File(file.path!));
           } else {
             // File size exceeds the limit
-            toast('File size should be less than $maxFileSizeMB MB');
+            toast('${language.fileSizeShouldBeLessThan} $maxFileSizeMB MB');
           }
         }
       } else {
@@ -450,7 +450,7 @@ Future<List<File>> pickFiles({
             _filePath.add(cacheFile);
           } else {
             // File size exceeds the limit
-            toast('File size should be less than $maxFileSizeMB MB');
+            toast('${language.fileSizeShouldBeLessThan} $maxFileSizeMB MB');
           }
         }
       }

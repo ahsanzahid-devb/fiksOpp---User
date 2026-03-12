@@ -2127,5 +2127,50 @@ class LanguageFr extends BaseLanguage {
   @override
   String get chooseWithdrawalMethod => "Choisissez la méthode de retrait";
 
+  @override
+  String get datePriceInfo => "Date / Prix";
+  @override
+  String get notAssigned => "Non assigné";
+  @override
+  String get noBiddersYet => "Pas encore d'enchérisseurs";
+  @override
+  String get noSubcategoriesFound => "Aucune sous-catégorie trouvée";
+  @override
+  String get subcategory => "Sous-catégorie";
+  @override
+  String get selectSubcategory => "Sélectionner la sous-catégorie";
+  @override
+  String get pleaseEnterValidDate => "Veuillez entrer une date valide (AAAA-MM-JJ)";
+  @override
+  String get postJobTimedOutTryFromMyJobs => "Service enregistré. Délai dépassé – réessayez depuis Mes jobs.";
+  @override
+  String get serviceIncludedInThisPackage => "Service inclus dans ce forfait";
+  @override
+  String get lblPurchase => "Acheter";
+  @override
+  String get whatAreYouLookingFor => "Que recherchez-vous ?";
+  @override
+  String get startSearchingYourService => "Commencez à rechercher votre service";
+  @override
+  String get postJobDataNotFound => "Données du job introuvables.";
+  @override
+  String get failedToSendMessage => "Échec de l'envoi du message";
+  @override
+  String get lblFrom => "De";
+  @override
+  String get lblTo => "À";
+  @override
+  String get fileSizeShouldBeLessThan => "La taille du fichier doit être inférieure à";
+  @override
+  String get upiApps => "Applications UPI";
+  @override
+  String get categoryLabel => "Catégorie";
+  @override
+  String get subCategoryLabel => "Sous-catégorie";
+  @override
+  String get payWithUpiApps => "Payer avec les apps UPI";
+  @override
+  String get payWithCard => "Payer par carte";
+
   String bookingCompleted(int count) => '$count réservation${count > 1 ? 's' : ''} terminée';
 }

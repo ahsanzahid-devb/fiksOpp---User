@@ -1,3 +1,4 @@
+import 'package:booking_system_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -25,12 +26,12 @@ class CategoryWidget extends StatelessWidget {
       children: [
         if (categoryText.isNotEmpty)
           Text(
-            'Category: $categoryText',
+            '${language.categoryLabel}: $categoryText',
             style: secondaryTextStyle(size: size, color: color),
           ),
         if (subCategoryText.isNotEmpty)
           Text(
-            'Sub Category: $subCategoryText',
+            '${language.subCategoryLabel}: $subCategoryText',
             style: secondaryTextStyle(size: size, color: color),
           ),
       ],

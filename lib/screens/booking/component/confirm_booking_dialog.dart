@@ -168,7 +168,7 @@ class _ConfirmBookingDialogState extends State<ConfirmBookingDialog> {
                   serviceDetailsWidget("${language.serviceName}:", widget.data.serviceDetail?.name.validate() ?? "", false).visible(widget.selectedPackage == null),
                   serviceDetailsWidget("${language.packageName}:", widget.selectedPackage?.name.validate() ?? "", false).visible(widget.selectedPackage != null),
                   serviceDetailsWidget("${language.lblDateAndTime}",widget.data.serviceDetail!.isSlotAvailable?getConfirmBookingDateFormat(date: "${widget.data.serviceDetail!.bookingDate} ${widget.data.serviceDetail!.bookingSlot}"): getConfirmBookingDateFormat(date: widget.data.serviceDetail!.dateTimeVal.validate()), false),
-                  serviceDetailsWidget("${language.price}:",widget.data.serviceDetail!.isFreeService? "Free" :  widget.bookingPrice.validate().toStringAsFixed(getIntAsync(PRICE_DECIMAL_POINTS)), !widget.data.serviceDetail!.isFreeService)
+                  serviceDetailsWidget("${language.price}:",widget.data.serviceDetail!.isFreeService ? language.lblFree :  widget.bookingPrice.validate().toStringAsFixed(getIntAsync(PRICE_DECIMAL_POINTS)), !widget.data.serviceDetail!.isFreeService)
                 ],
               ),
             ),

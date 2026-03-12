@@ -145,7 +145,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Date / Price Info", style: secondaryTextStyle()),
+              Text(language.datePriceInfo, style: secondaryTextStyle()),
               4.height,
               Text(datePriceInfo, style: boldTextStyle(size: 14)),
               20.height,
@@ -168,7 +168,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
             ? Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'No services added',
+                  language.noServiceAdded,
                   style: secondaryTextStyle(),
                 ),
               )
@@ -230,7 +230,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
             ? Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'No bidders yet',
+                  language.noBiddersYet,
                   style: secondaryTextStyle(),
                 ),
               )
@@ -269,7 +269,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
               backgroundColor: context.cardColor,
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
-            child: Text('Not assigned', style: secondaryTextStyle()),
+            child: Text(language.notAssigned, style: secondaryTextStyle()),
           ),
         ],
       ).paddingOnly(left: 16, right: 16);

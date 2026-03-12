@@ -1,4 +1,5 @@
 import 'package:booking_system_flutter/component/cached_image_widget.dart';
+import 'package:booking_system_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -31,7 +32,7 @@ class _UpiPayScreenState extends State<UpiPayScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBarTitle: "Upi Apps",
+      appBarTitle: language.upiApps,
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
         itemCount: upiApps.length,

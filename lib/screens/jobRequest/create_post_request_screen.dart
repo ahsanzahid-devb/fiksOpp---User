@@ -448,7 +448,7 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                                 try {
                                   DateFormat('yyyy-MM-dd').parseStrict(s);
                                 } catch (e) {
-                                  return "Please enter a valid date (YYYY-MM-DD)";
+                                  return language.pleaseEnterValidDate;
                                 }
                               }
                               return null;

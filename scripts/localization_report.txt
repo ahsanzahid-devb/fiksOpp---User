@@ -1,0 +1,8 @@
+=== Localization check report ===
+Scanned 324 Dart files under lib/
+
+--- Potentially hardcoded user-facing strings (candidates for localization) ---
+
+--- Summary ---
+Total unique hardcoded string candidates: 0
+Known language getters in BaseLanguage: 731

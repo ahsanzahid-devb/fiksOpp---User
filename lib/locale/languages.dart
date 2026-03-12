@@ -1422,5 +1422,49 @@ abstract class BaseLanguage {
 
   String get chooseWithdrawalMethod;
 
+  String get datePriceInfo;
+
+  String get notAssigned;
+
+  String get noBiddersYet;
+
+  String get noSubcategoriesFound;
+
+  String get subcategory;
+
+  String get selectSubcategory;
+
+  String get pleaseEnterValidDate;
+
+  String get postJobTimedOutTryFromMyJobs;
+
+  String get serviceIncludedInThisPackage;
+
+  String get lblPurchase;
+
+  String get whatAreYouLookingFor;
+
+  String get startSearchingYourService;
+
+  String get postJobDataNotFound;
+
+  String get failedToSendMessage;
+
+  String get lblFrom;
+
+  String get lblTo;
+
+  String get fileSizeShouldBeLessThan;
+
+  String get upiApps;
+
+  String get categoryLabel;
+
+  String get subCategoryLabel;
+
+  String get payWithUpiApps;
+
+  String get payWithCard;
+
   String bookingCompleted(int validate);
 }

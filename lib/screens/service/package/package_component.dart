@@ -140,7 +140,7 @@ class _PackageComponentState extends State<PackageComponent> {
                   AppButton(
                     width: context.width(),
                     child: Text(
-                      "Purchase", //Todo language
+                      language.lblPurchase,
                       style: boldTextStyle(color: Colors.white),
                     ),
                     color: context.primaryColor,

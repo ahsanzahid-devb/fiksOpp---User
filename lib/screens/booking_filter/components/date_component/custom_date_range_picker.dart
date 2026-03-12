@@ -1,7 +1,8 @@
-
 import 'custom_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../../main.dart';
 
 class CustomDateRangePicker extends StatefulWidget {
   final DateTime minimumDate;
@@ -103,7 +104,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  'From',
+                                  language.lblFrom,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
@@ -137,7 +138,7 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  'To',
+                                  language.lblTo,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,
@@ -198,8 +199,8 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                   widget.onCancelClick();
                                   Navigator.pop(context);
                                 },
-                                child: const Text(
-                                  'Cancel',
+                                child: Text(
+                                  language.lblCancel,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 18,
@@ -227,8 +228,8 @@ class CustomDateRangePickerState extends State<CustomDateRangePicker>
                                   widget.onApplyClick(startDate!, endDate!);
                                   Navigator.pop(context);
                                 },
-                                child: const Text(
-                                  'Apply',
+                                child: Text(
+                                  language.lblApply,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 18,
