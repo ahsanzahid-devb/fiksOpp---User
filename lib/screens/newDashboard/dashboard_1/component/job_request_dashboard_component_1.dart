@@ -29,19 +29,8 @@ class NewJobRequestDashboardComponent1 extends StatelessWidget {
             style: boldTextStyle(color: white, size: 16),
           ),
           20.height,
-          AppButton(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.add, color: Colors.white),
-                4.width,
-                Text(language.newRequest,
-                    style: boldTextStyle(color: Colors.white, size: 14)),
-              ],
-            ),
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            color: primaryColor,
-            onTap: () async {
+          ElevatedButton(
+            onPressed: () async {
               if (appStore.isLoggedIn) {
                 CreateServiceScreen().launch(context);
               } else {
@@ -55,6 +44,25 @@ class NewJobRequestDashboardComponent1 extends StatelessWidget {
                 }
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: primaryColor,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: primaryColor, size: 20),
+                8.width,
+                Text(
+                  language.newRequest,
+                  style: boldTextStyle(color: primaryColor, size: 14),
+                ),
+              ],
+            ),
           ),
           16.height,
         ],

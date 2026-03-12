@@ -94,7 +94,6 @@ List<(int bookingId, BookingDetailResponse list)?> cachedBookingDetailList = [];
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase: do not block app launch if init fails (e.g. in review/sandbox)
   try {
     await Firebase.initializeApp();
     initFirebaseMessaging();
@@ -136,8 +135,8 @@ void main() async {
 
   // Initialize language before app starts
   try {
-    String savedLanguageCode =
-        getStringAsync('selected_language_code', defaultValue: DEFAULT_LANGUAGE);
+    String savedLanguageCode = getStringAsync('selected_language_code',
+        defaultValue: DEFAULT_LANGUAGE);
     language = await AppLocalizations().load(Locale(savedLanguageCode));
     appStore.selectedLanguageCode = savedLanguageCode;
   } catch (e) {

@@ -39,13 +39,8 @@ class JobRequestDashboardComponent4 extends StatelessWidget {
             ],
           ).expand(),
           8.width,
-          AppButton(
-            textColor: white,
-            elevation: 0,
-            color: appTextPrimaryColor,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            text: language.newRequest,
-            onTap: () async {
+          ElevatedButton(
+            onPressed: () async {
               if (appStore.isLoggedIn) {
                 CreateServiceScreen().launch(context);
               } else {
@@ -62,6 +57,18 @@ class JobRequestDashboardComponent4 extends StatelessWidget {
                 }
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: primaryColor,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              language.newRequest,
+              style: boldTextStyle(color: primaryColor, size: 14),
+            ),
           ).paddingAll(16),
         ],
       ),
