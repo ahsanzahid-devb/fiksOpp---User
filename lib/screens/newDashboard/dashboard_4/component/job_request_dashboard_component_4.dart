@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../../../main.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/images.dart';

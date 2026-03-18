@@ -591,13 +591,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen>
                     text: language.lblAboutProvider,
                     style: boldTextStyle(size: LABEL_TEXT_SIZE),
                   ),
-                  if (res.handymanData.validate().isNotEmpty &&
-                      (res.providerData!.id ==
-                          res.handymanData!.first.id.validate()))
-                    TextSpan(
-                      text: ' (${language.asHandyman})',
-                      style: secondaryTextStyle(size: LABEL_TEXT_SIZE),
-                    ),
+                  // if (res.handymanData.validate().isNotEmpty &&
+                  //     (res.providerData!.id ==
+                  //         res.handymanData!.first.id.validate()))
+                  //   TextSpan(
+                  //     text: ' (${language.asHandyman})',
+                  //     style: secondaryTextStyle(size: LABEL_TEXT_SIZE),
+                  //   ),
                 ],
               ),
             ),
@@ -1495,9 +1495,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen>
                           list: snap.data!.serviceProof.validate()),
 
                       /// About Provider Card
-                      providerWidget(
-                        
-                        res: snap.data!),
+                      providerWidget(res: snap.data!),
 
                       /// About Handyman Card
                       handymanWidget(
@@ -1614,7 +1612,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen>
       toast(e.toString(), print: true);
     });
   }
-
 
   void _handleCancelClick(
       {required BookingDetailResponse status, required bool isDurationMode}) {

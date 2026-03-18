@@ -65,7 +65,11 @@ class BookingData {
   String? refundStatus;
 
   //Local
-  double get totalAmountWithExtraCharges => totalAmount.validate() + extraCharges.validate().sumByDouble((e) => e.qty.validate() * e.price.validate());
+  double get totalAmountWithExtraCharges =>
+      totalAmount.validate() +
+      extraCharges
+          .validate()
+          .sumByDouble((e) => e.qty.validate() * e.price.validate());
 
   bool get isHourlyService => type.validate() == SERVICE_TYPE_HOURLY;
 
@@ -73,7 +77,9 @@ class BookingData {
 
   bool get isSlotBooking => bookingSlot != null;
 
-  bool get isProviderAndHandymanSame => handyman.validate().isNotEmpty ? handyman.validate().first.handymanId.validate() == providerId.validate() : false;
+  bool get isProviderAndHandymanSame => handyman.validate().isNotEmpty
+      ? handyman.validate().first.handymanId.validate() == providerId.validate()
+      : false;
 
   bool get isFreeService => type.validate() == SERVICE_TYPE_FREE;
 
@@ -81,16 +87,26 @@ class BookingData {
 
   bool get isPackageBooking => bookingPackage != null;
 
-  bool get canCustomerContact =>
-      (status == BookingStatusKeys.accept
-          || status == BookingStatusKeys.onGoing
-          || status == BookingStatusKeys.inProgress
-          || status == BookingStatusKeys.hold)
-          || !(paymentStatus == SERVICE_PAYMENT_STATUS_PAID || paymentStatus == PENDING_BY_ADMIN);
+  bool get canCustomerContact {
+    // Chat should be enabled until the booking "start" time (drive start).
+    // So we avoid fragile static status checks.
+    final startValue = startAt?.validate();
+    if (startValue == null || startValue.isEmpty) return true;
+
+    // API values look like: "2026-03-18 21:18:00" (space instead of 'T').
+    final normalized = startValue.replaceFirst(' ', 'T');
+    final startTime = DateTime.tryParse(normalized);
+
+    // If parsing fails, don't block chat.
+    if (startTime == null) return true;
+
+    return DateTime.now().isBefore(startTime);
+  }
 
   bool get isAdvancePaymentDone => paidAmount.validate() != 0;
 
-  num get totalExtraChargeAmount => extraCharges.validate().sumByDouble((e) => e.total.validate());
+  num get totalExtraChargeAmount =>
+      extraCharges.validate().sumByDouble((e) => e.total.validate());
 
   List<Serviceaddon>? serviceaddon;
 
@@ -174,7 +190,9 @@ class BookingData {
       amount: _parseNum(json['amount']),
       totalAmount: _parseNum(json['total_amount']),
       bookingAddressId: _parseInt(json['booking_address_id']),
-      couponData: json['coupon_data'] != null ? CouponData.fromJson(json['coupon_data']) : null,
+      couponData: json['coupon_data'] != null
+          ? CouponData.fromJson(json['coupon_data'])
+          : null,
       customerId: _parseInt(json['customer_id']),
       customerName: json['customer_name'],
       date: json['date'],
@@ -182,7 +200,9 @@ class BookingData {
       discount: _parseNum(json['discount']),
       durationDiff: json['duration_diff']?.toString(),
       durationDiffHour: json['duration_diff_hour']?.toString(),
-      handyman: json['handyman'] != null ? (json['handyman'] as List).map((i) => Handyman.fromJson(i)).toList() : null,
+      handyman: json['handyman'] != null
+          ? (json['handyman'] as List).map((i) => Handyman.fromJson(i)).toList()
+          : null,
       id: _parseInt(json['id']),
       paymentId: _parseInt(json['payment_id']),
       paymentMethod: json['payment_method'],
@@ -196,29 +216,44 @@ class BookingData {
               : 0
           : 0,
       quantity: _parseInt(json['quantity']),
-      serviceAttachments: json['service_attchments'] != null ? new List<String>.from(json['service_attchments']) : null,
+      serviceAttachments: json['service_attchments'] != null
+          ? new List<String>.from(json['service_attchments'])
+          : null,
       serviceId: _parseInt(json['service_id']),
       serviceName: json['service_name'],
       status: json['status'],
       statusLabel: json['status_label'],
-      taxes: json['taxes'] != null ? (json['taxes'] as List).map((i) => TaxData.fromJson(i)).toList() : null,
+      taxes: json['taxes'] != null
+          ? (json['taxes'] as List).map((i) => TaxData.fromJson(i)).toList()
+          : null,
       type: json['type'],
       reason: json['reason'],
       totalReview: _parseInt(json['total_review']),
       totalRating: _parseNum(json['total_rating']),
       startAt: json['start_at']?.toString(),
       endAt: json['end_at']?.toString(),
-      extraCharges: json['extra_charges'] != null ? (json['extra_charges'] as List).map((i) => ExtraChargesModel.fromJson(i)).toList() : null,
+      extraCharges: json['extra_charges'] != null
+          ? (json['extra_charges'] as List)
+              .map((i) => ExtraChargesModel.fromJson(i))
+              .toList()
+          : null,
       bookingType: json['booking_type'],
-      bookingPackage: json['booking_package'] != null ? BookingPackage.fromJson(json['booking_package']) : null,
+      bookingPackage: json['booking_package'] != null
+          ? BookingPackage.fromJson(json['booking_package'])
+          : null,
       paidAmount: _parseNum(json[AdvancePaymentKey.advancePaidAmount]),
       finalTotalServicePrice: _parseNum(json['final_total_service_price']),
       finalTotalTax: _parseNum(json['final_total_tax']),
       finalSubTotal: _parseNum(json['final_sub_total']),
       finalDiscountAmount: _parseNum(json['final_discount_amount']),
-      finalCouponDiscountAmount: _parseNum(json['final_coupon_discount_amount']),
+      finalCouponDiscountAmount:
+          _parseNum(json['final_coupon_discount_amount']),
       txnId: json['txn_id'],
-      serviceaddon: json['BookingAddonService'] != null ? (json['BookingAddonService'] as List).map((i) => Serviceaddon.fromJson(i)).toList() : null,
+      serviceaddon: json['BookingAddonService'] != null
+          ? (json['BookingAddonService'] as List)
+              .map((i) => Serviceaddon.fromJson(i))
+              .toList()
+          : null,
       bookingDate: json['booking_date'],
       cancellationChargeHours: _parseInt(json['cancellation_charge_hours']),
       cancellationCharges: _parseNum(json['cancellationcharges']),
@@ -288,13 +323,15 @@ class BookingData {
       data['taxes'] = this.taxes!.map((v) => v.toJson()).toList();
     }
     if (this.extraCharges != null) {
-      data['extra_charges'] = this.extraCharges!.map((v) => v.toJson()).toList();
+      data['extra_charges'] =
+          this.extraCharges!.map((v) => v.toJson()).toList();
     }
     if (bookingPackage != null) {
       data['booking_package'] = this.bookingPackage!.toJson();
     }
     if (this.serviceaddon != null) {
-      data['BookingAddonService'] = this.serviceaddon!.map((v) => v.toJson()).toList();
+      data['BookingAddonService'] =
+          this.serviceaddon!.map((v) => v.toJson()).toList();
     }
 
     data['booking_date'] = this.bookingDate;

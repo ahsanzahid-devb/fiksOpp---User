@@ -12,10 +12,7 @@ import '../../component/base_scaffold_widget.dart';
 import '../../component/empty_error_state_widget.dart';
 
 class MyPostRequestListScreen extends StatefulWidget {
-  final bool isFromDashboard;
-
-  const MyPostRequestListScreen({Key? key, this.isFromDashboard = false})
-      : super(key: key);
+  const MyPostRequestListScreen({Key? key}) : super(key: key);
 
   @override
   _MyPostRequestListScreenState createState() =>
@@ -43,8 +40,11 @@ class _MyPostRequestListScreenState extends State<MyPostRequestListScreen> {
       lastPageCallBack: (val) {
         isLastPage = val;
       },
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () => throw 'Request timed out. Pull to refresh to try again.',
     );
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void getLocation() {
@@ -53,10 +53,17 @@ class _MyPostRequestListScreenState extends State<MyPostRequestListScreen> {
           value == LocationPermission.always) {
         Geolocator.getCurrentPosition(
           locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
-        ).then((pos) {
+        )
+            .timeout(
+          const Duration(seconds: 30),
+          onTimeout: () =>
+              throw 'Location request timed out. Please try again.',
+        )
+            .then((pos) {
+          if (!mounted) return;
           appStore.setLatitude(pos.latitude);
           appStore.setLongitude(pos.longitude);
-          setState(() {});
+          if (mounted) setState(() {});
         }).catchError(onError);
       }
     });
@@ -75,7 +82,7 @@ class _MyPostRequestListScreenState extends State<MyPostRequestListScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      appBarTitle: widget.isFromDashboard ? null : language.myPostJobList,
+      appBarTitle: language.myPostJobList,
       child: SafeArea(
         child: Stack(
           children: [

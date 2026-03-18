@@ -209,7 +209,7 @@ class _MyAppState extends State<MyApp> {
                 ],
                 builder: (context, child) {
                   return MediaQuery(
-                    child: child!,
+                    child: child ?? const SizedBox.shrink(),
                     data: MediaQuery.of(context)
                         .copyWith(textScaler: TextScaler.linear(1.0)),
                   );

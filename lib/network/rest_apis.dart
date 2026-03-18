@@ -236,9 +236,15 @@ Future<void> logout(BuildContext context) async {
                       cachedWalletHistoryList!.clear();
 
                     appStore.setLoading(false);
-                    DashboardScreen(initialTabIndex: 0).launch(context,
-                        isNewTask: true,
-                        pageRouteAnimation: PageRouteAnimation.Fade);
+                    navigatorKey.currentState?.pushAndRemoveUntil(
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) =>
+                            DashboardScreen(initialTabIndex: 0),
+                        transitionsBuilder: (_, a, __, c) =>
+                            FadeTransition(opacity: a, child: c),
+                      ),
+                      (route) => false,
+                    );
                   } else {
                     toast(errorInternetNotAvailable);
                   }
@@ -316,14 +322,22 @@ Future<void> getAppConfigurations(
     log('App Configurations was synced recently');
   } else {
     try {
+      final endpoint =
+          'configurations?is_authenticated=${appStore.isLoggedIn.getIntBool()}';
+      final req = appStore.isLoggedIn ? {"user_id": appStore.userId} : null;
+      log(
+          'CONFIG | ${DateTime.now().toIso8601String()} | request start | endpoint=$endpoint | req=$req');
       AppConfigurationModel? res = AppConfigurationModel.fromJsonMap(
-          await handleResponse(await buildHttpResponse(
-              'configurations?is_authenticated=${appStore.isLoggedIn.getIntBool()}',
-              method: HttpMethodType.POST,
-              request:
-                  appStore.isLoggedIn ? {"user_id": appStore.userId} : null)));
+          await handleResponse(await buildHttpResponse(endpoint,
+              method: HttpMethodType.POST, request: req)));
+      log(
+          'CONFIG | ${DateTime.now().toIso8601String()} | request success | endpoint=$endpoint');
       await setAppConfigurations(res);
+      log(
+          'CONFIG | ${DateTime.now().toIso8601String()} | setAppConfigurations done');
     } catch (e) {
+      log(
+          'CONFIG | ${DateTime.now().toIso8601String()} | request failed | $e');
       throw e;
     }
   }

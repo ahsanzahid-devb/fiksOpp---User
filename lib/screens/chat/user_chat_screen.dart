@@ -32,13 +32,14 @@ class UserChatScreen extends StatefulWidget {
   final UserData receiverUser;
   final bool isChattingAllow;
 
-  UserChatScreen({required this.receiverUser, this.isChattingAllow = false});
+  UserChatScreen({required this.receiverUser, this.isChattingAllow = true});
 
   @override
   _UserChatScreenState createState() => _UserChatScreenState();
 }
 
-class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObserver {
+class _UserChatScreenState extends State<UserChatScreen>
+    with WidgetsBindingObserver {
   TextEditingController messageCont = TextEditingController();
 
   FocusNode messageFocus = FocusNode();
@@ -64,14 +65,16 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     log("🔵 [CHAT DEBUG] Sender User Email: ${appStore.userEmail}");
     log("🔵 [CHAT DEBUG] Sender User UID: ${appStore.uid}");
     log("🔵 [CHAT DEBUG] Is Chatting Allowed: ${widget.isChattingAllow}");
-    
+
     WidgetsBinding.instance.addObserver(this);
 
     //OneSignal.shared.disablePush(true);
 
     if (widget.receiverUser.uid.validate().isEmpty) {
       log("🔵 [CHAT DEBUG] Receiver UID is empty, fetching user by email...");
-      await userService.getUser(email: widget.receiverUser.email.validate()).then((value) {
+      await userService
+          .getUser(email: widget.receiverUser.email.validate())
+          .then((value) {
         widget.receiverUser.uid = value.uid;
         log("🔵 [CHAT DEBUG] ✅ Receiver UID fetched successfully: ${value.uid}");
       }).catchError((e) {
@@ -84,28 +87,29 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
 
     log("🔵 [CHAT DEBUG] Fetching sender user...");
     try {
-      senderUser = await userService.getUser(email: appStore.userEmail.validate());
+      senderUser =
+          await userService.getUser(email: appStore.userEmail.validate());
       log("🔵 [CHAT DEBUG] ✅ Sender user fetched: ${senderUser.displayName} (UID: ${senderUser.uid})");
     } catch (e) {
       log("🔴 [CHAT DEBUG] ❌ Error fetching sender user: ${e.toString()}");
     }
-    
+
     appStore.setLoading(false);
     setState(() {});
 
     log("🔵 [CHAT DEBUG] Checking if receiver is in contacts...");
     bool isInContacts = await userService.isReceiverInContacts(
-      senderUserId: appStore.uid.validate(), 
-      receiverUserId: widget.receiverUser.uid.validate()
-    );
+        senderUserId: appStore.uid.validate(),
+        receiverUserId: widget.receiverUser.uid.validate());
     log("🔵 [CHAT DEBUG] Is receiver in contacts: $isInContacts");
 
     if (isInContacts) {
       log("🔵 [CHAT DEBUG] Setting unread status to true...");
-      await chatServices.setUnReadStatusToTrue(
-        senderId: appStore.uid.validate(), 
-        receiverId: widget.receiverUser.uid.validate()
-      ).then((_) {
+      await chatServices
+          .setUnReadStatusToTrue(
+              senderId: appStore.uid.validate(),
+              receiverId: widget.receiverUser.uid.validate())
+          .then((_) {
         log("🔵 [CHAT DEBUG] ✅ Unread status set successfully");
       }).catchError((e) {
         log("🔴 [CHAT DEBUG] ❌ Error setting unread status: ${e.toString()}");
@@ -115,16 +119,16 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
       log("🔵 [CHAT DEBUG] Receiver ID: ${widget.receiverUser.uid}");
       log("🔵 [CHAT DEBUG] Setting online count to 1...");
       chatServices.setOnlineCount(
-        senderId: widget.receiverUser.uid.validate(), 
-        receiverId: appStore.uid.validate(), 
-        status: 1
-      );
-      
+          senderId: widget.receiverUser.uid.validate(),
+          receiverId: appStore.uid.validate(),
+          status: 1);
+
       log("🔵 [CHAT DEBUG] Setting up online status listener...");
-      _streamSubscription = chatServices.isReceiverOnline(
-        senderId: appStore.uid.validate(), 
-        receiverUserId: widget.receiverUser.uid.validate()
-      ).listen(
+      _streamSubscription = chatServices
+          .isReceiverOnline(
+              senderId: appStore.uid.validate(),
+              receiverUserId: widget.receiverUser.uid.validate())
+          .listen(
         (event) {
           isReceiverOnline = event.isOnline.validate();
           log("🔵 [CHAT DEBUG] ====== Online Status Changed: $isReceiverOnline ======");
@@ -140,7 +144,7 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     } else {
       log("🔵 [CHAT DEBUG] ⚠️ Receiver not in contacts, will add when first message is sent");
     }
-    
+
     log("🔵 [CHAT DEBUG] ========== INIT COMPLETED ==========");
   }
 
@@ -166,7 +170,8 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Transform.rotate(angle: -0.75, child: Icon(Icons.attach_file_outlined)),
+                icon: Transform.rotate(
+                    angle: -0.75, child: Icon(Icons.attach_file_outlined)),
                 onPressed: () {
                   if (!appStore.isLoading) {
                     _handleDocumentClick();
@@ -183,11 +188,13 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
               ),
             ],
           ),
-          decoration: inputDecoration(context).copyWith(hintText: language.message, hintStyle: secondaryTextStyle()),
+          decoration: inputDecoration(context).copyWith(
+              hintText: language.message, hintStyle: secondaryTextStyle()),
         ).expand(),
         8.width,
         Container(
-          decoration: boxDecorationDefault(borderRadius: radius(80), color: primaryColor),
+          decoration: boxDecorationDefault(
+              borderRadius: radius(80), color: primaryColor),
           child: IconButton(
             icon: Icon(Icons.send, color: Colors.white),
             onPressed: () {
@@ -211,12 +218,12 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     log("🟢 [CHAT DEBUG] Attachment Files Count: ${attachmentFiles.length}");
     log("🟢 [CHAT DEBUG] Message Text: ${messageCont.text}");
     log("🟢 [CHAT DEBUG] App Store Loading: ${appStore.isLoading}");
-    
+
     if (appStore.isLoading) {
       log("🟡 [CHAT DEBUG] ⚠️ App is loading, aborting send message");
       return;
     }
-    
+
     // If Message TextField is Empty.
     if (messageCont.text.trim().isEmpty && !isFile) {
       log("🟡 [CHAT DEBUG] ⚠️ Message is empty and not a file, requesting focus");
@@ -239,7 +246,7 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     data.updatedAtTime = Timestamp.now();
     data.messageType = isFile ? MessageType.Files.name : MessageType.TEXT.name;
     data.attachmentfiles = attachmentFiles;
-    
+
     log("🟢 [CHAT DEBUG] Message Data Prepared:");
     log("🟢 [CHAT DEBUG] - Receiver ID: ${data.receiverId}");
     log("🟢 [CHAT DEBUG] - Sender ID: ${data.senderId}");
@@ -249,13 +256,12 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     log("🟢 [CHAT DEBUG] - Created At: ${data.createdAt}");
     log("🟢 [CHAT DEBUG] - Attachments: ${data.attachmentfiles?.length ?? 0}");
     log('🟢 [CHAT DEBUG] ChatMessageModel JSON: ${data.toJson()}');
-    
+
     messageCont.clear();
 
     bool isInContacts = await userService.isReceiverInContacts(
-      senderUserId: appStore.uid.validate(), 
-      receiverUserId: widget.receiverUser.uid.validate()
-    );
+        senderUserId: appStore.uid.validate(),
+        receiverUserId: widget.receiverUser.uid.validate());
     log("🟢 [CHAT DEBUG] Is receiver in contacts: $isInContacts");
 
     if (!isInContacts) {
@@ -264,7 +270,7 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
       log("🟢 [CHAT DEBUG] Receiver ID: ${data.receiverId}");
       log("🟢 [CHAT DEBUG] Receiver Name: ${widget.receiverUser.displayName.validate()}");
       log("🟢 [CHAT DEBUG] Sender Name: ${senderUser.displayName.validate()}");
-      
+
       try {
         await chatServices.addToContacts(
           senderId: data.senderId,
@@ -273,13 +279,14 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
           senderName: senderUser.displayName.validate(),
         );
         log("🟢 [CHAT DEBUG] ✅ Successfully added to contacts");
-        
+
         log("🟢 [CHAT DEBUG] Setting up online status listener after adding to contacts...");
         _streamSubscription?.cancel();
-        _streamSubscription = chatServices.isReceiverOnline(
-          senderId: appStore.uid.validate(), 
-          receiverUserId: widget.receiverUser.uid.validate()
-        ).listen(
+        _streamSubscription = chatServices
+            .isReceiverOnline(
+                senderId: appStore.uid.validate(),
+                receiverUserId: widget.receiverUser.uid.validate())
+            .listen(
           (event) {
             isReceiverOnline = event.isOnline.validate();
             log("🟢 [CHAT DEBUG] ====== Online Status: $isReceiverOnline ======");
@@ -293,32 +300,34 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
         log("🔴 [CHAT DEBUG] ❌ Error adding to contacts: ${e.toString()}");
       }
     }
-    
+
     log("🟢 [CHAT DEBUG] ------- Calling addMessage -------");
     try {
       DocumentReference messageRef = await chatServices.addMessage(data);
       log("🟢 [CHAT DEBUG] ✅ Message Successfully Added to Firebase");
       log("🟢 [CHAT DEBUG] Message Document Reference: ${messageRef.path}");
-      
+
       // todo : remove this
       isReceiverOnline = 0;
       log("🟢 [CHAT DEBUG] Is Receiver Online: $isReceiverOnline");
-      
+
       if (isReceiverOnline != 1) {
         log("🟢 [CHAT DEBUG] Receiver is offline, sending push notification...");
+
         /// Send Notification
         NotificationService()
             .sendPushNotifications(
           appStore.userFullName,
           data.message.validate(),
-          image: data.attachmentfiles == null || data.attachmentfiles!.isEmpty ? null : data.attachmentfiles!.first,
+          image: data.attachmentfiles == null || data.attachmentfiles!.isEmpty
+              ? null
+              : data.attachmentfiles!.first,
           receiverUser: widget.receiverUser,
           senderUserData: senderUser,
         )
             .then((_) {
           log("🟢 [CHAT DEBUG] ✅ Push notification sent successfully");
-        })
-            .catchError((e) {
+        }).catchError((e) {
           log("🔴 [CHAT DEBUG] ❌ Notification Error: ${e.toString()}");
         });
       } else {
@@ -327,10 +336,11 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
 
       /// Save receiverId to Sender Doc.
       log("🟢 [CHAT DEBUG] Saving receiverId to sender contacts...");
-      userService.saveToContacts(
-        senderId: appStore.uid, 
-        receiverId: widget.receiverUser.uid.validate()
-      ).then((value) {
+      userService
+          .saveToContacts(
+              senderId: appStore.uid,
+              receiverId: widget.receiverUser.uid.validate())
+          .then((value) {
         log("🟢 [CHAT DEBUG] ✅ ReceiverId saved to Sender Doc");
       }).catchError((e) {
         log("🔴 [CHAT DEBUG] ❌ Error saving receiverId to sender: ${e.toString()}");
@@ -338,10 +348,11 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
 
       /// Save senderId to Receiver Doc.
       log("🟢 [CHAT DEBUG] Saving senderId to receiver contacts...");
-      userService.saveToContacts(
-        senderId: widget.receiverUser.uid.validate(), 
-        receiverId: appStore.uid
-      ).then((value) {
+      userService
+          .saveToContacts(
+              senderId: widget.receiverUser.uid.validate(),
+              receiverId: appStore.uid)
+          .then((value) {
         log("🟢 [CHAT DEBUG] ✅ SenderId saved to Receiver Doc");
       }).catchError((e) {
         log("🔴 [CHAT DEBUG] ❌ Error saving senderId to receiver: ${e.toString()}");
@@ -362,14 +373,23 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.detached) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
+      chatServices.setOnlineCount(
+          senderId: widget.receiverUser.uid.validate(),
+          receiverId: appStore.uid.validate(),
+          status: 0);
     }
 
     if (state == AppLifecycleState.paused) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
+      chatServices.setOnlineCount(
+          senderId: widget.receiverUser.uid.validate(),
+          receiverId: appStore.uid.validate(),
+          status: 0);
     }
     if (state == AppLifecycleState.resumed) {
-      chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 1);
+      chatServices.setOnlineCount(
+          senderId: widget.receiverUser.uid.validate(),
+          receiverId: appStore.uid.validate(),
+          status: 1);
     }
   }
 
@@ -382,24 +402,35 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    chatServices.setOnlineCount(senderId: widget.receiverUser.uid.validate(), receiverId: appStore.uid.validate(), status: 0);
+    chatServices.setOnlineCount(
+        senderId: widget.receiverUser.uid.validate(),
+        receiverId: appStore.uid.validate(),
+        status: 0);
 
     _streamSubscription?.cancel();
 
-    setStatusBarColor(transparentColor, statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.dark);
+    setStatusBarColor(transparentColor,
+        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark);
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool effectiveChatAllowed =
+        widget.isChattingAllow && appConfigurationStore.isEnableChat;
+
     return GestureDetector(
       onTap: () => hideKeyboard(context),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: context.primaryColor,
           leadingWidth: context.width(),
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: context.primaryColor, statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
+          systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: context.primaryColor,
+              statusBarBrightness: Brightness.dark,
+              statusBarIconBrightness: Brightness.light),
           leading: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -410,7 +441,11 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                 },
                 icon: ic_arrow_left.iconImage(color: Colors.white),
               ),
-              CachedImageWidget(url: widget.receiverUser.profileImage.validate(), height: 36, circle: true, fit: BoxFit.cover),
+              CachedImageWidget(
+                  url: widget.receiverUser.profileImage.validate(),
+                  height: 36,
+                  circle: true,
+                  fit: BoxFit.cover),
               12.width,
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -439,7 +474,11 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                     title: language.clearChatMessage,
                     onAccept: (c) async {
                       appStore.setLoading(true);
-                      await chatServices.clearAllMessages(senderId: appStore.uid, receiverId: widget.receiverUser.uid.validate()).then((value) {
+                      await chatServices
+                          .clearAllMessages(
+                              senderId: appStore.uid,
+                              receiverId: widget.receiverUser.uid.validate())
+                          .then((value) {
                         toast(language.chatCleared);
                         hideKeyboard(context);
                       }).catchError((e) {
@@ -472,16 +511,17 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
             fit: StackFit.expand,
             children: [
               Container(
-                margin: EdgeInsets.only(bottom: widget.isChattingAllow ? 0 : 80),
+                margin:
+                    EdgeInsets.only(bottom: effectiveChatAllowed ? 80 : 0),
                 child: FirestorePagination(
                   reverse: true,
                   isLive: true,
-                  padding: EdgeInsets.only(left: 8, top: 8, right: 8, bottom: 0),
+                  padding:
+                      EdgeInsets.only(left: 8, top: 8, right: 8, bottom: 0),
                   physics: BouncingScrollPhysics(),
                   query: chatServices.chatMessagesWithPagination(
-                    senderId: appStore.uid.validate(), 
-                    receiverUserId: widget.receiverUser.uid.validate()
-                  ),
+                      senderId: appStore.uid.validate(),
+                      receiverUserId: widget.receiverUser.uid.validate()),
                   initialLoader: LoaderWidget(),
                   limit: PER_PAGE_CHAT_LIST_COUNT,
                   onEmpty: NoDataWidget(
@@ -492,12 +532,13 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                   viewType: ViewType.list,
                   itemBuilder: (context, snap, index) {
                     try {
-                      ChatMessageModel data = ChatMessageModel.fromJson(snap[index].data() as Map<String, dynamic>);
+                      ChatMessageModel data = ChatMessageModel.fromJson(
+                          snap[index].data() as Map<String, dynamic>);
                       data.isMe = data.senderId == appStore.uid;
                       data.chatDocumentReference = snap[index].reference;
-                      
+
                       log("🟣 [CHAT DEBUG] Message loaded - Index: $index, IsMe: ${data.isMe}, Type: ${data.messageType}, Message: ${data.message?.substring(0, data.message!.length > 50 ? 50 : data.message!.length)}");
-                      
+
                       return ChatItemWidget(chatItemData: data);
                     } catch (e) {
                       log("🔴 [CHAT DEBUG] ❌ Error parsing message at index $index: ${e.toString()}");
@@ -506,14 +547,16 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
                   },
                 ),
               ),
-              if (!widget.isChattingAllow)
+              if (effectiveChatAllowed)
                 Positioned(
                   bottom: 16,
                   left: 16,
                   right: 16,
                   child: _buildChatFieldWidget(),
                 ),
-              Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+              Observer(
+                  builder: (context) =>
+                      LoaderWidget().visible(appStore.isLoading)),
             ],
           ),
         ),
@@ -547,17 +590,19 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
   Future<void> handleUploadAndSendFiles(List<File> pickedfiles) async {
     log("🟡 [CHAT DEBUG] ========== HANDLE UPLOAD FILES STARTED ==========");
     log("🟡 [CHAT DEBUG] Files count: ${pickedfiles.length}");
-    
+
     if (pickedfiles.isEmpty) {
       log("🟡 [CHAT DEBUG] ⚠️ No files to upload");
       return;
     }
-    
+
     for (int i = 0; i < pickedfiles.length; i++) {
       log("🟡 [CHAT DEBUG] File $i: ${pickedfiles[i].path} (${pickedfiles[i].lengthSync()} bytes)");
     }
-    
-    await SendFilePreviewScreen(pickedfiles: pickedfiles).launch(context).then((value) async {
+
+    await SendFilePreviewScreen(pickedfiles: pickedfiles)
+        .launch(context)
+        .then((value) async {
       log("🟡 [CHAT DEBUG] File preview screen returned");
       log("🟡 [CHAT DEBUG] Return value: $value");
       log("🟡 [CHAT DEBUG] Text value: ${value[MessageType.TEXT.name]}");
@@ -577,20 +622,23 @@ class _UserChatScreenState extends State<UserChatScreen> with WidgetsBindingObse
       if (messageCont.text.trim().isNotEmpty || pickedfiles.isNotEmpty) {
         log("🟡 [CHAT DEBUG] Starting file upload...");
         appStore.setLoading(true);
-        await ChatServices().uploadFiles(pickedfiles).then((attached_files) async {
+        await ChatServices()
+            .uploadFiles(pickedfiles)
+            .then((attached_files) async {
           log("🟡 [CHAT DEBUG] ✅ Files uploaded successfully");
           log("🟡 [CHAT DEBUG] Attached files count: ${attached_files.length}");
           for (int i = 0; i < attached_files.length; i++) {
             log("🟡 [CHAT DEBUG] Attached file $i: ${attached_files[i]}");
           }
-          
+
           if (attached_files.isEmpty) {
             log("🟡 [CHAT DEBUG] ⚠️ No files were uploaded");
             return;
           }
-          
+
           log("🟡 [CHAT DEBUG] Sending message with attachments...");
-          await sendMessages(isFile: true, attachmentFiles: attached_files).whenComplete(() {
+          await sendMessages(isFile: true, attachmentFiles: attached_files)
+              .whenComplete(() {
             log("🟡 [CHAT DEBUG] ✅ Message with attachments sent");
             appStore.setLoading(false);
           });

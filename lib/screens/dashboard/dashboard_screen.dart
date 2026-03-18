@@ -25,6 +25,7 @@ import '../newDashboard/dashboard_4/dashboard_fragment_4.dart';
 class DashboardScreen extends StatefulWidget {
   /// When true, open on Bookings tab (index 2).
   final bool? redirectToBooking;
+
   /// Force initial tab (0=Home, 1=My Jobs, 2=Bookings, …). Used after login/signup to always land on Home.
   final int? initialTabIndex;
 
@@ -37,6 +38,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
   bool isInterNetConnect = true;
+
   /// Ignore LIVESTREAM_FIREBASE tab switch briefly after launch (avoids stray notification switching tab after login).
   bool _ignoreFirebaseStreamUntil = false;
 
@@ -49,7 +51,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       currentIndex = 2; // Booking is now at index 2 (after Home, My Jobs)
     }
     _ignoreFirebaseStreamUntil = true;
-    Future.delayed(const Duration(seconds: 2), () {
+    // Ignore FCM-driven tab switch for 60s after launch so login/signup land on home (index 0)
+    Future.delayed(const Duration(seconds: 60), () {
       if (mounted) _ignoreFirebaseStreamUntil = false;
     });
 
@@ -130,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               Observer(
                   builder: (context) => appStore.isLoggedIn
-                      ? MyPostRequestListScreen(isFromDashboard: true)
+                      ? MyPostRequestListScreen()
                       : SignInScreen(isFromDashboard: true)),
               Observer(
                   builder: (context) => appStore.isLoggedIn

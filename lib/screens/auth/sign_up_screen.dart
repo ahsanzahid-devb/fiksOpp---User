@@ -11,6 +11,7 @@ import 'package:booking_system_flutter/utils/configs.dart';
 import 'package:booking_system_flutter/utils/constant.dart';
 import 'package:booking_system_flutter/utils/images.dart';
 import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
@@ -26,7 +27,14 @@ class SignUpScreen extends StatefulWidget {
   final String? uid;
   final int? tokenForOTPCredentials;
 
-  SignUpScreen({Key? key, this.phoneNumber, this.isOTPLogin = false, this.countryCode, this.uid, this.tokenForOTPCredentials}) : super(key: key);
+  SignUpScreen(
+      {Key? key,
+      this.phoneNumber,
+      this.isOTPLogin = false,
+      this.countryCode,
+      this.uid,
+      this.tokenForOTPCredentials})
+      : super(key: key);
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -63,11 +71,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void init() async {
     if (widget.phoneNumber != null) {
-      selectedCountry = Country.parse(widget.countryCode.validate(value: selectedCountry.countryCode));
+      selectedCountry = Country.parse(
+          widget.countryCode.validate(value: selectedCountry.countryCode));
 
-      mobileCont.text = widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
-      passwordCont.text = widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
-      userNameCont.text = widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
+      mobileCont.text =
+          widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
+      passwordCont.text =
+          widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
+      userNameCont.text =
+          widget.phoneNumber != null ? widget.phoneNumber.toString() : "";
     }
   }
 
@@ -109,10 +121,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         /// Link OTP login with Email Auth
         if (widget.tokenForOTPCredentials != null) {
           try {
-            AuthCredential credential = PhoneAuthProvider.credentialFromToken(widget.tokenForOTPCredentials!);
-            UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+            AuthCredential credential = PhoneAuthProvider.credentialFromToken(
+                widget.tokenForOTPCredentials!);
+            UserCredential userCredential =
+                await FirebaseAuth.instance.signInWithCredential(credential);
 
-            AuthCredential emailAuthCredential = EmailAuthProvider.credential(email: emailCont.text.trim(), password: DEFAULT_FIREBASE_PASSWORD);
+            AuthCredential emailAuthCredential = EmailAuthProvider.credential(
+                email: emailCont.text.trim(),
+                password: DEFAULT_FIREBASE_PASSWORD);
             userCredential.user!.linkWithCredential(emailAuthCredential);
           } catch (e) {
             print(e);
@@ -135,13 +151,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withValues(alpha:0.2),
+              color: const Color(0xFF8C98A8).withValues(alpha: 0.2),
             ),
           ),
         ),
       ),
 
-      showPhoneCode: true, // optional. Shows phone code before the country name.
+      showPhoneCode:
+          true, // optional. Shows phone code before the country name.
       onSelect: (Country country) {
         selectedCountry = country;
         setState(() {});
@@ -187,10 +204,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       appStore.setLoading(false);
       toast(registerResponse.message.validate());
-      await appStore.setLoginType(tempRegisterData.loginType.validate());
+      await saveUserData(registerResponse.userData!);
 
-      /// Back to sign in screen
-      finish(context);
+      DashboardScreen(initialTabIndex: 0).launch(context,
+          isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
     }).catchError((e) {
       appStore.setLoading(false);
       toast(e.toString());
@@ -209,12 +226,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
           width: 80,
           padding: EdgeInsets.all(16),
           child: ic_profile2.iconImage(color: Colors.white),
-          decoration: boxDecorationDefault(shape: BoxShape.circle, color: primaryColor),
+          decoration:
+              boxDecorationDefault(shape: BoxShape.circle, color: primaryColor),
         ),
         16.height,
         Text(language.lblHelloUser, style: boldTextStyle(size: 22)).center(),
         16.height,
-        Text(language.lblSignUpSubTitle, style: secondaryTextStyle(size: 14), textAlign: TextAlign.center).center().paddingSymmetric(horizontal: 32),
+        Text(language.lblSignUpSubTitle,
+                style: secondaryTextStyle(size: 14),
+                textAlign: TextAlign.center)
+            .center()
+            .paddingSymmetric(horizontal: 32),
       ],
     );
   }
@@ -223,145 +245,162 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {});
     return ResponsiveContainer(
       child: Column(
-      children: [
-        32.height,
-        AppTextField(
-          textFieldType: TextFieldType.NAME,
-          controller: fNameCont,
-          focus: fNameFocus,
-          nextFocus: lNameFocus,
-          errorThisFieldRequired: language.requiredText,
-          decoration: inputDecoration(context, labelText: language.hintFirstNameTxt),
-          suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-        ),
-        16.height,
-        AppTextField(
-          textFieldType: TextFieldType.NAME,
-          controller: lNameCont,
-          focus: lNameFocus,
-          nextFocus: userNameFocus,
-          errorThisFieldRequired: language.requiredText,
-          decoration: inputDecoration(context, labelText: language.hintLastNameTxt),
-          suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-        ),
-        16.height,
-        AppTextField(
-          textFieldType: TextFieldType.USERNAME,
-          controller: userNameCont,
-          focus: userNameFocus,
-          nextFocus: emailFocus,
-          readOnly: widget.isOTPLogin.validate() ? widget.isOTPLogin : false,
-          errorThisFieldRequired: language.requiredText,
-          decoration: inputDecoration(context, labelText: language.hintUserNameTxt),
-          suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-        ),
-        16.height,
-        AppTextField(
-          textFieldType: TextFieldType.EMAIL_ENHANCED,
-          controller: emailCont,
-          focus: emailFocus,
-          errorThisFieldRequired: language.requiredText,
-          nextFocus: mobileFocus,
-          decoration: inputDecoration(context, labelText: language.hintEmailTxt),
-          suffix: ic_message.iconImage(size: 10).paddingAll(14),
-        ),
-        16.height,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Country code ...
-            Container(
-              height: 48.0,
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              child: Center(
-                child: ValueListenableBuilder(
-                  valueListenable: _valueNotifier,
-                  builder: (context, value, child) => Row(
-                    children: [
-                      Text(
-                        "+${selectedCountry.phoneCode}",
-                        style: primaryTextStyle(size: 12),
-                      ),
-                      Icon(
-                        Icons.arrow_drop_down,
-                        color: textSecondaryColorGlobal,
-                      )
-                    ],
-                  ).paddingOnly(left: 8),
-                ),
-              ),
-            ).onTap(() => changeCountry()),
-            10.width,
-            // Mobile number text field...
-            AppTextField(
-              textFieldType: isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
-              controller: mobileCont,
-              focus: mobileFocus,
-              errorThisFieldRequired: language.requiredText,
-              nextFocus: passwordFocus,
-              decoration: inputDecoration(context, labelText: "${language.hintContactNumberTxt}").copyWith(
-                hintText: '${language.lblExample}: ${selectedCountry.example}',
-                hintStyle: secondaryTextStyle(),
-              ),
-              maxLength: 15,
-              suffix: ic_calling.iconImage(size: 10).paddingAll(14),
-            ).expand(),
-          ],
-        ),
-        8.height,
-        if (!widget.isOTPLogin)
-          Column(
+        children: [
+          32.height,
+          AppTextField(
+            textFieldType: TextFieldType.NAME,
+            controller: fNameCont,
+            focus: fNameFocus,
+            nextFocus: lNameFocus,
+            errorThisFieldRequired: language.requiredText,
+            decoration:
+                inputDecoration(context, labelText: language.hintFirstNameTxt),
+            suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+          ),
+          16.height,
+          AppTextField(
+            textFieldType: TextFieldType.NAME,
+            controller: lNameCont,
+            focus: lNameFocus,
+            nextFocus: userNameFocus,
+            errorThisFieldRequired: language.requiredText,
+            decoration:
+                inputDecoration(context, labelText: language.hintLastNameTxt),
+            suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+          ),
+          16.height,
+          AppTextField(
+            textFieldType: TextFieldType.USERNAME,
+            controller: userNameCont,
+            focus: userNameFocus,
+            nextFocus: emailFocus,
+            readOnly: widget.isOTPLogin.validate() ? widget.isOTPLogin : false,
+            errorThisFieldRequired: language.requiredText,
+            decoration:
+                inputDecoration(context, labelText: language.hintUserNameTxt),
+            suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+          ),
+          16.height,
+          AppTextField(
+            textFieldType: TextFieldType.EMAIL_ENHANCED,
+            controller: emailCont,
+            focus: emailFocus,
+            errorThisFieldRequired: language.requiredText,
+            nextFocus: mobileFocus,
+            decoration:
+                inputDecoration(context, labelText: language.hintEmailTxt),
+            suffix: ic_message.iconImage(size: 10).paddingAll(14),
+          ),
+          16.height,
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              4.height,
+              // Country code ...
+              Container(
+                height: 48.0,
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Center(
+                  child: ValueListenableBuilder(
+                    valueListenable: _valueNotifier,
+                    builder: (context, value, child) => Row(
+                      children: [
+                        Text(
+                          "+${selectedCountry.phoneCode}",
+                          style: primaryTextStyle(size: 12),
+                        ),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          color: textSecondaryColorGlobal,
+                        )
+                      ],
+                    ).paddingOnly(left: 8),
+                  ),
+                ),
+              ).onTap(() => changeCountry()),
+              10.width,
+              // Mobile number text field...
               AppTextField(
-                textFieldType: TextFieldType.PASSWORD,
-                controller: passwordCont,
-                focus: passwordFocus,
-                obscureText: true,
-                readOnly: widget.isOTPLogin.validate() ? widget.isOTPLogin : false,
-                suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-                suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
+                textFieldType:
+                    isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
+                controller: mobileCont,
+                focus: mobileFocus,
                 errorThisFieldRequired: language.requiredText,
-                decoration: inputDecoration(context, labelText: language.hintPasswordTxt),
-                isValidationRequired: true,
-                validator: (val) {
-                  if (val == null || val.isEmpty) {
-                    return language.requiredText;
-                  } else if (val.length < 8 || val.length > 12) {
-                    return language.passwordLengthShouldBe;
-                  }
-                  return null;
-                },
-                onFieldSubmitted: (s) {},
-              ),
-              20.height,
+                nextFocus: passwordFocus,
+                decoration: inputDecoration(context,
+                        labelText: "${language.hintContactNumberTxt}")
+                    .copyWith(
+                  hintText:
+                      '${language.lblExample}: ${selectedCountry.example}',
+                  hintStyle: secondaryTextStyle(),
+                ),
+                maxLength: 15,
+                suffix: ic_calling.iconImage(size: 10).paddingAll(14),
+              ).expand(),
             ],
           ),
-        _buildTcAcceptWidget(),
-        8.height,
-        AppButton(
-          text: language.signUp,
-          color: primaryColor,
-          textColor: Colors.white,
-          width: context.width() >= 600
-              ? 400
-              : context.width() - context.navigationBarHeight,
-          onTap: () {
-            if (widget.isOTPLogin) {
-              registerWithOTP();
-            } else {
-              registerUser();
-            }
-          },
-        ),
-      ],
-    ),
+          8.height,
+          if (!widget.isOTPLogin)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                4.height,
+                AppTextField(
+                  textFieldType: TextFieldType.PASSWORD,
+                  controller: passwordCont,
+                  focus: passwordFocus,
+                  obscureText: true,
+                  readOnly:
+                      widget.isOTPLogin.validate() ? widget.isOTPLogin : false,
+                  suffixPasswordVisibleWidget:
+                      ic_show.iconImage(size: 10).paddingAll(14),
+                  suffixPasswordInvisibleWidget:
+                      ic_hide.iconImage(size: 10).paddingAll(14),
+                  errorThisFieldRequired: language.requiredText,
+                  decoration: inputDecoration(context,
+                      labelText: language.hintPasswordTxt),
+                  isValidationRequired: true,
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return language.requiredText;
+                    } else if (val.length < 8 || val.length > 12) {
+                      return language.passwordLengthShouldBe;
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (s) {},
+                ),
+                20.height,
+              ],
+            ),
+          _buildTcAcceptWidget(),
+          8.height,
+          AppButton(
+            text: language.signUp,
+            color: primaryColor,
+            textColor: Colors.white,
+            width: context.width() >= 600
+                ? 400
+                : context.width() - context.navigationBarHeight,
+            onTap: () {
+              if (widget.isOTPLogin) {
+                registerWithOTP();
+              } else {
+                registerUser();
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
+
+  static const String _privacyPolicyUrl =
+      'https://fiksopp.com/personvernerklaering-for-fiksopp/';
+  static const String _termsAndConditionsUrl =
+      'https://fiksopp.com/brukeravtale-for-fiksopp/';
 
   Widget _buildTcAcceptWidget() {
     return Row(
@@ -374,13 +413,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         16.width,
         RichTextWidget(
           list: [
-            TextSpan(text: '${language.lblAgree} ', style: secondaryTextStyle()),
+            TextSpan(
+                text: '${language.lblAgree} ', style: secondaryTextStyle()),
             TextSpan(
               text: language.lblTermsOfService,
               style: boldTextStyle(color: primaryColor, size: 14),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  checkIfLink(context, appConfigurationStore.termConditions, title: language.termsCondition);
+                  final url =
+                      appConfigurationStore.termConditions.validate().isNotEmpty
+                          ? appConfigurationStore.termConditions
+                          : _termsAndConditionsUrl;
+                  checkIfLink(context, url, title: language.termsCondition);
                 },
             ),
             TextSpan(text: ' & ', style: secondaryTextStyle()),
@@ -389,7 +433,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: boldTextStyle(color: primaryColor, size: 14),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  checkIfLink(context, appConfigurationStore.privacyPolicy, title: language.privacyPolicy);
+                  final url =
+                      appConfigurationStore.privacyPolicy.validate().isNotEmpty
+                          ? appConfigurationStore.privacyPolicy
+                          : _privacyPolicyUrl;
+                  checkIfLink(context, url, title: language.privacyPolicy);
                 },
             ),
           ],
@@ -404,7 +452,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         16.height,
         RichTextWidget(
           list: [
-            TextSpan(text: "${language.alreadyHaveAccountTxt} ", style: secondaryTextStyle()),
+            TextSpan(
+                text: "${language.alreadyHaveAccountTxt} ",
+                style: secondaryTextStyle()),
             TextSpan(
               text: language.signIn,
               style: boldTextStyle(color: primaryColor, size: 14),
@@ -439,14 +489,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               child: BackWidget(iconColor: context.iconColor)),
           scrolledUnderElevation: 0,
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarIconBrightness: appStore.isDarkMode ? Brightness.light : Brightness.dark, statusBarColor: context.scaffoldBackgroundColor),
+          systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  appStore.isDarkMode ? Brightness.light : Brightness.dark,
+              statusBarColor: context.scaffoldBackgroundColor),
         ),
         body: Stack(
           alignment: AlignmentDirectional.center,
           children: [
             Form(
               key: formKey,
-              autovalidateMode: isFirstTimeValidation ? AutovalidateMode.disabled : AutovalidateMode.onUserInteraction,
+              autovalidateMode: isFirstTimeValidation
+                  ? AutovalidateMode.disabled
+                  : AutovalidateMode.onUserInteraction,
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Column(
@@ -459,7 +514,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-            Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
+            Observer(
+                builder: (_) =>
+                    LoaderWidget().center().visible(appStore.isLoading)),
           ],
         ),
       ),

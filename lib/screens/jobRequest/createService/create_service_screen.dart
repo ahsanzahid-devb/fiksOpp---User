@@ -216,47 +216,34 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
           final decoded = jsonDecode(data);
           toast(decoded['message']?.toString() ?? language.save, print: true);
 
-          // If this was a new service and job request fields are filled, create post job
+          // Build post-job request if we have job fields (so we can run it in background after closing)
+          Map<String, dynamic>? postJobRequest;
           if (!isUpdate && jobTitleCont.text.trim().isNotEmpty) {
-            // API may return service_id (root), data.id, or id
             final rawId = decoded['service_id'] ??
                 decoded['data']?['id'] ??
                 decoded['id'];
             final serviceId =
                 rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '');
             if (serviceId != null && serviceId > 0) {
-              try {
-                final request = {
-                  PostJob.postTitle: jobTitleCont.text.validate(),
-                  PostJob.description: jobDescriptionCont.text.validate(),
-                  PostJob.serviceId: [serviceId],
-                  PostJob.price: jobDateCont.text.validate(),
-                  PostJob.status: JOB_REQUEST_STATUS_REQUESTED,
-                  PostJob.latitude: appStore.latitude,
-                  PostJob.longitude: appStore.longitude,
-                };
-                await savePostJob(request).timeout(
-                  const Duration(seconds: 30),
-                  onTimeout: () => throw TimeoutException('Post job request timed out'),
-                );
-
-                /// Show a localized top snackbar-style toast once the job is successfully posted
-                toast(
-                  language.postJobSuccess,
-                  gravity: ToastGravity.TOP,
-                );
-              } on TimeoutException {
-                toast(
-                  language.postJobTimedOutTryFromMyJobs,
-                  gravity: ToastGravity.TOP,
-                  print: true,
-                );
-              } catch (e) {
-                toast(e.toString(), print: true);
-              }
+              postJobRequest = {
+                PostJob.postTitle: jobTitleCont.text.validate(),
+                PostJob.description: jobDescriptionCont.text.validate(),
+                PostJob.serviceId: [serviceId],
+                PostJob.price: jobDateCont.text.validate(),
+                PostJob.status: JOB_REQUEST_STATUS_REQUESTED,
+                PostJob.latitude: appStore.latitude,
+                PostJob.longitude: appStore.longitude,
+              };
             }
           }
+
+          // Close screen immediately so user is not stuck for minutes if post-job is slow
           finish(context, true);
+
+          // Post job in background (short timeout so we don't block; toast result)
+          if (postJobRequest != null) {
+            unawaited(_postJobInBackground(postJobRequest));
+          }
         },
         onError: (error) {
           toast(error.toString(), print: true);
@@ -268,6 +255,25 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       });
     } catch (e) {
       toast(e.toString());
+    }
+  }
+
+  /// Runs after screen is closed; posts job with short timeout and shows toast.
+  Future<void> _postJobInBackground(Map<String, dynamic> request) async {
+    try {
+      await savePostJob(request).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () => throw TimeoutException('Post job request timed out'),
+      );
+      toast(language.postJobSuccess, gravity: ToastGravity.TOP);
+    } on TimeoutException {
+      toast(
+        language.postJobTimedOutTryFromMyJobs,
+        gravity: ToastGravity.TOP,
+        print: true,
+      );
+    } catch (e) {
+      toast(e.toString(), print: true);
     }
   }
 

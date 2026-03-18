@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../../model/booking_data_model.dart';
-import '../../../utils/model_keys.dart';
 import '../../chat/user_chat_screen.dart';
 
 class BookingDetailProviderWidget extends StatefulWidget {
@@ -142,8 +141,13 @@ class BookingDetailProviderWidgetState
                     Fluttertoast.cancel();
 
                     if (widget.bookingDetail != null) {
-                      isChattingAllow = widget.bookingDetail!.status !=
-                          BookingStatusKeys.pending;
+                      // Use the same rule as booking data "can customer contact"
+                      // so chat UI visibility is consistent across provider/handyman.
+                      isChattingAllow =
+                          widget.bookingDetail!.canCustomerContact;
+                      log(
+                        "🔵 [CHAT-DEBUG] Provider chat launch | status=${widget.bookingDetail!.status} paymentStatus=${widget.bookingDetail!.paymentStatus} canCustomerContact=$isChattingAllow",
+                      );
                     }
 
                     UserChatScreen(

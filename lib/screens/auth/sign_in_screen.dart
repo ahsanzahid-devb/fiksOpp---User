@@ -150,7 +150,8 @@ class _SignInScreenState extends State<SignInScreen> {
         onLoginSuccessRedirection();
       } catch (e) {
         log(e.toString());
-        final String msg = e is PlatformException ? (e.message ?? '') : e.toString();
+        final String msg =
+            e is PlatformException ? (e.message ?? '') : e.toString();
         final bool isShaError = e is PlatformException &&
             e.code == 'sign_in_failed' &&
             (msg.contains('ApiException: 10') ||
@@ -220,15 +221,21 @@ class _SignInScreenState extends State<SignInScreen> {
   void onLoginSuccessRedirection() {
     afterBuildCreated(() {
       appStore.setLoading(false);
+      if (!mounted) {
+        // Screen was disposed (e.g. after Google Sign-In); use global navigator
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => DashboardScreen(initialTabIndex: 0),
+            transitionsBuilder: (_, a, __, c) =>
+                FadeTransition(opacity: a, child: c),
+          ),
+          (route) => false,
+        );
+        return;
+      }
       if (widget.isFromServiceBooking.validate() ||
-          widget.isFromDashboard.validate() ||
           widget.returnExpected.validate()) {
-        if (widget.isFromDashboard.validate()) {
-          push(DashboardScreen(redirectToBooking: true),
-              isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-        } else {
-          finish(context, true);
-        }
+        finish(context, true);
       } else {
         // Always open on Home tab (index 0) after login
         DashboardScreen(initialTabIndex: 0).launch(context,
@@ -357,7 +364,9 @@ class _SignInScreenState extends State<SignInScreen> {
           20.height,
           if ((appConfigurationStore.googleLoginStatus ||
                   appConfigurationStore.otpLoginStatus) ||
-              (isIOS && (appConfigurationStore.appleLoginStatus || appConfigurationStore.googleLoginStatus)))
+              (isIOS &&
+                  (appConfigurationStore.appleLoginStatus ||
+                      appConfigurationStore.googleLoginStatus)))
             Row(
               children: [
                 Divider(color: context.dividerColor, thickness: 2).expand(),
@@ -427,7 +436,8 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           if (appConfigurationStore.otpLoginStatus) 16.height,
           if (isIOS)
-            if (appConfigurationStore.appleLoginStatus || appConfigurationStore.googleLoginStatus)
+            if (appConfigurationStore.appleLoginStatus ||
+                appConfigurationStore.googleLoginStatus)
               AppButton(
                 text: '',
                 color: context.cardColor,
