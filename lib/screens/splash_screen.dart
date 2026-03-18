@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
-import 'package:booking_system_flutter/screens/maintenance_mode_screen.dart';
-import 'package:booking_system_flutter/utils/configs.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
+import 'package:fiksOpp/screens/maintenance_mode_screen.dart';
+import 'package:fiksOpp/utils/configs.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';

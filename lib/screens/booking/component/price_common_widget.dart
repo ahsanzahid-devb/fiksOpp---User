@@ -1,13 +1,13 @@
-import 'package:booking_system_flutter/component/price_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/booking_data_model.dart';
-import 'package:booking_system_flutter/model/package_data_model.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/component/price_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/booking_data_model.dart';
+import 'package:fiksOpp/model/package_data_model.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -32,7 +32,9 @@ class PriceCommonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (bookingDetail.isFreeService && bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE) return Offstage();
+    if (bookingDetail.isFreeService &&
+        bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE)
+      return Offstage();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -50,9 +52,13 @@ class PriceCommonWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(language.price, style: secondaryTextStyle(size: 14)).expand(),
+                    Text(language.price, style: secondaryTextStyle(size: 14))
+                        .expand(),
                     16.width,
-                    PriceWidget(price: bookingPackage!.price.validate(), color: textPrimaryColorGlobal, isBoldText: true),
+                    PriceWidget(
+                        price: bookingPackage!.price.validate(),
+                        color: textPrimaryColorGlobal,
+                        isBoldText: true),
                   ],
                 ),
                 if (bookingDetail.totalExtraChargeAmount != 0)
@@ -62,8 +68,12 @@ class PriceCommonWidget extends StatelessWidget {
                       16.height,
                       Row(
                         children: [
-                          Text(language.lblTotalExtraCharges, style: secondaryTextStyle(size: 14)).expand(),
-                          PriceWidget(price: bookingDetail.totalExtraChargeAmount, color: textPrimaryColorGlobal),
+                          Text(language.lblTotalExtraCharges,
+                                  style: secondaryTextStyle(size: 14))
+                              .expand(),
+                          PriceWidget(
+                              price: bookingDetail.totalExtraChargeAmount,
+                              color: textPrimaryColorGlobal),
                         ],
                       ),
                     ],
@@ -77,15 +87,22 @@ class PriceCommonWidget extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(language.lblTax, style: secondaryTextStyle(size: 14)).expand(),
-                              Icon(Icons.info_outline_rounded, size: 20, color: context.primaryColor).onTap(
+                              Text(language.lblTax,
+                                      style: secondaryTextStyle(size: 14))
+                                  .expand(),
+                              Icon(Icons.info_outline_rounded,
+                                      size: 20, color: context.primaryColor)
+                                  .onTap(
                                 () {
                                   showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
                                       return AppliedTaxListBottomSheet(
                                         taxes: bookingDetail.taxes.validate(),
-                                        subTotal: bookingDetail.finalSubTotal.validate() + bookingDetail.totalExtraChargeAmount,
+                                        subTotal: bookingDetail.finalSubTotal
+                                                .validate() +
+                                            bookingDetail
+                                                .totalExtraChargeAmount,
                                       );
                                     },
                                   );
@@ -94,7 +111,10 @@ class PriceCommonWidget extends StatelessWidget {
                             ],
                           ).expand(),
                           16.width,
-                          PriceWidget(price: bookingDetail.finalTotalTax.validate(), color: Colors.red, isBoldText: true),
+                          PriceWidget(
+                              price: bookingDetail.finalTotalTax.validate(),
+                              color: Colors.red,
+                              isBoldText: true),
                         ],
                       ),
                     ],
@@ -106,7 +126,9 @@ class PriceCommonWidget extends StatelessWidget {
                     8.height,
                     Row(
                       children: [
-                        Text(language.totalAmount, style: secondaryTextStyle(size: 14)).expand(),
+                        Text(language.totalAmount,
+                                style: secondaryTextStyle(size: 14))
+                            .expand(),
                         PriceWidget(
                           price: bookingDetail.totalAmount.validate(),
                           color: primaryColor,
@@ -126,13 +148,18 @@ class PriceCommonWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE || bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                if (bookingDetail.bookingType.validate() ==
+                        BOOKING_TYPE_SERVICE ||
+                    bookingDetail.bookingType.validate() ==
+                        BOOKING_TYPE_USER_POST_JOB)
                   Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(language.lblPrice, style: secondaryTextStyle(size: 14)).expand(),
+                          Text(language.lblPrice,
+                                  style: secondaryTextStyle(size: 14))
+                              .expand(),
                           16.width,
                           if (bookingDetail.isFixedService)
                             Marquee(
@@ -144,11 +171,16 @@ class PriceCommonWidget extends StatelessWidget {
                                     isBoldText: false,
                                     color: appTextSecondaryColor,
                                   ),
-                                  Text(' * ${bookingDetail.quantity != 0 ? bookingDetail.quantity : 1}  = ', style: secondaryTextStyle()),
+                                  Text(
+                                      ' * ${bookingDetail.quantity != 0 ? bookingDetail.quantity : 1}  = ',
+                                      style: secondaryTextStyle()),
                                   PriceWidget(
-                                    price: (bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                                    price: (bookingDetail.bookingType
+                                                .validate() ==
+                                            BOOKING_TYPE_USER_POST_JOB)
                                         ? bookingDetail.amount.validate()
-                                        : bookingDetail.finalTotalServicePrice.validate(),
+                                        : bookingDetail.finalTotalServicePrice
+                                            .validate(),
                                     isBoldText: true,
                                     color: textPrimaryColorGlobal,
                                   ),
@@ -157,7 +189,8 @@ class PriceCommonWidget extends StatelessWidget {
                             )
                           else
                             PriceWidget(
-                              price: bookingDetail.finalTotalServicePrice.validate(),
+                              price: bookingDetail.finalTotalServicePrice
+                                  .validate(),
                               color: textPrimaryColorGlobal,
                               isBoldText: true,
                             ),
@@ -166,7 +199,9 @@ class PriceCommonWidget extends StatelessWidget {
                       16.height,
                     ],
                   ),
-                if (bookingDetail.finalDiscountAmount != 0 && bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE)
+                if (bookingDetail.finalDiscountAmount != 0 &&
+                    bookingDetail.bookingType.validate() ==
+                        BOOKING_TYPE_SERVICE)
                   Column(
                     children: [
                       Row(
@@ -176,9 +211,12 @@ class PriceCommonWidget extends StatelessWidget {
                           Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(text: language.lblDiscount, style: secondaryTextStyle(size: 14)),
                                 TextSpan(
-                                  text: " (${bookingDetail.discount.validate()}% ${language.lblOff.toLowerCase()}) ",
+                                    text: language.lblDiscount,
+                                    style: secondaryTextStyle(size: 14)),
+                                TextSpan(
+                                  text:
+                                      " (${bookingDetail.discount.validate()}% ${language.lblOff.toLowerCase()}) ",
                                   style: boldTextStyle(color: Colors.green),
                                 ),
                               ],
@@ -201,10 +239,15 @@ class PriceCommonWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text(language.lblCoupon, style: secondaryTextStyle(size: 14)),
-                          Text(" (${couponData!.code})", style: boldTextStyle(size: 14, color: primaryColor)).expand(),
+                          Text(language.lblCoupon,
+                              style: secondaryTextStyle(size: 14)),
+                          Text(" (${couponData!.code})",
+                                  style: boldTextStyle(
+                                      size: 14, color: primaryColor))
+                              .expand(),
                           PriceWidget(
-                            price: bookingDetail.finalCouponDiscountAmount.validate(),
+                            price: bookingDetail.finalCouponDiscountAmount
+                                .validate(),
                             color: Colors.green,
                             isBoldText: true,
                             isDiscountedPrice: true,
@@ -222,16 +265,23 @@ class PriceCommonWidget extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(language.serviceAddOns, style: secondaryTextStyle(size: 14)).flexible(fit: FlexFit.loose),
+                          Text(language.serviceAddOns,
+                                  style: secondaryTextStyle(size: 14))
+                              .flexible(fit: FlexFit.loose),
                           16.width,
-                          PriceWidget(price: bookingDetail.serviceaddon.validate().sumByDouble((p0) => p0.price), color: textPrimaryColorGlobal)
+                          PriceWidget(
+                              price: bookingDetail.serviceaddon
+                                  .validate()
+                                  .sumByDouble((p0) => p0.price),
+                              color: textPrimaryColorGlobal)
                         ],
                       ),
                       16.height,
                     ],
                   ),
 
-                if ((bookingDetail.isHourlyService || bookingDetail.isFixedService))
+                if ((bookingDetail.isHourlyService ||
+                    bookingDetail.isFixedService))
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -241,8 +291,12 @@ class PriceCommonWidget extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                Text(language.lblTotalExtraCharges, style: secondaryTextStyle(size: 14)).expand(),
-                                PriceWidget(price: bookingDetail.totalExtraChargeAmount, color: textPrimaryColorGlobal),
+                                Text(language.lblTotalExtraCharges,
+                                        style: secondaryTextStyle(size: 14))
+                                    .expand(),
+                                PriceWidget(
+                                    price: bookingDetail.totalExtraChargeAmount,
+                                    color: textPrimaryColorGlobal),
                               ],
                             ),
                             16.height,
@@ -251,9 +305,13 @@ class PriceCommonWidget extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(language.lblSubTotal, style: secondaryTextStyle(size: 14)).flexible(fit: FlexFit.loose),
+                          Text(language.lblSubTotal,
+                                  style: secondaryTextStyle(size: 14))
+                              .flexible(fit: FlexFit.loose),
                           PriceWidget(
-                            price: (bookingDetail.finalSubTotal == null && bookingDetail.bookingType.validate() == BOOKING_TYPE_USER_POST_JOB)
+                            price: (bookingDetail.finalSubTotal == null &&
+                                    bookingDetail.bookingType.validate() ==
+                                        BOOKING_TYPE_USER_POST_JOB)
                                 ? bookingDetail.amount.validate()
                                 : bookingDetail.finalSubTotal.validate(),
                             color: textPrimaryColorGlobal,
@@ -264,7 +322,9 @@ class PriceCommonWidget extends StatelessWidget {
                     ],
                   ),
 
-                if (bookingDetail.finalTotalTax.validate() != 0 && bookingDetail.bookingType.validate() == BOOKING_TYPE_SERVICE)
+                if (bookingDetail.finalTotalTax.validate() != 0 &&
+                    bookingDetail.bookingType.validate() ==
+                        BOOKING_TYPE_SERVICE)
                   Column(
                     children: [
                       16.height,
@@ -273,15 +333,20 @@ class PriceCommonWidget extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(language.lblTax, style: secondaryTextStyle(size: 14)).expand(),
-                              Icon(Icons.info_outline_rounded, size: 20, color: context.primaryColor).onTap(
+                              Text(language.lblTax,
+                                      style: secondaryTextStyle(size: 14))
+                                  .expand(),
+                              Icon(Icons.info_outline_rounded,
+                                      size: 20, color: context.primaryColor)
+                                  .onTap(
                                 () {
                                   showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
                                       return AppliedTaxListBottomSheet(
                                         taxes: bookingDetail.taxes.validate(),
-                                        subTotal: bookingDetail.finalSubTotal.validate(),
+                                        subTotal: bookingDetail.finalSubTotal
+                                            .validate(),
                                       );
                                     },
                                   );
@@ -290,14 +355,19 @@ class PriceCommonWidget extends StatelessWidget {
                             ],
                           ).expand(),
                           16.width,
-                          PriceWidget(price: bookingDetail.finalTotalTax.validate(), color: Colors.red, isBoldText: true),
+                          PriceWidget(
+                              price: bookingDetail.finalTotalTax.validate(),
+                              color: Colors.red,
+                              isBoldText: true),
                         ],
                       ),
                     ],
                   ),
 
                 /// Advance Payment Detail
-                if (serviceDetail.isAdvancePayment && serviceDetail.isFixedService && !serviceDetail.isFreeService)
+                if (serviceDetail.isAdvancePayment &&
+                    serviceDetail.isFixedService &&
+                    !serviceDetail.isFreeService)
                   Column(
                     children: [
                       16.height,
@@ -305,22 +375,32 @@ class PriceCommonWidget extends StatelessWidget {
                         children: [
                           Text.rich(TextSpan(children: [
                             TextSpan(
-                              text: bookingDetail.paidAmount.validate() != 0 ? language.advancePaid : language.advancePayment,
+                              text: bookingDetail.paidAmount.validate() != 0
+                                  ? language.advancePaid
+                                  : language.advancePayment,
                               style: secondaryTextStyle(size: 14),
                             ),
                             TextSpan(
-                              text: " (${serviceDetail.advancePaymentPercentage.validate().toString()}%)  ",
+                              text:
+                                  " (${serviceDetail.advancePaymentPercentage.validate().toString()}%)  ",
                               style: boldTextStyle(color: Colors.green),
                             ),
                           ])).expand(),
-                          PriceWidget(price: getAdvancePaymentAmount, color: primaryColor),
+                          PriceWidget(
+                              price: getAdvancePaymentAmount,
+                              color: primaryColor),
                         ],
                       ),
                     ],
                   ),
 
                 /// Remaining Amount if Advance Payment
-                if (serviceDetail.isAdvancePayment && bookingDetail.paidAmount.validate() != 0 && serviceDetail.isFixedService && !serviceDetail.isFreeService && bookingDetail.status.validate().toLowerCase() != BOOKING_STATUS_CANCELLED)
+                if (serviceDetail.isAdvancePayment &&
+                    bookingDetail.paidAmount.validate() != 0 &&
+                    serviceDetail.isFixedService &&
+                    !serviceDetail.isFreeService &&
+                    bookingDetail.status.validate().toLowerCase() !=
+                        BOOKING_STATUS_CANCELLED)
                   Column(
                     children: [
                       16.height,
@@ -338,21 +418,33 @@ class PriceCommonWidget extends StatelessWidget {
                             ),
                             textStyle: secondaryTextStyle(size: 14),
                             edgeInsets: EdgeInsets.zero,
-                            suffix: bookingDetail.status == BookingStatusKeys.complete && bookingDetail.paymentStatus == SERVICE_PAYMENT_STATUS_PAID ? Offstage() : Icon(Icons.info_outline_rounded, size: 20, color: context.primaryColor),
+                            suffix: bookingDetail.status ==
+                                        BookingStatusKeys.complete &&
+                                    bookingDetail.paymentStatus ==
+                                        SERVICE_PAYMENT_STATUS_PAID
+                                ? Offstage()
+                                : Icon(Icons.info_outline_rounded,
+                                    size: 20, color: context.primaryColor),
                             expandedText: true,
                             maxLine: 3,
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (_) {
-                                  return PaymentInfoComponent(bookingDetail.id!);
+                                  return PaymentInfoComponent(
+                                      bookingDetail.id!);
                                 },
                               );
                             },
                           ).expand(),
                           8.width,
-                          bookingDetail.status == BookingStatusKeys.complete && bookingDetail.paymentStatus == SERVICE_PAYMENT_STATUS_PAID
-                              ? bookingDetail.status == BookingStatusKeys.complete && bookingDetail.paymentStatus == SERVICE_PAYMENT_STATUS_PAID
+                          bookingDetail.status == BookingStatusKeys.complete &&
+                                  bookingDetail.paymentStatus ==
+                                      SERVICE_PAYMENT_STATUS_PAID
+                              ? bookingDetail.status ==
+                                          BookingStatusKeys.complete &&
+                                      bookingDetail.paymentStatus ==
+                                          SERVICE_PAYMENT_STATUS_PAID
                                   ? Center(
                                       child: Text(
                                         language.paid,
@@ -360,7 +452,9 @@ class PriceCommonWidget extends StatelessWidget {
                                       ),
                                     )
                                   : Offstage()
-                              : PriceWidget(price: getRemainingAmount, color: primaryColor),
+                              : PriceWidget(
+                                  price: getRemainingAmount,
+                                  color: primaryColor),
                         ],
                       ),
                     ],
@@ -390,12 +484,19 @@ class PriceCommonWidget extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 Text('(', style: secondaryTextStyle()),
-                                PriceWidget(price: bookingDetail.amount.validate(), color: appTextSecondaryColor, size: 14, isBoldText: false),
-                                Text('/${language.lblHr})', style: secondaryTextStyle()),
+                                PriceWidget(
+                                    price: bookingDetail.amount.validate(),
+                                    color: appTextSecondaryColor,
+                                    size: 14,
+                                    isBoldText: false),
+                                Text('/${language.lblHr})',
+                                    style: secondaryTextStyle()),
                               ],
                             ),
                           8.width,
-                          PriceWidget(price: bookingDetail.totalAmount.validate(), color: primaryColor)
+                          PriceWidget(
+                              price: bookingDetail.totalAmount.validate(),
+                              color: primaryColor)
                         ],
                       ),
                     ).flexible(flex: 3),
@@ -403,7 +504,8 @@ class PriceCommonWidget extends StatelessWidget {
                 ),
 
                 /// Hourly Service Detail
-                if (bookingDetail.isHourlyService && bookingDetail.status == BookingStatusKeys.complete)
+                if (bookingDetail.isHourlyService &&
+                    bookingDetail.status == BookingStatusKeys.complete)
                   Align(
                     alignment: Alignment.center,
                     child: Column(
@@ -428,7 +530,9 @@ class PriceCommonWidget extends StatelessWidget {
     if (bookingDetail.paidAmount.validate() != 0) {
       return bookingDetail.paidAmount!;
     } else {
-      return bookingDetail.totalAmount.validate() * serviceDetail.advancePaymentPercentage.validate() / 100;
+      return bookingDetail.totalAmount.validate() *
+          serviceDetail.advancePaymentPercentage.validate() /
+          100;
     }
   }
 

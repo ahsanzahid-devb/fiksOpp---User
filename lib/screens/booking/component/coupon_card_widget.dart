@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/component/dotted_line.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/utils/extensions/num_extenstions.dart';
+import 'package:fiksOpp/component/dotted_line.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -43,15 +43,23 @@ class CouponCardWidget extends StatelessWidget {
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          PriceWidget(price: data.discount.validate(), decimalPoint: 0, color: hold, size: 34),
-                          Text("${language.lblDiscount.toUpperCase()}", style: boldTextStyle(color: white, size: 16)),
+                          PriceWidget(
+                              price: data.discount.validate(),
+                              decimalPoint: 0,
+                              color: hold,
+                              size: 34),
+                          Text("${language.lblDiscount.toUpperCase()}",
+                              style: boldTextStyle(color: white, size: 16)),
                         ],
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("${data.discount.validate()}%", textAlign: TextAlign.center, style: boldTextStyle(color: hold, size: 34)),
-                          Text("${language.lblDiscount.toUpperCase()}", style: boldTextStyle(color: white, size: 16)),
+                          Text("${data.discount.validate()}%",
+                              textAlign: TextAlign.center,
+                              style: boldTextStyle(color: hold, size: 34)),
+                          Text("${language.lblDiscount.toUpperCase()}",
+                              style: boldTextStyle(color: white, size: 16)),
                         ],
                       ),
               ).paddingRight(4).expand(flex: 1),
@@ -59,22 +67,29 @@ class CouponCardWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("${data.code.validate()}", style: boldTextStyle(color: white)),
+                  Text("${data.code.validate()}",
+                      style: boldTextStyle(color: white)),
                   8.height,
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
                           text: '${language.useThisCodeToGet} ',
-                          style: primaryTextStyle(color: white, size: 12, weight: FontWeight.w500),
+                          style: primaryTextStyle(
+                              color: white, size: 12, weight: FontWeight.w500),
                         ),
                         TextSpan(
-                          text: calculateCouponDiscount(couponData: data, price: servicePrice.validate()).toPriceFormat(),
-                          style: primaryTextStyle(color: hold, size: 12, weight: FontWeight.w600),
+                          text: calculateCouponDiscount(
+                                  couponData: data,
+                                  price: servicePrice.validate())
+                              .toPriceFormat(),
+                          style: primaryTextStyle(
+                              color: hold, size: 12, weight: FontWeight.w600),
                         ),
                         TextSpan(
                           text: ' ${language.off}',
-                          style: primaryTextStyle(color: white, size: 12, weight: FontWeight.w500),
+                          style: primaryTextStyle(
+                              color: white, size: 12, weight: FontWeight.w500),
                         ),
                       ],
                     ),
@@ -83,9 +98,11 @@ class CouponCardWidget extends StatelessWidget {
                   data.isApplied
                       ? Row(
                           children: [
-                            Icon(Icons.check_circle_outline, size: 16, color: completed),
+                            Icon(Icons.check_circle_outline,
+                                size: 16, color: completed),
                             6.width,
-                            Text(language.applied, style: boldTextStyle(color: white)),
+                            Text(language.applied,
+                                style: boldTextStyle(color: white)),
                             8.width,
                           ],
                         ).paddingBottom(8)
@@ -93,11 +110,21 @@ class CouponCardWidget extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           width: context.width() * 0.35,
                           child: TextIcon(
-                            text: data.isApplied ? language.applied : language.lblApply,
-                            textStyle: boldTextStyle(color: appStore.isDarkMode ? white : context.primaryColor),
-                            prefix: data.isApplied ? Icon(Icons.check_circle_outline, size: 16, color: completed) : Offstage(),
+                            text: data.isApplied
+                                ? language.applied
+                                : language.lblApply,
+                            textStyle: boldTextStyle(
+                                color: appStore.isDarkMode
+                                    ? white
+                                    : context.primaryColor),
+                            prefix: data.isApplied
+                                ? Icon(Icons.check_circle_outline,
+                                    size: 16, color: completed)
+                                : Offstage(),
                           ),
-                          color: appStore.isDarkMode ? context.scaffoldBackgroundColor : white,
+                          color: appStore.isDarkMode
+                              ? context.scaffoldBackgroundColor
+                              : white,
                           onTap: () {
                             data.isApplied = true;
                             finish(context, data);
@@ -164,7 +191,7 @@ class CouponCardWidget extends StatelessWidget {
                         ),
                         DottedLine(
                           direction: Axis.vertical,
-                          dashColor: white.withValues(alpha:0.12),
+                          dashColor: white.withValues(alpha: 0.12),
                           dashGapLength: 8,
                           dashLength: 10,
                         ).expand(),

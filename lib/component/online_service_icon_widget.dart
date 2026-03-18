@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -13,7 +13,8 @@ class OnlineServiceIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.green.shade50, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+          color: Colors.green.shade50, borderRadius: BorderRadius.circular(24)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -21,10 +22,14 @@ class OnlineServiceIconWidget extends StatelessWidget {
             height: 26,
             margin: EdgeInsets.only(right: isShowText ? 8 : 0),
             padding: EdgeInsets.all(6),
-            decoration: BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+            decoration:
+                BoxDecoration(color: Colors.green, shape: BoxShape.circle),
             child: ic_video.iconImage(size: 15, color: white),
           ),
-          if (isShowText) Text(language.online, style: boldTextStyle(size: 12, color: Colors.green)).paddingRight(16),
+          if (isShowText)
+            Text(language.online,
+                    style: boldTextStyle(size: 12, color: Colors.green))
+                .paddingRight(16),
         ],
       ),
     );

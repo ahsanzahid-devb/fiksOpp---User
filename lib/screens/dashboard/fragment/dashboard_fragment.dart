@@ -1,12 +1,12 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/dashboard_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/dashboard/component/category_component.dart';
-import 'package:booking_system_flutter/screens/dashboard/component/featured_service_list_component.dart';
-import 'package:booking_system_flutter/screens/dashboard/component/service_list_component.dart';
-import 'package:booking_system_flutter/screens/dashboard/component/slider_and_location_component.dart';
-import 'package:booking_system_flutter/screens/dashboard/shimmer/dashboard_shimmer.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/dashboard_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/dashboard/component/category_component.dart';
+import 'package:fiksOpp/screens/dashboard/component/featured_service_list_component.dart';
+import 'package:fiksOpp/screens/dashboard/component/service_list_component.dart';
+import 'package:fiksOpp/screens/dashboard/component/slider_and_location_component.dart';
+import 'package:fiksOpp/screens/dashboard/shimmer/dashboard_shimmer.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -50,11 +50,13 @@ class _DashboardFragmentState extends State<DashboardFragment> {
 
   void init() async {
     log("+-+-+-+-+-+-+-+- init()");
-    future = userDashboard(isCurrentLocation: appStore.isCurrentLocation, lat: getDoubleAsync(LATITUDE), long: getDoubleAsync(LONGITUDE));
+    future = userDashboard(
+        isCurrentLocation: appStore.isCurrentLocation,
+        lat: getDoubleAsync(LATITUDE),
+        long: getDoubleAsync(LONGITUDE));
     setStatusBarColorChange();
     setState(() {});
   }
-
 
   Future<void> setStatusBarColorChange() async {
     setStatusBarColor(
@@ -107,7 +109,8 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                   return AnimatedScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
                     listAnimationType: ListAnimationType.FadeIn,
-                    fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                    fadeInConfiguration:
+                        FadeInConfiguration(duration: 2.seconds),
                     onSwipeRefresh: () async {
                       appStore.setLoading(true);
 
@@ -129,17 +132,23 @@ class _DashboardFragmentState extends State<DashboardFragment> {
                         },
                       ),
                       30.height,
-                      PendingBookingComponent(upcomingConfirmedBooking: snap.upcomingData),
+                      PendingBookingComponent(
+                          upcomingConfirmedBooking: snap.upcomingData),
                       CategoryComponent(categoryList: snap.category.validate()),
-                      if (snap.promotionalBanner.validate().isNotEmpty && appConfigurationStore.isPromotionalBanner)
+                      if (snap.promotionalBanner.validate().isNotEmpty &&
+                          appConfigurationStore.isPromotionalBanner)
                         PromotionalBannerSliderComponent(
-                          promotionalBannerList: snap.promotionalBanner.validate(),
+                          promotionalBannerList:
+                              snap.promotionalBanner.validate(),
                         ).paddingTop(16),
                       16.height,
-                      FeaturedServiceListComponent(serviceList: snap.featuredServices.validate()),
-                      ServiceListComponent(serviceList: snap.service.validate()),
+                      FeaturedServiceListComponent(
+                          serviceList: snap.featuredServices.validate()),
+                      ServiceListComponent(
+                          serviceList: snap.service.validate()),
                       16.height,
-                      if (appConfigurationStore.jobRequestStatus && rolesAndPermissionStore.postJobList)
+                      if (appConfigurationStore.jobRequestStatus &&
+                          rolesAndPermissionStore.postJobList)
                         NewJobRequestComponent(),
                     ],
                   );
@@ -151,14 +160,11 @@ class _DashboardFragmentState extends State<DashboardFragment> {
           /// 🔒 Loader Overlay and Interaction Block
           Observer(
             builder: (context) {
-              return appStore.isLoading
-                  ? LoaderWidget().center()
-                  : SizedBox();
+              return appStore.isLoading ? LoaderWidget().center() : SizedBox();
             },
           ),
         ],
       ),
     );
   }
-
 }

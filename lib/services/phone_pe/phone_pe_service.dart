@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:booking_system_flutter/model/payment_gateway_response.dart';
+import 'package:fiksOpp/model/payment_gateway_response.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +35,17 @@ class PhonePeServices {
   }) {
     isTest = paymentSetting.isTest == 1;
     environmentValue = isTest ? phonePeTestEnvironment : phonePeLiveEnvironment;
-    appId = isTest ? "" : paymentSetting.liveValue!.phonePeAppID.validate().trim();
-    merchantId = isTest ? paymentSetting.testValue!.phonePeMerchantID.validate().trim() : paymentSetting.liveValue!.phonePeMerchantID.validate().trim();
-    saltKey = isTest ? paymentSetting.testValue!.phonePeSaltKey.validate().trim() : paymentSetting.liveValue!.phonePeSaltKey.validate().trim();
-    saltIndex = isTest ? paymentSetting.testValue!.phonePeSaltIndex.validate().trim() : paymentSetting.liveValue!.phonePeSaltIndex.validate().trim();
+    appId =
+        isTest ? "" : paymentSetting.liveValue!.phonePeAppID.validate().trim();
+    merchantId = isTest
+        ? paymentSetting.testValue!.phonePeMerchantID.validate().trim()
+        : paymentSetting.liveValue!.phonePeMerchantID.validate().trim();
+    saltKey = isTest
+        ? paymentSetting.testValue!.phonePeSaltKey.validate().trim()
+        : paymentSetting.liveValue!.phonePeSaltKey.validate().trim();
+    saltIndex = isTest
+        ? paymentSetting.testValue!.phonePeSaltIndex.validate().trim()
+        : paymentSetting.liveValue!.phonePeSaltIndex.validate().trim();
     this.paymentSetting = paymentSetting;
     this.totalAmount = totalAmount;
     this.onComplete = onComplete;
@@ -60,10 +67,13 @@ class PhonePeServices {
   Future<void> createBodyAndCheckSum(num amount, String payType) async {
     try {
       if (txnId.trim().isEmpty) {
-        txnId = "${generateRandomString(5).toUpperCase()}${bookingId > 0 ? bookingId : appStore.userId}";
+        txnId =
+            "${generateRandomString(5).toUpperCase()}${bookingId > 0 ? bookingId : appStore.userId}";
       }
       if (generatedUsersId.trim().isEmpty) {
-        generatedUsersId = appStore.userEmail.isNotEmpty ? appStore.userEmail : "${generateRandomString(6).toUpperCase()}${appStore.userId}";
+        generatedUsersId = appStore.userEmail.isNotEmpty
+            ? appStore.userEmail
+            : "${generateRandomString(6).toUpperCase()}${appStore.userId}";
       }
       Map<String, dynamic> requestBody = {
         "merchantId": merchantId,
@@ -73,8 +83,11 @@ class PhonePeServices {
         "redirectUrl": "https://webhook.site/redirect-url",
         "redirectMode": "REDIRECT",
         "callbackUrl": "https://webhook.site/callback-url",
-        if (appStore.userContactNumber.isNotEmpty) "mobileNumber": appStore.userContactNumber,
-        "paymentInstrument": payType == cardPayType ? {"type": payType} : {"type": "UPI_INTENT", "targetApp": payType}
+        if (appStore.userContactNumber.isNotEmpty)
+          "mobileNumber": appStore.userContactNumber,
+        "paymentInstrument": payType == cardPayType
+            ? {"type": payType}
+            : {"type": "UPI_INTENT", "targetApp": payType}
       };
       String jsonString = jsonEncode(requestBody);
       body = base64Encode(utf8.encode(jsonString));
@@ -91,7 +104,8 @@ class PhonePeServices {
   Future<void> phonePeCheckout(BuildContext context) async {
     bool isInitialized = false;
     try {
-      isInitialized = await PhonePePaymentSdk.init(environmentValue, appId, merchantId, kDebugMode);
+      isInitialized = await PhonePePaymentSdk.init(
+          environmentValue, appId, merchantId, kDebugMode);
 
       if (isInitialized) {
         showModalBottomSheet<void>(
@@ -111,7 +125,8 @@ class PhonePeServices {
                 ),
                 SettingItemWidget(
                   title: language.payWithCard,
-                  leading: Icon(Icons.credit_card_rounded, color: context.iconColor),
+                  leading:
+                      Icon(Icons.credit_card_rounded, color: context.iconColor),
                   onTap: () async {
                     handlePayClick(context, isTypeCard: true);
                   },
@@ -128,14 +143,17 @@ class PhonePeServices {
     }
   }
 
-  Future<void> handlePayClick(BuildContext context, {bool isTypeCard = false}) async {
+  Future<void> handlePayClick(BuildContext context,
+      {bool isTypeCard = false}) async {
     if (isTypeCard) {
       await createBodyAndCheckSum(totalAmount, cardPayType);
     } else {
-      String? upiAppListResponse = await PhonePePaymentSdk.getUpiAppsForAndroid();
+      String? upiAppListResponse =
+          await PhonePePaymentSdk.getUpiAppsForAndroid();
       Iterable resp = jsonDecode(upiAppListResponse!);
       debugPrint('UPIAPPLISTRESPONSE: $upiAppListResponse');
-      List<UpiResponse> installedUpiAppList = resp.map((e) => UpiResponse.fromJson(e)).toList();
+      List<UpiResponse> installedUpiAppList =
+          resp.map((e) => UpiResponse.fromJson(e)).toList();
       final res = await UpiPayScreen(installedUpiAppList).launch(context);
       if (res is String) {
         packageName = res;
@@ -143,7 +161,8 @@ class PhonePeServices {
       }
     }
 
-    Future<Map<dynamic, dynamic>?> response = PhonePePaymentSdk.startTransaction(body, callback);
+    Future<Map<dynamic, dynamic>?> response =
+        PhonePePaymentSdk.startTransaction(body, callback);
     await response.then((val) {
       log('startPGTransaction response: $val');
       if (val?['status'] == 'SUCCESS') {
@@ -159,9 +178,11 @@ class PhonePeServices {
 
   //generateRandomString
   String generateRandomString(int len) {
-    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    const chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     Random rnd = Random();
-    var s = String.fromCharCodes(Iterable.generate(len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    var s = String.fromCharCodes(Iterable.generate(
+        len, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
     log('generateRandomString(len:$len) --> ${s.toUpperCase()}');
     return s;
   }

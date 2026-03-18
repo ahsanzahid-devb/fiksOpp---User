@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/model/category_model.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/component/category_dashboard_component_4.dart';
+import 'package:fiksOpp/model/category_model.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/component/category_dashboard_component_4.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -11,7 +11,8 @@ class CategoryListDashboardComponent4 extends StatelessWidget {
   final List<CategoryData> categoryList;
   final String listTiTle;
 
-  CategoryListDashboardComponent4({required this.categoryList, required this.listTiTle});
+  CategoryListDashboardComponent4(
+      {required this.categoryList, required this.listTiTle});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,10 @@ class CategoryListDashboardComponent4 extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             direction: Axis.horizontal,
-            children: categoryList.map((e) => CategoryDashboardComponent4(categoryData: e)).take(8).toList(),
+            children: categoryList
+                .map((e) => CategoryDashboardComponent4(categoryData: e))
+                .take(8)
+                .toList(),
           ).paddingSymmetric(horizontal: 16)
       ],
     );

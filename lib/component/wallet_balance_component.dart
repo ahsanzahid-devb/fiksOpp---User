@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/extensions/num_extenstions.dart';
+import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -35,7 +35,8 @@ class _WalletBalanceComponentState extends State<WalletBalanceComponent> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text('${language.walletBalance}: ', style: secondaryTextStyle(size: 14)),
+        Text('${language.walletBalance}: ',
+            style: secondaryTextStyle(size: 14)),
         SnapHelperWidget(
           future: futureWalletBalance,
           onSuccess: (balance) => Text(

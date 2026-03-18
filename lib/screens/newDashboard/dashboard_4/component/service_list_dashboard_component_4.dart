@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/component/service_dashboard_component_4.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/component/service_dashboard_component_4.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -14,7 +14,10 @@ class ServiceListDashboardComponent4 extends StatelessWidget {
   final String serviceListTitle;
   final bool isFeatured;
 
-  ServiceListDashboardComponent4({required this.serviceList, this.serviceListTitle = '', this.isFeatured = false});
+  ServiceListDashboardComponent4(
+      {required this.serviceList,
+      this.serviceListTitle = '',
+      this.isFeatured = false});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,8 @@ class ServiceListDashboardComponent4 extends StatelessWidget {
           list: serviceList,
           trailingTextStyle: boldTextStyle(color: primaryColor, size: 12),
           onTap: () {
-            ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '').launch(context);
+            ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '')
+                .launch(context);
           },
         ).paddingSymmetric(horizontal: 16),
         if (serviceList.isNotEmpty)

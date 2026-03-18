@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/model/user_data_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
 
 class LoginResponse {
   UserData? userData;
@@ -37,7 +37,10 @@ class VerificationModel {
   VerificationModel({this.status, this.message, this.isEmailVerified});
 
   factory VerificationModel.fromJson(Map<String, dynamic> json) {
-    return VerificationModel(status: json['status'], message: json['message'], isEmailVerified: json['is_email_verified']);
+    return VerificationModel(
+        status: json['status'],
+        message: json['message'],
+        isEmailVerified: json['is_email_verified']);
   }
 
   Map<String, dynamic> toJson() {

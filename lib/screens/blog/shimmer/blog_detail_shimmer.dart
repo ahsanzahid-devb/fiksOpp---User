@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -16,13 +16,18 @@ class BlogDetailShimmer extends StatelessWidget {
             width: context.width(),
             child: Stack(
               children: [
-                SizedBox(height: 400, width: context.width(), child: ShimmerWidget()),
+                SizedBox(
+                    height: 400,
+                    width: context.width(),
+                    child: ShimmerWidget()),
                 Positioned(
                   top: context.statusBarHeight + 8,
                   left: 16,
                   child: Container(
                     child: BackWidget(iconColor: context.iconColor),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: context.cardColor.withValues(alpha:0.7)),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: context.cardColor.withValues(alpha: 0.7)),
                   ),
                 ),
                 Positioned(
@@ -39,7 +44,8 @@ class BlogDetailShimmer extends StatelessWidget {
                             children: List.generate(
                               3,
                               (i) => Container(
-                                decoration: BoxDecoration(borderRadius: radius()),
+                                decoration:
+                                    BoxDecoration(borderRadius: radius()),
                                 child: ShimmerWidget(height: 60, width: 60),
                               ),
                             ),
@@ -51,9 +57,12 @@ class BlogDetailShimmer extends StatelessWidget {
                             child: Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(borderRadius: radius(), color: Colors.grey.withValues(alpha:0.2)),
+                              decoration: BoxDecoration(
+                                  borderRadius: radius(),
+                                  color: Colors.grey.withValues(alpha: 0.2)),
                               alignment: Alignment.center,
-                              child: Text('+' '5', style: boldTextStyle(color: white)),
+                              child: Text('+' '5',
+                                  style: boldTextStyle(color: white)),
                             ),
                           ),
                         ],

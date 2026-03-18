@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -13,7 +13,8 @@ extension strEtx on String {
       height: size ?? 24,
       width: size ?? 24,
       fit: fit ?? BoxFit.cover,
-      color: color ?? (appStore.isDarkMode ? Colors.white : appTextSecondaryColor),
+      color:
+          color ?? (appStore.isDarkMode ? Colors.white : appTextSecondaryColor),
       errorBuilder: (context, error, stackTrace) {
         return Image.asset(ic_no_photo, height: size ?? 24, width: size ?? 24);
       },

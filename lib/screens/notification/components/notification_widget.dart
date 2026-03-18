@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/component/image_border_component.dart';
-import 'package:booking_system_flutter/model/notification_model.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/component/image_border_component.dart';
+import 'package:fiksOpp/model/notification_model.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -56,7 +56,9 @@ class NotificationWidget extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${data.data!.type.validate().split('_').join(' ').capitalizeFirstLetter()}', style: boldTextStyle(size: 12)).expand(),
+                  Text('${data.data!.type.validate().split('_').join(' ').capitalizeFirstLetter()}',
+                          style: boldTextStyle(size: 12))
+                      .expand(),
                   Text(data.createdAt.validate(), style: secondaryTextStyle()),
                 ],
               ),
@@ -67,9 +69,9 @@ class NotificationWidget extends StatelessWidget {
                 trimLines: 2,
                 trimMode: TrimMode.Line,
                 trimCollapsedText: ' Read more', //Todo:
-                trimExpandedText: ' Read less',//Todo:
+                trimExpandedText: ' Read less', //Todo:
                 style: secondaryTextStyle(),
-                      )
+              )
             ],
           ).expand(),
         ],

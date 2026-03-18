@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/base_scaffold_body.dart';
-import 'package:booking_system_flutter/component/responsive_container.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/auth/forgot_password_screen.dart';
-import 'package:booking_system_flutter/screens/auth/otp_login_screen.dart';
-import 'package:booking_system_flutter/screens/auth/sign_up_screen.dart';
-import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/base_scaffold_body.dart';
+import 'package:fiksOpp/component/responsive_container.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/auth/forgot_password_screen.dart';
+import 'package:fiksOpp/screens/auth/otp_login_screen.dart';
+import 'package:fiksOpp/screens/auth/sign_up_screen.dart';
+import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -364,9 +364,7 @@ class _SignInScreenState extends State<SignInScreen> {
           20.height,
           if ((appConfigurationStore.googleLoginStatus ||
                   appConfigurationStore.otpLoginStatus) ||
-              (isIOS &&
-                  (appConfigurationStore.appleLoginStatus ||
-                      appConfigurationStore.googleLoginStatus)))
+              isIOS)
             Row(
               children: [
                 Divider(color: context.dividerColor, thickness: 2).expand(),
@@ -436,34 +434,32 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           if (appConfigurationStore.otpLoginStatus) 16.height,
           if (isIOS)
-            if (appConfigurationStore.appleLoginStatus ||
-                appConfigurationStore.googleLoginStatus)
-              AppButton(
-                text: '',
-                color: context.cardColor,
-                padding: EdgeInsets.all(8),
-                textStyle: boldTextStyle(),
-                width: context.width() >= 600
-                    ? 400
-                    : context.width() - context.navigationBarHeight,
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: boxDecorationWithRoundedCorners(
-                        backgroundColor: primaryColor.withValues(alpha: 0.1),
-                        boxShape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.apple),
+            AppButton(
+              text: '',
+              color: context.cardColor,
+              padding: EdgeInsets.all(8),
+              textStyle: boldTextStyle(),
+              width: context.width() >= 600
+                  ? 400
+                  : context.width() - context.navigationBarHeight,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: boxDecorationWithRoundedCorners(
+                      backgroundColor: primaryColor.withValues(alpha: 0.1),
+                      boxShape: BoxShape.circle,
                     ),
-                    Text(language.lblSignInWithApple,
-                            style: boldTextStyle(size: 12),
-                            textAlign: TextAlign.center)
-                        .expand(),
-                  ],
-                ),
-                onTap: appleSign,
+                    child: Icon(Icons.apple),
+                  ),
+                  Text(language.lblSignInWithApple,
+                          style: boldTextStyle(size: 12),
+                          textAlign: TextAlign.center)
+                      .expand(),
+                ],
               ),
+              onTap: appleSign,
+            ),
         ],
       );
     } else {

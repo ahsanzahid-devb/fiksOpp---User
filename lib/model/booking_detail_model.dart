@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/model/booking_data_model.dart';
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
+import 'package:fiksOpp/model/booking_data_model.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'service_detail_response.dart';
@@ -20,7 +20,10 @@ class BookingDetailResponse {
   List<ServiceProof>? serviceProof;
   PostJobData? postRequestDetail;
 
-  bool get isProviderAndHandymanSame => handymanData.validate().isNotEmpty ? handymanData.validate().first.id.validate() == providerData!.id.validate() : false;
+  bool get isProviderAndHandymanSame => handymanData.validate().isNotEmpty
+      ? handymanData.validate().first.id.validate() ==
+          providerData!.id.validate()
+      : false;
 
   BookingDetailResponse({
     this.bookingActivity,
@@ -39,24 +42,54 @@ class BookingDetailResponse {
 
   factory BookingDetailResponse.fromJson(Map<String, dynamic> json) {
     return BookingDetailResponse(
-      bookingActivity: json['booking_activity'] != null ? (json['booking_activity'] as List).map((i) => BookingActivity.fromJson(i)).toList() : null,
-      bookingDetail: json['booking_detail'] != null ? BookingData.fromJson(json['booking_detail']) : null,
-      couponData: json['coupon_data'] != null ? CouponData.fromJson(json['coupon_data']) : null,
-      customer: json['customer'] != null ? UserData.fromJson(json['customer']) : null,
-      handymanData: json['handyman_data'] != null ? (json['handyman_data'] as List).map((i) => UserData.fromJson(i)).toList() : null,
-      ratingData: json['rating_data'] != null ? (json['rating_data'] as List).map((i) => RatingData.fromJson(i)).toList() : null,
-      providerData: json['provider_data'] != null ? UserData.fromJson(json['provider_data']) : null,
-      service: json['service'] != null ? ServiceData.fromJson(json['service']) : null,
-      customerReview: json['customer_review'] != null ? RatingData.fromJson(json['customer_review']) : null,
-      serviceProof: json['service_proof'] != null ? (json['service_proof'] as List).map((i) => ServiceProof.fromJson(i)).toList() : null,
-      postRequestDetail: json['post_request_detail'] != null ? PostJobData.fromJson(json['post_request_detail']) : null,
+      bookingActivity: json['booking_activity'] != null
+          ? (json['booking_activity'] as List)
+              .map((i) => BookingActivity.fromJson(i))
+              .toList()
+          : null,
+      bookingDetail: json['booking_detail'] != null
+          ? BookingData.fromJson(json['booking_detail'])
+          : null,
+      couponData: json['coupon_data'] != null
+          ? CouponData.fromJson(json['coupon_data'])
+          : null,
+      customer:
+          json['customer'] != null ? UserData.fromJson(json['customer']) : null,
+      handymanData: json['handyman_data'] != null
+          ? (json['handyman_data'] as List)
+              .map((i) => UserData.fromJson(i))
+              .toList()
+          : null,
+      ratingData: json['rating_data'] != null
+          ? (json['rating_data'] as List)
+              .map((i) => RatingData.fromJson(i))
+              .toList()
+          : null,
+      providerData: json['provider_data'] != null
+          ? UserData.fromJson(json['provider_data'])
+          : null,
+      service: json['service'] != null
+          ? ServiceData.fromJson(json['service'])
+          : null,
+      customerReview: json['customer_review'] != null
+          ? RatingData.fromJson(json['customer_review'])
+          : null,
+      serviceProof: json['service_proof'] != null
+          ? (json['service_proof'] as List)
+              .map((i) => ServiceProof.fromJson(i))
+              .toList()
+          : null,
+      postRequestDetail: json['post_request_detail'] != null
+          ? PostJobData.fromJson(json['post_request_detail'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.bookingActivity != null) {
-      data['booking_activity'] = this.bookingActivity!.map((v) => v.toJson()).toList();
+      data['booking_activity'] =
+          this.bookingActivity!.map((v) => v.toJson()).toList();
     }
     if (this.bookingDetail != null) {
       data['booking_detail'] = this.bookingDetail!.toJson();
@@ -68,7 +101,8 @@ class BookingDetailResponse {
       data['customer'] = this.customer!.toJson();
     }
     if (this.handymanData != null) {
-      data['handyman_data'] = this.handymanData!.map((v) => v.toJson()).toList();
+      data['handyman_data'] =
+          this.handymanData!.map((v) => v.toJson()).toList();
     }
     if (this.providerData != null) {
       data['provider_data'] = this.providerData!.toJson();
@@ -83,7 +117,8 @@ class BookingDetailResponse {
       data['customer_review'] = this.customerReview!.toJson();
     }
     if (this.serviceProof != null) {
-      data['service_proof'] = this.serviceProof!.map((v) => v.toJson()).toList();
+      data['service_proof'] =
+          this.serviceProof!.map((v) => v.toJson()).toList();
     }
     if (postRequestDetail != null) {
       data['post_request_detail'] = postRequestDetail?.toJson();
@@ -103,7 +138,16 @@ class BookingActivity {
   int? id;
   String? updatedAt;
 
-  BookingActivity({this.activityData, this.activityMessage, this.activityType, this.bookingId, this.createdAt, this.datetime, this.deletedAt, this.id, this.updatedAt});
+  BookingActivity(
+      {this.activityData,
+      this.activityMessage,
+      this.activityType,
+      this.bookingId,
+      this.createdAt,
+      this.datetime,
+      this.deletedAt,
+      this.id,
+      this.updatedAt});
 
   static int? _parseInt(dynamic v) {
     if (v == null) return null;
@@ -182,7 +226,9 @@ class ServiceProof {
     userId = _parseInt(json['user_id']);
     handymanName = json['handyman_name'];
     serviceName = json['service_name'];
-    attachments = json['attachments'] != null ? List<String>.from(json['attachments']) : null;
+    attachments = json['attachments'] != null
+        ? List<String>.from(json['attachments'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

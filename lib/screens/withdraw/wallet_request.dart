@@ -1,11 +1,11 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/extensions/num_extenstions.dart';
-import 'package:booking_system_flutter/utils/extensions/string_extentions.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
+import 'package:fiksOpp/utils/extensions/string_extentions.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

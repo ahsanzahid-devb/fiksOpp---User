@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/chat_message_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/screens/chat/widget/chat_item_widget.dart';
-import 'package:booking_system_flutter/services/notification_services.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/chat_message_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/screens/chat/widget/chat_item_widget.dart';
+import 'package:fiksOpp/services/notification_services.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_pagination/firebase_pagination.dart';
@@ -511,8 +511,7 @@ class _UserChatScreenState extends State<UserChatScreen>
             fit: StackFit.expand,
             children: [
               Container(
-                margin:
-                    EdgeInsets.only(bottom: effectiveChatAllowed ? 80 : 0),
+                margin: EdgeInsets.only(bottom: effectiveChatAllowed ? 80 : 0),
                 child: FirestorePagination(
                   reverse: true,
                   isLive: true,

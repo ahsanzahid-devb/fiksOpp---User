@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/bankDetails/view/add_bank.dart';
+import 'package:fiksOpp/screens/bankDetails/view/add_bank.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -82,33 +82,35 @@ class _BankDetailsState extends State<BankDetails> {
   List<OptionModel> optionList({required BankHistory bankHistory}) {
     return [
       if (rolesAndPermissionStore.bankEdit)
-      OptionModel(
-        title: language.lblEdit,
-        onTap: () {
-          AddBankScreen(data: bankHistory).launch(context, pageRouteAnimation: PageRouteAnimation.Fade).then((value) {
-            if (value[0]) {
-              init();
-              setState(() {});
-            }
-          });
-        },
-      ),
-      if (bankHistory.isDefault == 0 &&  rolesAndPermissionStore.bankDelete)
-      OptionModel(
-        title: language.lblDelete,
-        onTap: () {
-          showConfirmDialogCustom(
-            context,
-            dialogType: DialogType.DELETE,
-            title: language.deleteBankTitle,
-            positiveText: language.lblDelete,
-            negativeText: language.lblCancel,
-            onAccept: (v) {
-              delete(bankHistory.id);
-            },
-          );
-        },
-      ),
+        OptionModel(
+          title: language.lblEdit,
+          onTap: () {
+            AddBankScreen(data: bankHistory)
+                .launch(context, pageRouteAnimation: PageRouteAnimation.Fade)
+                .then((value) {
+              if (value[0]) {
+                init();
+                setState(() {});
+              }
+            });
+          },
+        ),
+      if (bankHistory.isDefault == 0 && rolesAndPermissionStore.bankDelete)
+        OptionModel(
+          title: language.lblDelete,
+          onTap: () {
+            showConfirmDialogCustom(
+              context,
+              dialogType: DialogType.DELETE,
+              title: language.deleteBankTitle,
+              positiveText: language.lblDelete,
+              negativeText: language.lblCancel,
+              onAccept: (v) {
+                delete(bankHistory.id);
+              },
+            );
+          },
+        ),
       if (bankHistory.isDefault == 0)
         OptionModel(
           title: language.setAsDefault,
@@ -153,12 +155,13 @@ class _BankDetailsState extends State<BankDetails> {
         future: future,
         initialData: cachedBankList,
         onSuccess: (snap) {
-           return AnimatedListView(
+          return AnimatedListView(
             shrinkWrap: true,
             physics: AlwaysScrollableScrollPhysics(),
             listAnimationType: ListAnimationType.FadeIn,
             fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-            slideConfiguration: SlideConfiguration(duration: 400.milliseconds, delay: 50.milliseconds),
+            slideConfiguration: SlideConfiguration(
+                duration: 400.milliseconds, delay: 50.milliseconds),
             padding: EdgeInsets.all(8),
             itemCount: snap.length,
             itemBuilder: (BuildContext context, index) {
@@ -176,18 +179,27 @@ class _BankDetailsState extends State<BankDetails> {
                   children: [
                     Row(
                       children: [
-                        Marquee(child: Text(data.bankName.validate(), style: primaryTextStyle(size: 14, weight: FontWeight.bold))).expand(),
+                        Marquee(
+                                child: Text(data.bankName.validate(),
+                                    style: primaryTextStyle(
+                                        size: 14, weight: FontWeight.bold)))
+                            .expand(),
                         16.width,
                         Container(
                           alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                          decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(50)),
-                          child: Text(language.lbldefault, style: primaryTextStyle(size: 10, color: white)),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                          decoration: BoxDecoration(
+                              color: primaryColor,
+                              borderRadius: BorderRadius.circular(50)),
+                          child: Text(language.lbldefault,
+                              style: primaryTextStyle(size: 10, color: white)),
                         ).visible(data.isDefault == 1),
                       ],
                     ),
                     8.height,
-                    Text(bankAccountWidget(data.accountNo.validate()), style: secondaryTextStyle()),
+                    Text(bankAccountWidget(data.accountNo.validate()),
+                        style: secondaryTextStyle()),
                     8.height,
                     OptionListWidget(optionList: optionList(bankHistory: data)),
                   ],

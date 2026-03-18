@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_2/component/service_dashboard_component_2.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_2/component/service_dashboard_component_2.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -14,7 +14,10 @@ class ServiceListDashboardComponent2 extends StatelessWidget {
   final String serviceListTitle;
   final bool isFeatured;
 
-  ServiceListDashboardComponent2({required this.serviceList, this.serviceListTitle = '', this.isFeatured = false});
+  ServiceListDashboardComponent2(
+      {required this.serviceList,
+      this.serviceListTitle = '',
+      this.isFeatured = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,7 @@ class ServiceListDashboardComponent2 extends StatelessWidget {
             ? null
             : appStore.isDarkMode
                 ? context.cardColor
-                : context.primaryColor.withValues(alpha:0.1),
+                : context.primaryColor.withValues(alpha: 0.1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +41,8 @@ class ServiceListDashboardComponent2 extends StatelessWidget {
             list: serviceList,
             trailingTextStyle: boldTextStyle(color: primaryColor, size: 12),
             onTap: () {
-              ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '').launch(context);
+              ViewAllServiceScreen(isFeatured: isFeatured ? '1' : '')
+                  .launch(context);
             },
           ).paddingSymmetric(horizontal: 16),
           if (serviceList.isNotEmpty)
@@ -47,7 +51,10 @@ class ServiceListDashboardComponent2 extends StatelessWidget {
               spacing: 16,
               padding: EdgeInsets.only(left: 16, right: 16, bottom: 26, top: 8),
               itemBuilder: (context, index) {
-                return ServiceDashboardComponent2(serviceData: serviceList[index], width: 280, isBorderEnabled: true);
+                return ServiceDashboardComponent2(
+                    serviceData: serviceList[index],
+                    width: 280,
+                    isBorderEnabled: true);
               },
             )
           else

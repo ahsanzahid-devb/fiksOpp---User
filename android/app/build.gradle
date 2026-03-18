@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "buzz.inoor.fiksopp"
+    namespace "com.fiksopp.fiksopp"
     compileSdkVersion 36
     buildToolsVersion "36.1.0" // Using existing installed build tools
     ndkVersion = "29.0.14206865" // Using existing installed NDK version
@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'buzz.inoor.fiksopp'
+        applicationId 'com.fiksopp.fiksopp'
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()

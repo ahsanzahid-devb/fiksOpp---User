@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nb_utils/nb_utils.dart';

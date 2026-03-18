@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/booking_detail_model.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/booking_detail_model.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -22,17 +22,23 @@ class _CountdownWidgetState extends State<CountdownWidget> {
 
   @override
   void initState() {
-    if (widget.bookingDetailResponse.bookingDetail!.status.validate() == BookingStatusKeys.inProgress) {
-      value = "${(widget.bookingDetailResponse.bookingDetail!.durationDiff.toInt() + DateTime.now().difference(DateTime.parse(widget.bookingDetailResponse.bookingDetail!.startAt.validate())).inSeconds)}".toInt();
+    if (widget.bookingDetailResponse.bookingDetail!.status.validate() ==
+        BookingStatusKeys.inProgress) {
+      value =
+          "${(widget.bookingDetailResponse.bookingDetail!.durationDiff.toInt() + DateTime.now().difference(DateTime.parse(widget.bookingDetailResponse.bookingDetail!.startAt.validate())).inSeconds)}"
+              .toInt();
       stopTimer = false;
       init();
     } else {
-      value = widget.bookingDetailResponse.bookingDetail!.durationDiff.validate().toInt();
+      value = widget.bookingDetailResponse.bookingDetail!.durationDiff
+          .validate()
+          .toInt();
     }
     LiveStream().on(LIVESTREAM_START_TIMER, (value) {
       Map<String, dynamic> data = value as Map<String, dynamic>;
 
-      if (data['status'] == BookingStatusKeys.hold || data['status'] == BookingStatusKeys.complete) {
+      if (data['status'] == BookingStatusKeys.hold ||
+          data['status'] == BookingStatusKeys.complete) {
         value = data['inSeconds'] as int;
         stopTimer = true;
         init();
@@ -69,11 +75,16 @@ class _CountdownWidgetState extends State<CountdownWidget> {
 
     seconds = secTime - (hour * 3600) - (minute * 60);
 
-    String hourLeft = hour.toString().length < 2 ? "0" + hour.toString() : hour.toString();
+    String hourLeft =
+        hour.toString().length < 2 ? "0" + hour.toString() : hour.toString();
 
-    String minuteLeft = minute.toString().length < 2 ? "0" + minute.toString() : minute.toString();
+    String minuteLeft = minute.toString().length < 2
+        ? "0" + minute.toString()
+        : minute.toString();
 
-    String secondsLeft = seconds.toString().length < 2 ? "0" + seconds.toString() : seconds.toString();
+    String secondsLeft = seconds.toString().length < 2
+        ? "0" + seconds.toString()
+        : seconds.toString();
 
     String result = "$hourLeft:$minuteLeft:$secondsLeft";
 
@@ -99,8 +110,10 @@ class _CountdownWidgetState extends State<CountdownWidget> {
       color: context.dividerColor,
       child: Row(
         children: [
-          Text(widget.text ?? '${language.lblServiceTotalTime}: ', style: primaryTextStyle(size: 12)),
-          Text(calculateTime(value), style: boldTextStyle(color: Colors.red, size: 14)),
+          Text(widget.text ?? '${language.lblServiceTotalTime}: ',
+              style: primaryTextStyle(size: 12)),
+          Text(calculateTime(value),
+              style: boldTextStyle(color: Colors.red, size: 14)),
         ],
       ),
     ).withWidth(context.width());

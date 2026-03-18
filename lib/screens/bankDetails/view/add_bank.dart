@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -156,9 +156,10 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         controller: bankNameCont,
                         focus: bankNameFocus,
                         nextFocus: branchNameFocus,
-                        decoration:
-                            inputDecoration(context, hintText: language.bankName),
-                        suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
+                        decoration: inputDecoration(context,
+                            hintText: language.bankName),
+                        suffix:
+                            ic_piggy_bank.iconImage(size: 10).paddingAll(14),
                       ),
                       16.height,
                       AppTextField(
@@ -168,7 +169,8 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         nextFocus: accNumberFocus,
                         decoration: inputDecoration(context,
                             hintText: language.fullNameOnBankAccount),
-                        suffix: ic_piggy_bank.iconImage(size: 10).paddingAll(14),
+                        suffix:
+                            ic_piggy_bank.iconImage(size: 10).paddingAll(14),
                       ),
                       16.height,
                       AppTextField(
@@ -200,8 +202,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
                         initialValue: blogStatusModel != null
                             ? blogStatusModel
                             : statusListStaticData.first,
-                        items:
-                            statusListStaticData.map((StaticDataModel data) {
+                        items: statusListStaticData.map((StaticDataModel data) {
                           return DropdownMenuItem<StaticDataModel>(
                             value: data,
                             child: Text(data.value.validate(),

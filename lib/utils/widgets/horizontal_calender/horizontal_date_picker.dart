@@ -1,6 +1,6 @@
 library horizontal_center_date_picker;
 
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -83,7 +83,11 @@ class HorizontalDatePickerWidget extends StatefulWidget {
     required this.selectedDate,
     required this.widgetWidth,
     required this.datePickerController,
-    this.dateItemComponentList = const <DateItem>[DateItem.Month, DateItem.Day, DateItem.WeekDay],
+    this.dateItemComponentList = const <DateItem>[
+      DateItem.Month,
+      DateItem.Day,
+      DateItem.WeekDay
+    ],
 
     /// if null, the locale will use the system default one
     /// locale String like "de", can be found via
@@ -102,19 +106,34 @@ class HorizontalDatePickerWidget extends StatefulWidget {
     this.monthFontSize = 12,
     this.dayFontSize = 18,
     this.weekDayFontSize = 12,
-  })  : assert(dateItemComponentList.isNotEmpty, 'dateItemComponentList  cannot be empty'),
+  })  : assert(dateItemComponentList.isNotEmpty,
+            'dateItemComponentList  cannot be empty'),
         this.locale = locale ?? Intl.systemLocale;
 
   @override
-  _HorizontalDatePickerWidgetState createState() => _HorizontalDatePickerWidgetState(this.datePickerController, this.widgetWidth, this.width, this.startDate, this.endDate, this.selectedDate);
+  _HorizontalDatePickerWidgetState createState() =>
+      _HorizontalDatePickerWidgetState(
+          this.datePickerController,
+          this.widgetWidth,
+          this.width,
+          this.startDate,
+          this.endDate,
+          this.selectedDate);
 }
 
-class _HorizontalDatePickerWidgetState extends State<HorizontalDatePickerWidget> {
+class _HorizontalDatePickerWidgetState
+    extends State<HorizontalDatePickerWidget> {
   int _itemCount = 0;
   double _padding = 0.0;
   ScrollController _scrollController = ScrollController();
 
-  _HorizontalDatePickerWidgetState(DatePickerController controller, double ttlWidth, double width, DateTime startDate, DateTime endDate, DateTime selectedDate) {
+  _HorizontalDatePickerWidgetState(
+      DatePickerController controller,
+      double ttlWidth,
+      double width,
+      DateTime startDate,
+      DateTime endDate,
+      DateTime selectedDate) {
     _init(controller, ttlWidth, width, startDate, endDate, selectedDate);
   }
 
@@ -137,7 +156,9 @@ class _HorizontalDatePickerWidgetState extends State<HorizontalDatePickerWidget>
         itemCount: _itemCount,
         controller: _scrollController,
         itemBuilder: (context, index) {
-          var dateTime = widget.datePickerController.realStartDate?.add(Duration(days: index)) ?? widget.startDate;
+          var dateTime = widget.datePickerController.realStartDate
+                  ?.add(Duration(days: index)) ??
+              widget.startDate;
           DateItemState dateItemState = _getDateTimeState(dateTime);
 
           return GestureDetector(
@@ -162,10 +183,14 @@ class _HorizontalDatePickerWidgetState extends State<HorizontalDatePickerWidget>
               dayFontSize: widget.dayFontSize,
               monthFontSize: widget.monthFontSize,
               weekDayFontSize: widget.weekDayFontSize,
-              normalColor: appStore.isDarkMode ? cardDarkColor : widget.normalColor,
+              normalColor:
+                  appStore.isDarkMode ? cardDarkColor : widget.normalColor,
               selectedColor: widget.selectedColor,
-              disabledColor: appStore.isDarkMode ? scaffoldDarkColor : widget.disabledColor,
-              normalTextColor: appStore.isDarkMode ? gray : widget.normalTextColor,
+              disabledColor: appStore.isDarkMode
+                  ? scaffoldDarkColor
+                  : widget.disabledColor,
+              normalTextColor:
+                  appStore.isDarkMode ? gray : widget.normalTextColor,
               selectedTextColor: widget.selectedTextColor,
               disabledTextColor: widget.disabledTextColor,
               dateItemComponentList: widget.dateItemComponentList,
@@ -189,10 +214,13 @@ class _HorizontalDatePickerWidgetState extends State<HorizontalDatePickerWidget>
   }
 
   bool _isSelectedDate(DateTime dateTime) {
-    return dateTime.year == widget.datePickerController.selectedDate?.year && dateTime.month == widget.datePickerController.selectedDate?.month && dateTime.day == widget.datePickerController.selectedDate?.day;
+    return dateTime.year == widget.datePickerController.selectedDate?.year &&
+        dateTime.month == widget.datePickerController.selectedDate?.month &&
+        dateTime.day == widget.datePickerController.selectedDate?.day;
   }
 
-  void _init(DatePickerController controller, double ttlWidth, double width, DateTime startDate, DateTime endDate, DateTime selectedDate) {
+  void _init(DatePickerController controller, double ttlWidth, double width,
+      DateTime startDate, DateTime endDate, DateTime selectedDate) {
     int maxRowChild = 0;
     int shift = 0;
     double shiftPos;

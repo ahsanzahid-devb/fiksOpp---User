@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -17,7 +17,12 @@ class AddReviewDialog extends StatefulWidget {
   final int? handymanId;
   final bool? isCustomerRating;
 
-  AddReviewDialog({this.customerReview, this.bookingId, this.serviceId, this.handymanId, this.isCustomerRating});
+  AddReviewDialog(
+      {this.customerReview,
+      this.bookingId,
+      this.serviceId,
+      this.handymanId,
+      this.isCustomerRating});
 
   @override
   State<AddReviewDialog> createState() => _AddReviewDialogState();
@@ -34,7 +39,8 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
   @override
   void initState() {
     isUpdate = widget.customerReview != null;
-    isHandymanUpdate = widget.customerReview != null && widget.handymanId != null;
+    isHandymanUpdate =
+        widget.customerReview != null && widget.handymanId != null;
 
     if (isUpdate) {
       selectedRating = widget.customerReview!.rating.validate().toDouble();
@@ -140,7 +146,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                 ),
                 child: Row(
                   children: [
-                    Text(language.yourReview, style: boldTextStyle(color: Colors.white)).expand(),
+                    Text(language.yourReview,
+                            style: boldTextStyle(color: Colors.white))
+                        .expand(),
                     IconButton(
                       icon: Icon(Icons.clear, color: Colors.white, size: 16),
                       onPressed: () {
@@ -163,7 +171,10 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                   Container(
                     padding: EdgeInsets.all(16),
                     width: context.width(),
-                    decoration: boxDecorationDefault(color: appStore.isDarkMode ? context.dividerColor : context.cardColor),
+                    decoration: boxDecorationDefault(
+                        color: appStore.isDarkMode
+                            ? context.dividerColor
+                            : context.cardColor),
                     child: RatingBarWidget(
                       onRatingChanged: (rating) {
                         selectedRating = rating;
@@ -184,7 +195,8 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                     minLines: 5,
                     maxLines: 10,
                     enableChatGPT: appConfigurationStore.chatGPTStatus,
-                    promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
+                    promptFieldInputDecorationChatGPT:
+                        inputDecoration(context).copyWith(
                       hintText: language.writeHere,
                       fillColor: context.scaffoldBackgroundColor,
                       filled: true,
@@ -195,15 +207,23 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                     decoration: inputDecoration(
                       context,
                       labelText: language.lblEnterReview,
-                    ).copyWith(fillColor: appStore.isDarkMode ? context.dividerColor : context.cardColor, filled: true),
+                    ).copyWith(
+                        fillColor: appStore.isDarkMode
+                            ? context.dividerColor
+                            : context.cardColor,
+                        filled: true),
                   ),
                   32.height,
                   Row(
                     children: [
                       if (isHandymanUpdate)
                         AppButton(
-                          text: isHandymanUpdate ? language.lblDelete : language.lblCancel,
-                          textColor: isHandymanUpdate ? Colors.red : textPrimaryColorGlobal,
+                          text: isHandymanUpdate
+                              ? language.lblDelete
+                              : language.lblCancel,
+                          textColor: isHandymanUpdate
+                              ? Colors.red
+                              : textPrimaryColorGlobal,
                           color: context.cardColor,
                           onTap: () {
                             if (isHandymanUpdate) {
@@ -216,7 +236,11 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                                 onAccept: (c) async {
                                   appStore.setLoading(true);
 
-                                  await deleteHandymanReview(id: widget.customerReview!.id.validate().toInt()).then((value) {
+                                  await deleteHandymanReview(
+                                          id: widget.customerReview!.id
+                                              .validate()
+                                              .toInt())
+                                      .then((value) {
                                     toast(value.message);
                                     finish(context, true);
                                   }).catchError((e) {
@@ -253,7 +277,10 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
             ],
           ),
         ),
-        Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading).withSize(height: 80, width: 80))
+        Observer(
+            builder: (context) => LoaderWidget()
+                .visible(appStore.isLoading)
+                .withSize(height: 80, width: 80))
       ],
     );
   }

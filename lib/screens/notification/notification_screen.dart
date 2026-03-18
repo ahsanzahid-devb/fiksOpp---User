@@ -1,14 +1,14 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/notification_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/booking/booking_detail_screen.dart';
-import 'package:booking_system_flutter/screens/jobRequest/my_post_detail_screen.dart';
-import 'package:booking_system_flutter/screens/notification/components/notification_widget.dart';
-import 'package:booking_system_flutter/screens/wallet/user_wallet_balance_screen.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/notification_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/booking/booking_detail_screen.dart';
+import 'package:fiksOpp/screens/jobRequest/my_post_detail_screen.dart';
+import 'package:fiksOpp/screens/notification/components/notification_widget.dart';
+import 'package:fiksOpp/screens/wallet/user_wallet_balance_screen.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -96,29 +96,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     if (appConfigurationStore.onlinePaymentStatus) {
                       UserWalletBalanceScreen().launch(context);
                     }
-                  } else if (data.data!.notificationType.validate().contains(BOOKING) || data.data!.notificationType.validate().contains(PAYMENT_MESSAGE_STATUS)) {
-                    await BookingDetailScreen(bookingId: data.data!.id.validate()).launch(context);
+                  } else if (data.data!.notificationType
+                          .validate()
+                          .contains(BOOKING) ||
+                      data.data!.notificationType
+                          .validate()
+                          .contains(PAYMENT_MESSAGE_STATUS)) {
+                    await BookingDetailScreen(
+                            bookingId: data.data!.id.validate())
+                        .launch(context);
                     init();
                     setState(() {});
-                  }
-                  else if (data.data!.notificationType.validate().contains(PROVIDER_SEND_BID)) {
+                  } else if (data.data!.notificationType
+                      .validate()
+                      .contains(PROVIDER_SEND_BID)) {
                     int jobId = data.data!.jobId ?? 0;
 
-                      getPostJobDetail({PostJob.postRequestId: jobId}).then((response) {
-                        if (response.postRequestDetail != null) {
-                          MyPostDetailScreen(
-                            postJobData: response.postRequestDetail!,
-                            postRequestId: jobId,
-                            callback: () {},
-                          ).launch(context);
-                        } else {
-                          toast(language.postJobDataNotFound);
-                        }
-                      }).catchError((e) {
-                        toast(e.toString());
-                      });
-                  }
-                  else {
+                    getPostJobDetail({PostJob.postRequestId: jobId})
+                        .then((response) {
+                      if (response.postRequestDetail != null) {
+                        MyPostDetailScreen(
+                          postJobData: response.postRequestDetail!,
+                          postRequestId: jobId,
+                          callback: () {},
+                        ).launch(context);
+                      } else {
+                        toast(language.postJobDataNotFound);
+                      }
+                    }).catchError((e) {
+                      toast(e.toString());
+                    });
+                  } else {
                     //
                   }
                 },

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -26,7 +26,8 @@ class _WalletCardState extends State<WalletCard> {
     return Container(
       height: 130,
       width: context.width(),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: primaryColor),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10), color: primaryColor),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,9 +40,14 @@ class _WalletCardState extends State<WalletCard> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(language.availableBalance, style: secondaryTextStyle(size: 12)),
+                  Text(language.availableBalance,
+                      style: secondaryTextStyle(size: 12)),
                   FittedBox(
-                    child: PriceWidget(price: widget.availableBalance.validate(), size: 26, color: context.primaryColor, isBoldText: true),
+                    child: PriceWidget(
+                        price: widget.availableBalance.validate(),
+                        size: 26,
+                        color: context.primaryColor,
+                        isBoldText: true),
                   ),
                 ],
               ),
@@ -67,7 +73,9 @@ class _WalletCardState extends State<WalletCard> {
               ),
               TextIcon(
                 onTap: () {
-                  UserWalletBalanceScreen(isBackScreen: true).launch(context).then(widget.callback!);
+                  UserWalletBalanceScreen(isBackScreen: true)
+                      .launch(context)
+                      .then(widget.callback!);
                 },
                 suffix: CachedImageWidget(
                   url: ic_plus,

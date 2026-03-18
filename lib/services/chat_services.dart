@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/chat_message_model.dart';
-import 'package:booking_system_flutter/model/contact_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/services/base_services.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/extensions/string_extentions.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/chat_message_model.dart';
+import 'package:fiksOpp/model/contact_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/services/base_services.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/extensions/string_extentions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';

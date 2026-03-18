@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:686507061891:android:83aae3e96bd2ad2aace1b6",
+        "mobilesdk_app_id": "1:686507061891:android:7442045c234fe4eeace1b6",
         "android_client_info": {
-          "package_name": "buzz.inoor.fiksopp"
+          "package_name": "com.fiksopp.fiksopp"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "686507061891-s8hi1stm2967b4nlbl2fpldfiqt145ra.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "686507061891-7tgk3h1co95ufbdobnb2nc8go868o5rv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fiksopp.fiksopp"
+              }
             }
           ]
         }
@@ -58,6 +65,13 @@
             {
               "client_id": "686507061891-s8hi1stm2967b4nlbl2fpldfiqt145ra.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "686507061891-7tgk3h1co95ufbdobnb2nc8go868o5rv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fiksopp.fiksopp"
+              }
             }
           ]
         }
@@ -66,4 +80,3 @@
   ],
   "configuration_version": "1"
 }
-

@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/price_widget.dart';
+import 'package:fiksOpp/component/price_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -44,7 +44,9 @@ class _ServiceComponentState extends State<RelatedServiceComponent> {
       onTap: () {
         hideKeyboard(context);
         ServiceDetailScreen(
-          serviceId: widget.isFavouriteService ? widget.serviceData.serviceId.validate().toInt() : widget.serviceData.id.validate(),
+          serviceId: widget.isFavouriteService
+              ? widget.serviceData.serviceId.validate().toInt()
+              : widget.serviceData.id.validate(),
         ).launch(context).then((value) {
           setStatusBarColor(context.primaryColor);
           widget.onUpdate?.call();
@@ -54,7 +56,9 @@ class _ServiceComponentState extends State<RelatedServiceComponent> {
         decoration: boxDecorationWithRoundedCorners(
           borderRadius: radius(),
           backgroundColor: context.cardColor,
-          border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+          border: appStore.isDarkMode
+              ? Border.all(color: context.dividerColor)
+              : null,
         ),
         padding: EdgeInsets.all(12),
         child: Row(
@@ -85,10 +89,13 @@ class _ServiceComponentState extends State<RelatedServiceComponent> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: appStore.isDarkMode ? Colors.black : lightPrimaryColor,
+                          color: appStore.isDarkMode
+                              ? Colors.black
+                              : lightPrimaryColor,
                           borderRadius: radius(20),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         child: Text(
                           widget.serviceData.categoryName.validate(),
                           maxLines: 1,
@@ -104,9 +111,16 @@ class _ServiceComponentState extends State<RelatedServiceComponent> {
                       TextIcon(
                         suffix: Row(
                           children: [
-                            Image.asset(ic_star_fill, height: 12, color: getRatingBarColor(widget.serviceData.totalRating.validate().toInt())),
+                            Image.asset(ic_star_fill,
+                                height: 12,
+                                color: getRatingBarColor(widget
+                                    .serviceData.totalRating
+                                    .validate()
+                                    .toInt())),
                             4.width,
-                            Text("${widget.serviceData.totalRating.validate().toStringAsFixed(1)}", style: boldTextStyle()),
+                            Text(
+                                "${widget.serviceData.totalRating.validate().toStringAsFixed(1)}",
+                                style: boldTextStyle()),
                           ],
                         ),
                       ),
@@ -141,7 +155,10 @@ class _ServiceComponentState extends State<RelatedServiceComponent> {
                           "${widget.serviceData.discount.validate()}% off", //Todo translate
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: TextStyle(color: defaultActivityStatus, fontWeight: FontWeight.bold, fontSize: 12),
+                          style: TextStyle(
+                              color: defaultActivityStatus,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
                         ).expand(),
                     ],
                   )

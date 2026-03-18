@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/booking/component/slot_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/booking/component/slot_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -20,7 +20,8 @@ class AvailableSlotsComponent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AvailableSlotsComponentState createState() => _AvailableSlotsComponentState();
+  _AvailableSlotsComponentState createState() =>
+      _AvailableSlotsComponentState();
 }
 
 class _AvailableSlotsComponentState extends State<AvailableSlotsComponent> {
@@ -58,7 +59,8 @@ class _AvailableSlotsComponentState extends State<AvailableSlotsComponent> {
         runSpacing: 16,
         itemCount: widget.availableSlots.length,
         itemBuilder: (_, index) {
-          String value = "${(index + 1).toString().length >= 2 ? index + 1 : '0${index + 1}'}:00:00";
+          String value =
+              "${(index + 1).toString().length >= 2 ? index + 1 : '0${index + 1}'}:00:00";
 
           if (widget.selectedDate != null) {
             DateTime finalDate = DateTime(
@@ -77,7 +79,8 @@ class _AvailableSlotsComponentState extends State<AvailableSlotsComponent> {
               value.substring(3, 5).toInt(),
             ).subtract(1.minutes);
 
-            if (widget.selectedDate!.isToday && finalDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
+            if (widget.selectedDate!.isToday &&
+                finalDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
               return Offstage();
             }
           }
@@ -127,7 +130,8 @@ class _AvailableSlotsComponentState extends State<AvailableSlotsComponent> {
             value.substring(3, 5).toInt(),
           ).subtract(1.minutes);
 
-          if (widget.selectedDate!.isToday && finalDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
+          if (widget.selectedDate!.isToday &&
+              finalDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
             return Offstage();
           }
         }

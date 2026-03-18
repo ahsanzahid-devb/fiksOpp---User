@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/blog/model/blog_response_model.dart';
-import 'package:booking_system_flutter/screens/blog/view/blog_detail_screen.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/blog/model/blog_response_model.dart';
+import 'package:fiksOpp/screens/blog/view/blog_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -31,7 +31,8 @@ class _BlogItemComponentState extends State<BlogItemComponent> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        BlogDetailScreen(blogId: widget.blogData!.id.validate()).launch(context);
+        BlogDetailScreen(blogId: widget.blogData!.id.validate())
+            .launch(context);
       },
       child: Container(
         padding: EdgeInsets.all(12),
@@ -39,13 +40,17 @@ class _BlogItemComponentState extends State<BlogItemComponent> {
         decoration: boxDecorationWithRoundedCorners(
           borderRadius: radius(),
           backgroundColor: context.cardColor,
-          border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+          border: appStore.isDarkMode
+              ? Border.all(color: context.dividerColor)
+              : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CachedImageWidget(
-              url: widget.blogData!.imageAttachments.validate().isNotEmpty ? widget.blogData!.imageAttachments!.first.validate() : '',
+              url: widget.blogData!.imageAttachments.validate().isNotEmpty
+                  ? widget.blogData!.imageAttachments!.first.validate()
+                  : '',
               fit: BoxFit.cover,
               height: 80,
               width: 80,
@@ -74,9 +79,13 @@ class _BlogItemComponentState extends State<BlogItemComponent> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.blogData!.authorName.validate(), style: primaryTextStyle(size: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(widget.blogData!.authorName.validate(),
+                                style: primaryTextStyle(size: 14),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
                             2.height,
-                            Text(widget.blogData!.publishDate.validate(), style: secondaryTextStyle(size: 10)),
+                            Text(widget.blogData!.publishDate.validate(),
+                                style: secondaryTextStyle(size: 10)),
                           ],
                         ).expand(),
                       ],
@@ -84,10 +93,15 @@ class _BlogItemComponentState extends State<BlogItemComponent> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.remove_red_eye, size: 14, color: context.iconColor),
+                        Icon(Icons.remove_red_eye,
+                            size: 14, color: context.iconColor),
                         4.width,
-                        Text('${widget.blogData!.totalViews.validate()} ', style: secondaryTextStyle()),
-                        Text(language.views, style: secondaryTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text('${widget.blogData!.totalViews.validate()} ',
+                            style: secondaryTextStyle()),
+                        Text(language.views,
+                            style: secondaryTextStyle(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
                       ],
                     )
                   ],

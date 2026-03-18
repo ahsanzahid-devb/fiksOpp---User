@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/spin_kit_chasing_dots.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
+import 'package:fiksOpp/component/spin_kit_chasing_dots.dart';
+import 'package:fiksOpp/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoaderWidget extends StatefulWidget {
@@ -7,7 +7,8 @@ class LoaderWidget extends StatefulWidget {
   _LoaderWidgetState createState() => _LoaderWidgetState();
 }
 
-class _LoaderWidgetState extends State<LoaderWidget> with TickerProviderStateMixin {
+class _LoaderWidgetState extends State<LoaderWidget>
+    with TickerProviderStateMixin {
   late AnimationController controller;
 
   @override
@@ -17,7 +18,9 @@ class _LoaderWidgetState extends State<LoaderWidget> with TickerProviderStateMix
   }
 
   void init() async {
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 1000))..repeat(reverse: true);
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 1000))
+          ..repeat(reverse: true);
   }
 
   @override

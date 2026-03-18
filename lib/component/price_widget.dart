@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/extensions/num_extenstions.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -31,7 +31,8 @@ class PriceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextDecoration? textDecoration() => isLineThroughEnabled ? TextDecoration.lineThrough : null;
+    TextDecoration? textDecoration() =>
+        isLineThroughEnabled ? TextDecoration.lineThrough : null;
 
     TextStyle _textStyle({int? aSize}) {
       return isBoldText
@@ -39,8 +40,7 @@ class PriceWidget extends StatelessWidget {
               size: aSize ?? size!.toInt(),
               color: color ?? primaryColor,
               decoration: textDecoration(),
-              textDecorationStyle: TextDecorationStyle.solid
-            )
+              textDecorationStyle: TextDecorationStyle.solid)
           : secondaryTextStyle(
               size: aSize ?? size!.toInt(),
               color: color ?? primaryColor,

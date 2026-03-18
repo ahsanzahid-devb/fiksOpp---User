@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/extra_charges_model.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/extra_charges_model.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 import '../model/booking_amount_model.dart';
 import '../model/package_data_model.dart';
@@ -24,33 +24,60 @@ BookingAmountModel finalCalculations({
   BookingAmountModel data = BookingAmountModel();
 
   if (selectedPackage != null) {
-    data.finalTotalServicePrice = selectedPackage.price.validate().toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+    data.finalTotalServicePrice = selectedPackage.price
+        .validate()
+        .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+        .toDouble();
   } else {
     if (serviceType == SERVICE_TYPE_HOURLY) {
-      data.finalTotalServicePrice = hourlyCalculation(price: servicePrice.validate(), secTime: durationDiff.validate().toInt());
+      data.finalTotalServicePrice = hourlyCalculation(
+          price: servicePrice.validate(),
+          secTime: durationDiff.validate().toInt());
     } else {
-      data.finalTotalServicePrice = (servicePrice * quantity).toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+      data.finalTotalServicePrice = (servicePrice * quantity)
+          .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+          .toDouble();
     }
   }
 
-  data.finalDiscountAmount = selectedPackage == null && discount != 0 ? ((data.finalTotalServicePrice / 100) * discount).toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble() : 0;
+  data.finalDiscountAmount = selectedPackage == null && discount != 0
+      ? ((data.finalTotalServicePrice / 100) * discount)
+          .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+          .toDouble()
+      : 0;
 
-  data.finalCouponDiscountAmount = appliedCouponData != null ? calculateCouponDiscount(couponData: appliedCouponData, price: data.finalTotalServicePrice) : 0;
+  data.finalCouponDiscountAmount = appliedCouponData != null
+      ? calculateCouponDiscount(
+          couponData: appliedCouponData, price: data.finalTotalServicePrice)
+      : 0;
 
-  data.finalServiceAddonAmount = serviceAddons.validate().sumByDouble((e) => e.price);
+  data.finalServiceAddonAmount =
+      serviceAddons.validate().sumByDouble((e) => e.price);
 
-  data.finalSubTotal = (data.finalTotalServicePrice - data.finalDiscountAmount - data.finalCouponDiscountAmount + data.finalServiceAddonAmount).toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+  data.finalSubTotal = (data.finalTotalServicePrice -
+          data.finalDiscountAmount -
+          data.finalCouponDiscountAmount +
+          data.finalServiceAddonAmount)
+      .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+      .toDouble();
 
-  num totalExtraCharges = extraCharges.validate().sumByDouble((e) => e.price.validate() * e.qty.validate(value: 1));
+  num totalExtraCharges = extraCharges
+      .validate()
+      .sumByDouble((e) => e.price.validate() * e.qty.validate(value: 1));
 
-  data.finalTotalTax = calculateTotalTaxAmount(taxes, data.finalSubTotal + totalExtraCharges);
+  data.finalTotalTax =
+      calculateTotalTaxAmount(taxes, data.finalSubTotal + totalExtraCharges);
 
-  data.finalGrandTotalAmount = (data.finalSubTotal + data.finalTotalTax + totalExtraCharges).toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+  data.finalGrandTotalAmount =
+      (data.finalSubTotal + data.finalTotalTax + totalExtraCharges)
+          .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+          .toDouble();
 
   return data;
 }
 
-num calculateCouponDiscount({CouponData? couponData, num price = 0, ServiceData? detail}) {
+num calculateCouponDiscount(
+    {CouponData? couponData, num price = 0, ServiceData? detail}) {
   num couponAmount = 0.0;
 
   if (couponData != null) {
@@ -61,7 +88,9 @@ num calculateCouponDiscount({CouponData? couponData, num price = 0, ServiceData?
     }
   }
 
-  return couponAmount.toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+  return couponAmount
+      .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+      .toDouble();
 }
 
 num calculateTotalTaxAmount(List<TaxData>? taxes, num subTotal) {
@@ -73,10 +102,15 @@ num calculateTotalTaxAmount(List<TaxData>? taxes, num subTotal) {
     } else {
       element.totalCalculatedValue = element.value.validate();
     }
-    taxAmount += element.totalCalculatedValue.validate().toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+    taxAmount += element.totalCalculatedValue
+        .validate()
+        .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+        .toDouble();
   });
 
-  return taxAmount.toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+  return taxAmount
+      .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+      .toDouble();
 }
 
 num hourlyCalculation({required int secTime, required num price}) {
@@ -94,5 +128,7 @@ num hourlyCalculation({required int secTime, required num price}) {
     totalMinutes = secTime / 60;
   }
 
-  return (totalMinutes * perMinuteCharge).toStringAsFixed(appConfigurationStore.priceDecimalPoint).toDouble();
+  return (totalMinutes * perMinuteCharge)
+      .toStringAsFixed(appConfigurationStore.priceDecimalPoint)
+      .toDouble();
 }

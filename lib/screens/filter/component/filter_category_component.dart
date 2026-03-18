@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/selected_item_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/category_model.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/selected_item_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/category_model.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -14,7 +14,8 @@ class FilterCategoryComponent extends StatefulWidget {
   FilterCategoryComponent({required this.catList});
 
   @override
-  State<FilterCategoryComponent> createState() => _FilterCategoryComponentState();
+  State<FilterCategoryComponent> createState() =>
+      _FilterCategoryComponentState();
 }
 
 class _FilterCategoryComponentState extends State<FilterCategoryComponent> {
@@ -59,7 +60,8 @@ class _FilterCategoryComponentState extends State<FilterCategoryComponent> {
                 children: [
                   Text(data.name.validate(), style: boldTextStyle()),
                   4.height,
-                  Text('${data.services} ${language.service}', style: secondaryTextStyle()),
+                  Text('${data.services} ${language.service}',
+                      style: secondaryTextStyle()),
                 ],
               ).expand(),
               SelectedItemWidget(isSelected: data.isSelected),

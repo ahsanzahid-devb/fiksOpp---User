@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/jobRequest/components/my_post_request_item_component.dart';
-import 'package:booking_system_flutter/screens/jobRequest/shimmer/my_post_job_shimmer.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/jobRequest/components/my_post_request_item_component.dart';
+import 'package:fiksOpp/screens/jobRequest/shimmer/my_post_job_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:geolocator/geolocator.dart';

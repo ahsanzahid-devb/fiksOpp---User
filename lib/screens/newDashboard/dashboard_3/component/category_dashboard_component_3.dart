@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -23,7 +23,8 @@ class CategoryDashboardComponent3 extends StatelessWidget {
           categoryName: categoryData.name.validate(),
           isFromCategory: true,
         ).launch(context).then((value) {
-          setStatusBarColor(Colors.transparent, statusBarIconBrightness: Brightness.dark);
+          setStatusBarColor(Colors.transparent,
+              statusBarIconBrightness: Brightness.dark);
         });
       },
       child: SizedBox(
@@ -47,7 +48,11 @@ class CategoryDashboardComponent3 extends StatelessWidget {
                           height: CATEGORY_ICON_SIZE,
                           width: CATEGORY_ICON_SIZE,
                           colorFilter: ColorFilter.mode(
-                            appStore.isDarkMode ? Colors.white : categoryData.color.validate(value: '000').toColor(),
+                            appStore.isDarkMode
+                                ? Colors.white
+                                : categoryData.color
+                                    .validate(value: '000')
+                                    .toColor(),
                             BlendMode.srcIn,
                           ),
                           placeholderBuilder: (context) => PlaceHolderWidget(
@@ -71,7 +76,9 @@ class CategoryDashboardComponent3 extends StatelessWidget {
                     padding: EdgeInsets.all(14),
                     width: width ?? context.width() / 4 - 8,
                     decoration: BoxDecoration(
-                      color: appStore.isDarkMode ? Colors.white24 : context.cardColor,
+                      color: appStore.isDarkMode
+                          ? Colors.white24
+                          : context.cardColor,
                       shape: BoxShape.rectangle,
                       borderRadius: radius(8),
                     ),

@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -120,7 +120,8 @@ class _AppBarDashboardComponent4State extends State<AppBarDashboardComponent4> {
           width: context.width(),
           height: context.height() * 0.18,
           decoration: boxDecorationDefault(color: primaryColor),
-          padding: EdgeInsets.only(top: 16 + topPadding, left: 16, right: 16, bottom: 16),
+          padding: EdgeInsets.only(
+              top: 16 + topPadding, left: 16, right: 16, bottom: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

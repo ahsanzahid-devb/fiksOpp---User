@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -10,7 +10,11 @@ class ThemeSelectionDaiLog extends StatefulWidget {
 }
 
 class ThemeSelectionDaiLogState extends State<ThemeSelectionDaiLog> {
-  List<String> themeModeList = [language.appThemeLight, language.appThemeDark, language.appThemeDefault];
+  List<String> themeModeList = [
+    language.appThemeLight,
+    language.appThemeDark,
+    language.appThemeDefault
+  ];
 
   int? currentIndex = 0;
 
@@ -21,7 +25,8 @@ class ThemeSelectionDaiLogState extends State<ThemeSelectionDaiLog> {
   }
 
   Future<void> init() async {
-    currentIndex = getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+    currentIndex =
+        getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
   }
 
   @override
@@ -42,12 +47,15 @@ class ThemeSelectionDaiLogState extends State<ThemeSelectionDaiLog> {
               width: context.width(),
               decoration: boxDecorationDefault(
                 color: context.primaryColor,
-                borderRadius: radiusOnly(topRight: defaultRadius, topLeft: defaultRadius),
+                borderRadius:
+                    radiusOnly(topRight: defaultRadius, topLeft: defaultRadius),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(language.chooseTheme, style: boldTextStyle(color: Colors.white)).flexible(),
+                  Text(language.chooseTheme,
+                          style: boldTextStyle(color: Colors.white))
+                      .flexible(),
                   IconButton(
                     onPressed: () {
                       finish(context);
@@ -71,7 +79,8 @@ class ThemeSelectionDaiLogState extends State<ThemeSelectionDaiLog> {
                     currentIndex = val;
 
                     if (val == THEME_MODE_SYSTEM) {
-                      appStore.setDarkMode(context.platformBrightness() == Brightness.dark);
+                      appStore.setDarkMode(
+                          context.platformBrightness() == Brightness.dark);
                     } else if (val == THEME_MODE_LIGHT) {
                       appStore.setDarkMode(false);
                       defaultToastBackgroundColor = Colors.black;

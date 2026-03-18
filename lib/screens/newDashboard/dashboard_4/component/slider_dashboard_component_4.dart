@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -17,7 +17,8 @@ class SliderDashboardComponent4 extends StatefulWidget {
   SliderDashboardComponent4({required this.sliderList});
 
   @override
-  _SliderDashboardComponent4State createState() => _SliderDashboardComponent4State();
+  _SliderDashboardComponent4State createState() =>
+      _SliderDashboardComponent4State();
 }
 
 class _SliderDashboardComponent4State extends State<SliderDashboardComponent4> {
@@ -33,14 +34,17 @@ class _SliderDashboardComponent4State extends State<SliderDashboardComponent4> {
   }
 
   void init() async {
-    if (getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true) && widget.sliderList.length >= 2) {
-      _timer = Timer.periodic(Duration(seconds: DASHBOARD_AUTO_SLIDER_SECOND), (Timer timer) {
+    if (getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true) &&
+        widget.sliderList.length >= 2) {
+      _timer = Timer.periodic(Duration(seconds: DASHBOARD_AUTO_SLIDER_SECOND),
+          (Timer timer) {
         if (_currentPage < widget.sliderList.length - 1) {
           _currentPage++;
         } else {
           _currentPage = 0;
         }
-        sliderPageController.animateToPage(_currentPage, duration: Duration(milliseconds: 950), curve: Curves.easeOutQuart);
+        sliderPageController.animateToPage(_currentPage,
+            duration: Duration(milliseconds: 950), curve: Curves.easeOutQuart);
       });
 
       sliderPageController.addListener(() {
@@ -79,7 +83,9 @@ class _SliderDashboardComponent4State extends State<SliderDashboardComponent4> {
                         fit: BoxFit.cover,
                       ).onTap(() {
                         if (data.type == SERVICE) {
-                          ServiceDetailScreen(serviceId: data.typeId.validate().toInt()).launch(
+                          ServiceDetailScreen(
+                                  serviceId: data.typeId.validate().toInt())
+                              .launch(
                             context,
                             pageRouteAnimation: PageRouteAnimation.Fade,
                           );
@@ -98,7 +104,8 @@ class _SliderDashboardComponent4State extends State<SliderDashboardComponent4> {
                 pageController: sliderPageController,
                 pages: widget.sliderList,
                 indicatorColor: primaryColor,
-                unselectedIndicatorColor: appStore.isDarkMode ? context.cardColor : Colors.white,
+                unselectedIndicatorColor:
+                    appStore.isDarkMode ? context.cardColor : Colors.white,
                 currentBoxShape: BoxShape.rectangle,
                 boxShape: BoxShape.rectangle,
                 borderRadius: radius(2),

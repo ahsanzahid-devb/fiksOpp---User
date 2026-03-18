@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/component/user_info_widget.dart';
-import 'package:booking_system_flutter/component/view_all_label_component.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/provider_info_response.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/component/user_info_widget.dart';
+import 'package:fiksOpp/component/view_all_label_component.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/provider_info_response.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -24,7 +24,11 @@ class ProviderInfoScreen extends StatefulWidget {
   final VoidCallback? onUpdate;
   final ServiceData? serviceData;
 
-  ProviderInfoScreen({this.providerId, this.canCustomerContact = false, this.onUpdate,this.serviceData});
+  ProviderInfoScreen(
+      {this.providerId,
+      this.canCustomerContact = false,
+      this.onUpdate,
+      this.serviceData});
 
   @override
   ProviderInfoScreenState createState() => ProviderInfoScreenState();
@@ -41,7 +45,8 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
   }
 
   Future<void> init() async {
-    future = getProviderDetail(widget.providerId.validate(), userId: appStore.userId.validate());
+    future = getProviderDetail(widget.providerId.validate(),
+        userId: appStore.userId.validate());
   }
 
   @override
@@ -57,10 +62,14 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
           label: '${language.service} (${totalServices})',
           list: list,
           onTap: () {
-            ViewAllServiceScreen(providerId: providerId).launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
+            ViewAllServiceScreen(providerId: providerId)
+                .launch(context, pageRouteAnimation: PageRouteAnimation.Fade);
           },
         ),
-        if (list.isEmpty) NoDataWidget(title: language.lblNoServicesFound, imageWidget: EmptyStateWidget()),
+        if (list.isEmpty)
+          NoDataWidget(
+              title: language.lblNoServicesFound,
+              imageWidget: EmptyStateWidget()),
         if (list.isNotEmpty)
           AnimatedWrap(
             spacing: 16,
@@ -68,8 +77,10 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
             itemCount: list.length,
             listAnimationType: ListAnimationType.FadeIn,
             fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-            scaleConfiguration: ScaleConfiguration(duration: 300.milliseconds, delay: 50.milliseconds),
-            itemBuilder: (_, index) => ProviderServiceComponent(serviceData: list[index], isFromProviderInfo: true),
+            scaleConfiguration: ScaleConfiguration(
+                duration: 300.milliseconds, delay: 50.milliseconds),
+            itemBuilder: (_, index) => ProviderServiceComponent(
+                serviceData: list[index], isFromProviderInfo: true),
           ).paddingOnly(bottom: 50)
       ],
     );
@@ -89,7 +100,11 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
         child: Scaffold(
           body: SnapHelperWidget<ProviderInfoResponse>(
             future: future,
-            initialData: cachedProviderList.firstWhere((element) => element?.$1 == widget.providerId.validate(), orElse: () => null)?.$2,
+            initialData: cachedProviderList
+                .firstWhere(
+                    (element) => element?.$1 == widget.providerId.validate(),
+                    orElse: () => null)
+                ?.$2,
             onSuccess: (data) {
               return Stack(
                 children: [
@@ -109,26 +124,41 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           4.height,
-                          if (data.userData!.knownLanguagesArray.isNotEmpty) ...[
+                          if (data
+                              .userData!.knownLanguagesArray.isNotEmpty) ...[
                             26.height,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(language.knownLanguages, style: boldTextStyle()).paddingSymmetric(horizontal: 16),
+                                Text(language.knownLanguages,
+                                        style: boldTextStyle())
+                                    .paddingSymmetric(horizontal: 16),
                                 8.height,
                                 Wrap(
-                                  children: data.userData!.knownLanguagesArray.map((e) {
+                                  children: data.userData!.knownLanguagesArray
+                                      .map((e) {
                                     return Container(
-                                      decoration: boxDecorationWithRoundedCorners(
-                                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                                        backgroundColor: appStore.isDarkMode ? cardDarkColor : primaryColor.withValues(alpha:0.1),
+                                      decoration:
+                                          boxDecorationWithRoundedCorners(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        backgroundColor: appStore.isDarkMode
+                                            ? cardDarkColor
+                                            : primaryColor.withValues(
+                                                alpha: 0.1),
                                       ),
-                                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      margin: EdgeInsets.only(right: 8,bottom: 8),
-                                      child: Text(e, style: secondaryTextStyle(weight: FontWeight.bold)),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      margin:
+                                          EdgeInsets.only(right: 8, bottom: 8),
+                                      child: Text(e,
+                                          style: secondaryTextStyle(
+                                              weight: FontWeight.bold)),
                                     );
                                   }).toList(),
-                                ).paddingSymmetric(horizontal: 16,),
+                                ).paddingSymmetric(
+                                  horizontal: 16,
+                                ),
                               ],
                             ),
                             32.height
@@ -138,18 +168,28 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(language.essentialSkills, style: boldTextStyle()).paddingSymmetric(horizontal: 16),
+                                Text(language.essentialSkills,
+                                        style: boldTextStyle())
+                                    .paddingSymmetric(horizontal: 16),
                                 8.height,
                                 Wrap(
                                   children: data.userData!.skillsArray.map((e) {
                                     return Container(
-                                      decoration: boxDecorationWithRoundedCorners(
-                                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                                        backgroundColor: appStore.isDarkMode ? cardDarkColor : primaryColor.withValues(alpha:0.1),
+                                      decoration:
+                                          boxDecorationWithRoundedCorners(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(20)),
+                                        backgroundColor: appStore.isDarkMode
+                                            ? cardDarkColor
+                                            : primaryColor.withValues(
+                                                alpha: 0.1),
                                       ),
-                                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
                                       margin: EdgeInsets.only(right: 8),
-                                      child: Text(e, style: secondaryTextStyle(weight: FontWeight.bold)),
+                                      child: Text(e,
+                                          style: secondaryTextStyle(
+                                              weight: FontWeight.bold)),
                                     );
                                   }).toList(),
                                 ).paddingSymmetric(horizontal: 16),
@@ -162,14 +202,22 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(language.personalInfo, style: boldTextStyle()).paddingSymmetric(horizontal: 16),
+                                Text(language.personalInfo,
+                                        style: boldTextStyle())
+                                    .paddingSymmetric(horizontal: 16),
                                 8.height,
                                 TextIcon(
                                   spacing: 10,
                                   onTap: () {
-                                    launchMail("${data.userData!.email.validate()}");
+                                    launchMail(
+                                        "${data.userData!.email.validate()}");
                                   },
-                                  prefix: Image.asset(ic_message, width: 16, height: 16, color: appStore.isDarkMode ? Colors.white : context.primaryColor),
+                                  prefix: Image.asset(ic_message,
+                                      width: 16,
+                                      height: 16,
+                                      color: appStore.isDarkMode
+                                          ? Colors.white
+                                          : context.primaryColor),
                                   text: data.userData!.email.validate(),
                                   textStyle: secondaryTextStyle(size: 14),
                                   expandedText: true,
@@ -178,9 +226,15 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
                                 TextIcon(
                                   spacing: 10,
                                   onTap: () {
-                                    launchCall("${data.userData!.contactNumber.validate()}");
+                                    launchCall(
+                                        "${data.userData!.contactNumber.validate()}");
                                   },
-                                  prefix: Image.asset(ic_calling, width: 16, height: 16, color: appStore.isDarkMode ? Colors.white : context.primaryColor),
+                                  prefix: Image.asset(ic_calling,
+                                      width: 16,
+                                      height: 16,
+                                      color: appStore.isDarkMode
+                                          ? Colors.white
+                                          : context.primaryColor),
                                   text: data.userData!.contactNumber.validate(),
                                   textStyle: secondaryTextStyle(size: 14),
                                   expandedText: true,
@@ -208,7 +262,9 @@ class ProviderInfoScreenState extends State<ProviderInfoScreen> {
                       return await 2.seconds.delay;
                     },
                   ),
-                  Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading))
+                  Observer(
+                      builder: (context) =>
+                          LoaderWidget().visible(appStore.isLoading))
                 ],
               );
             },

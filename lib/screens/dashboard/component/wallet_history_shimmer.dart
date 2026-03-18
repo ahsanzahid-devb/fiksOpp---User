@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -8,12 +8,14 @@ class WalletHistoryShimmer extends StatelessWidget {
     return Column(
       children: [
         16.height,
-        ShimmerWidget(height: context.height() * 0.19, width: context.width()).paddingSymmetric(horizontal: 16),
+        ShimmerWidget(height: context.height() * 0.19, width: context.width())
+            .paddingSymmetric(horizontal: 16),
         20.height,
         AnimatedListView(
           shrinkWrap: true,
           physics: AlwaysScrollableScrollPhysics(),
-          slideConfiguration: SlideConfiguration(duration: 400.milliseconds, delay: 50.milliseconds),
+          slideConfiguration: SlideConfiguration(
+              duration: 400.milliseconds, delay: 50.milliseconds),
           padding: EdgeInsets.all(8),
           listAnimationType: ListAnimationType.None,
           itemBuilder: (_, i) {

@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/component/price_widget.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/price_widget.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -10,7 +10,8 @@ class AppliedTaxListBottomSheet extends StatelessWidget {
   final List<TaxData> taxes;
   final num subTotal;
 
-  const AppliedTaxListBottomSheet({super.key, required this.taxes, required this.subTotal});
+  const AppliedTaxListBottomSheet(
+      {super.key, required this.taxes, required this.subTotal});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,9 @@ class AppliedTaxListBottomSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(language.appliedTaxes, style: boldTextStyle(size: LABEL_TEXT_SIZE)).paddingSymmetric(horizontal: 16),
+          Text(language.appliedTaxes,
+                  style: boldTextStyle(size: LABEL_TEXT_SIZE))
+              .paddingSymmetric(horizontal: 16),
           8.height,
           AnimatedListView(
             itemCount: taxes.length,
@@ -31,7 +34,8 @@ class AppliedTaxListBottomSheet extends StatelessWidget {
               TaxData data = taxes[index];
 
               if (data.type == TAX_TYPE_PERCENT) {
-                data.totalCalculatedValue = subTotal * data.value.validate() / 100;
+                data.totalCalculatedValue =
+                    subTotal * data.value.validate() / 100;
               } else {
                 data.totalCalculatedValue = data.value.validate();
               }
@@ -44,12 +48,16 @@ class AppliedTaxListBottomSheet extends StatelessWidget {
                     data.type == TAX_TYPE_PERCENT
                         ? Row(
                             children: [
-                              Text(data.title.validate(), style: primaryTextStyle()),
+                              Text(data.title.validate(),
+                                  style: primaryTextStyle()),
                               4.width,
-                              Text("(${data.value.validate()}%)", style: primaryTextStyle(color: context.primaryColor)),
+                              Text("(${data.value.validate()}%)",
+                                  style: primaryTextStyle(
+                                      color: context.primaryColor)),
                             ],
                           ).expand()
-                        : Text(data.title.validate(), style: primaryTextStyle()).expand(),
+                        : Text(data.title.validate(), style: primaryTextStyle())
+                            .expand(),
                     PriceWidget(price: data.totalCalculatedValue.validate()),
                   ],
                 ),

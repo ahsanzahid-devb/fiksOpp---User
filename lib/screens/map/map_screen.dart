@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/services/location_service.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/services/location_service.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:geolocator/geolocator.dart';

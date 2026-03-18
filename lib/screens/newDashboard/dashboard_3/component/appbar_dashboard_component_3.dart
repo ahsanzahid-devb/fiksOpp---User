@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -47,7 +47,9 @@ class _AppbarDashboardComponent3State extends State<AppbarDashboardComponent3> {
           children: [
             Flexible(
               child: Text(
-                appStore.isLoggedIn ? appStore.userFullName : language.helloGuest,
+                appStore.isLoggedIn
+                    ? appStore.userFullName
+                    : language.helloGuest,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: boldTextStyle(),

@@ -1,8 +1,8 @@
-name: booking_system_flutter
+name: fiksOpp
 description: A new Flutter project.
 
 publish_to: "none"
-version: 11.14.4+122
+version: 11.14.4+122a
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

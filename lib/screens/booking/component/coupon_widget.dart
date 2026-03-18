@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -29,7 +29,8 @@ class _CouponWidgetState extends State<CouponWidget> {
   void initState() {
     isUpdate = widget.appliedCouponData != null;
     if (isUpdate) {
-      selectedIndex = widget.couponData.indexWhere((element) => element.code == widget.appliedCouponData!.code);
+      selectedIndex = widget.couponData.indexWhere(
+          (element) => element.code == widget.appliedCouponData!.code);
       couponCode = widget.appliedCouponData!.code.validate();
 
       setState(() {});
@@ -51,7 +52,8 @@ class _CouponWidgetState extends State<CouponWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+                  decoration: boxDecorationDefault(
+                      color: context.scaffoldBackgroundColor),
                   padding: EdgeInsets.all(16),
                   width: context.width(),
                   child: Column(
@@ -65,16 +67,23 @@ class _CouponWidgetState extends State<CouponWidget> {
                           CouponData data = widget.couponData[index];
 
                           return DottedBorderWidget(
-                            color: selectedIndex == index ? primaryColor : context.dividerColor,
+                            color: selectedIndex == index
+                                ? primaryColor
+                                : context.dividerColor,
                             strokeWidth: 1.5,
                             dotsWidth: 8,
                             padding: EdgeInsets.all(0),
                             child: Container(
                               padding: EdgeInsets.all(8),
-                              color: selectedIndex == index ? context.primaryColor.withValues(alpha:0.15) : context.cardColor,
+                              color: selectedIndex == index
+                                  ? context.primaryColor.withValues(alpha: 0.15)
+                                  : context.cardColor,
                               child: Text(
                                 data.code.validate(),
-                                style: primaryTextStyle(color: selectedIndex == index ? context.primaryColor : null),
+                                style: primaryTextStyle(
+                                    color: selectedIndex == index
+                                        ? context.primaryColor
+                                        : null),
                               ),
                             ),
                           ).onTap(() {
@@ -86,20 +95,32 @@ class _CouponWidgetState extends State<CouponWidget> {
                         },
                       ),
                       16.height,
-                      widget.couponData[selectedIndex ?? 0].discountType == SERVICE_TYPE_FIXED
+                      widget.couponData[selectedIndex ?? 0].discountType ==
+                              SERVICE_TYPE_FIXED
                           ? Row(
                               children: [
-                                PriceWidget(price: widget.couponData[selectedIndex ?? 0].discount.validate(), decimalPoint: 0, color: appTextSecondaryColor),
-                                Text(" ${language.lblOff.toLowerCase()}", style: primaryTextStyle()),
+                                PriceWidget(
+                                    price: widget
+                                        .couponData[selectedIndex ?? 0].discount
+                                        .validate(),
+                                    decimalPoint: 0,
+                                    color: appTextSecondaryColor),
+                                Text(" ${language.lblOff.toLowerCase()}",
+                                    style: primaryTextStyle()),
                               ],
                             )
-                          : Text("${widget.couponData[selectedIndex ?? 0].discount.validate()}% ${language.lblOff.toLowerCase()}", style: primaryTextStyle()),
+                          : Text(
+                              "${widget.couponData[selectedIndex ?? 0].discount.validate()}% ${language.lblOff.toLowerCase()}",
+                              style: primaryTextStyle()),
                       16.height,
                       RichTextWidget(
                         list: [
-                          TextSpan(text: '${language.lblExpiryDate} ', style: secondaryTextStyle()),
                           TextSpan(
-                            text: " ${DateFormat(DATE_FORMAT_2).format(DateTime.parse(widget.couponData[selectedIndex ?? 0].expireDate.validate()))}",
+                              text: '${language.lblExpiryDate} ',
+                              style: secondaryTextStyle()),
+                          TextSpan(
+                            text:
+                                " ${DateFormat(DATE_FORMAT_2).format(DateTime.parse(widget.couponData[selectedIndex ?? 0].expireDate.validate()))}",
                             style: boldTextStyle(size: 12),
                           ),
                         ],
@@ -123,12 +144,16 @@ class _CouponWidgetState extends State<CouponWidget> {
               ],
             )
           else
-            Text(language.lblNoCouponsAvailable, style: secondaryTextStyle()).center().paddingSymmetric(vertical: 50),
+            Text(language.lblNoCouponsAvailable, style: secondaryTextStyle())
+                .center()
+                .paddingSymmetric(vertical: 50),
           16.height,
           Row(
             children: [
               AppButton(
-                color: widget.couponData.isEmpty ? primaryColor : context.scaffoldBackgroundColor,
+                color: widget.couponData.isEmpty
+                    ? primaryColor
+                    : context.scaffoldBackgroundColor,
                 onTap: () {
                   if (isUpdate && selectedIndex != null) {
                     finish(context, widget.couponData[selectedIndex ?? 0]);
@@ -137,7 +162,9 @@ class _CouponWidgetState extends State<CouponWidget> {
                   }
                 },
                 text: language.lblCancel,
-                textColor: widget.couponData.isEmpty ? Colors.white : textPrimaryColorGlobal,
+                textColor: widget.couponData.isEmpty
+                    ? Colors.white
+                    : textPrimaryColorGlobal,
               ).expand(),
               if (widget.couponData.isNotEmpty) 16.width,
               if (widget.couponData.isNotEmpty)
@@ -145,7 +172,8 @@ class _CouponWidgetState extends State<CouponWidget> {
                   color: primaryColor,
                   onTap: () {
                     if (couponCode.isNotEmpty) {
-                      if (widget.couponData.any((element) => element.code == couponCode)) {
+                      if (widget.couponData
+                          .any((element) => element.code == couponCode)) {
                         finish(context, widget.couponData[selectedIndex ?? 0]);
                       } else {
                         toast(language.lblInvalidCoupon);

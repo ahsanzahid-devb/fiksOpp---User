@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../main.dart';
@@ -7,9 +7,11 @@ import 'configs.dart';
 
 //region Get Configurations
 
-bool get isCurrencyPositionLeft => appConfigurationStore.currencyPosition == CURRENCY_POSITION_LEFT;
+bool get isCurrencyPositionLeft =>
+    appConfigurationStore.currencyPosition == CURRENCY_POSITION_LEFT;
 
-bool get isCurrencyPositionRight => appConfigurationStore.currencyPosition == CURRENCY_POSITION_RIGHT;
+bool get isCurrencyPositionRight =>
+    appConfigurationStore.currencyPosition == CURRENCY_POSITION_RIGHT;
 
 //endregion
 
@@ -19,8 +21,10 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   await setValue(SITE_DESCRIPTION, data.aboutUs);
   await setValue(SITE_COPYRIGHT, data.siteCopyright);
   await setValue(WEBSITE, data.website);
-  appConfigurationStore.setInquiryEmail(data.inquiryEmail.validate(value: INQUIRY_SUPPORT_EMAIL));
-  appConfigurationStore.setHelplineNumber(data.helplineNumber.validate(value: HELP_LINE_NUMBER));
+  appConfigurationStore.setInquiryEmail(
+      data.inquiryEmail.validate(value: INQUIRY_SUPPORT_EMAIL));
+  appConfigurationStore
+      .setHelplineNumber(data.helplineNumber.validate(value: HELP_LINE_NUMBER));
   await setValue(DATE_FORMAT, getDateFormat(data.dateFormat.validate()));
   await setValue(TIME_FORMAT, getDisplayTimeFormat(data.timeFormat.validate()));
   await setValue(TIMEZONE, data.timeZone);
@@ -32,28 +36,45 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   await setValue(PROVIDER_APPSTORE_URL, data.providerAppstoreUrl.validate());
 
   await appConfigurationStore.setCurrencyCode(data.currencyCode.validate());
-  await appConfigurationStore.setCurrencyPosition(data.currencyPosition.validate());
+  await appConfigurationStore
+      .setCurrencyPosition(data.currencyPosition.validate());
   await appConfigurationStore.setCurrencySymbol(data.currencySymbol.validate());
   await appConfigurationStore.setPriceDecimalPoint(data.decimalPoint.toInt());
 
-  await appConfigurationStore.setAdvancePaymentAllowed(data.advancePaymentStatus.validate().getBoolInt());
-  await appConfigurationStore.setSlotServiceStatus(data.slotServiceStatus.validate().getBoolInt());
-  await appConfigurationStore.setDigitalServiceStatus(data.digitalServiceStatus.validate().getBoolInt());
-  await appConfigurationStore.setServicePackageStatus(data.servicePackageStatus.validate().getBoolInt());
-  await appConfigurationStore.setServiceAddonStatus(data.serviceAddonStatus.validate().getBoolInt());
-  await appConfigurationStore.setJobRequestStatus(data.jobRequestServiceStatus.validate().getBoolInt());
+  await appConfigurationStore.setAdvancePaymentAllowed(
+      data.advancePaymentStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setSlotServiceStatus(data.slotServiceStatus.validate().getBoolInt());
+  await appConfigurationStore.setDigitalServiceStatus(
+      data.digitalServiceStatus.validate().getBoolInt());
+  await appConfigurationStore.setServicePackageStatus(
+      data.servicePackageStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setServiceAddonStatus(data.serviceAddonStatus.validate().getBoolInt());
+  await appConfigurationStore.setJobRequestStatus(
+      data.jobRequestServiceStatus.validate().getBoolInt());
 
-  await appConfigurationStore.setSocialLoginStatus(data.socialLoginStatus.validate().getBoolInt());
-  await appConfigurationStore.setGoogleLoginStatus(data.googleLoginStatus.validate().getBoolInt());
-  await appConfigurationStore.setAppleLoginStatus(data.appleLoginStatus.validate().getBoolInt());
-  await appConfigurationStore.setOTPLoginStatus(data.otpLoginStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setSocialLoginStatus(data.socialLoginStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setGoogleLoginStatus(data.googleLoginStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setAppleLoginStatus(data.appleLoginStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setOTPLoginStatus(data.otpLoginStatus.validate().getBoolInt());
 
-  await appConfigurationStore.setOnlinePaymentStatus(data.onlinePaymentStatus.getBoolInt());
-  await appConfigurationStore.setBlogStatus(data.blogStatus.validate().getBoolInt());
-  await appConfigurationStore.setMaintenanceModeStatus(data.maintenanceMode.validate().getBoolInt());
-  await appConfigurationStore.setEnableUserWallet(data.walletStatus.validate().getBoolInt());
-  await appConfigurationStore.setChatGptStatus(data.chatGptStatus.validate().getBoolInt());
-  await appConfigurationStore.setTestWithoutKey(data.testChatGptWithoutKey.validate().getBoolInt());
+  await appConfigurationStore
+      .setOnlinePaymentStatus(data.onlinePaymentStatus.getBoolInt());
+  await appConfigurationStore
+      .setBlogStatus(data.blogStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setMaintenanceModeStatus(data.maintenanceMode.validate().getBoolInt());
+  await appConfigurationStore
+      .setEnableUserWallet(data.walletStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setChatGptStatus(data.chatGptStatus.validate().getBoolInt());
+  await appConfigurationStore
+      .setTestWithoutKey(data.testChatGptWithoutKey.validate().getBoolInt());
 
   await setValue(FORCE_UPDATE_USER_APP, data.forceUpdateUserApp);
   await setValue(USER_APP_MINIMUM_VERSION, data.userAppMinimumVersion);
@@ -65,202 +86,358 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   await setValue(LINKEDIN_URL, data.linkedinUrl.validate());
   await setValue(YOUTUBE_URL, data.youtubeUrl.validate());
 
-  await appConfigurationStore.setPrivacyPolicy(data.privacyPolicy ?? PRIVACY_POLICY_URL);
-  await appConfigurationStore.setTermConditions(data.termsConditions ?? TERMS_CONDITION_URL);
-  await appConfigurationStore.setHelpAndSupport(data.helpAndSupport ?? HELP_AND_SUPPORT_URL);
-  await appConfigurationStore.setRefundPolicy(data.refundPolicy ?? REFUND_POLICY_URL);
+  await appConfigurationStore
+      .setPrivacyPolicy(data.privacyPolicy ?? PRIVACY_POLICY_URL);
+  await appConfigurationStore
+      .setTermConditions(data.termsConditions ?? TERMS_CONDITION_URL);
+  await appConfigurationStore
+      .setHelpAndSupport(data.helpAndSupport ?? HELP_AND_SUPPORT_URL);
+  await appConfigurationStore
+      .setRefundPolicy(data.refundPolicy ?? REFUND_POLICY_URL);
 
   appConfigurationStore.setGoogleMapKey(data.googleMapKey.validate());
-  appConfigurationStore.setCancellationCharge(data.cancellationCharge.validate().getBoolInt());
-  appConfigurationStore.setCancellationChargeAmount(double.parse(data.cancellationChargeAmount.toString()).validate());
-  appConfigurationStore.setCancellationChargeHours(data.cancellationChargeHours.validate());
-  await appConfigurationStore.setUserDashboardType(data.userdashboardType ?? DEFAULT_USER_DASHBOARD);
+  appConfigurationStore
+      .setCancellationCharge(data.cancellationCharge.validate().getBoolInt());
+  appConfigurationStore.setCancellationChargeAmount(
+      double.parse(data.cancellationChargeAmount.toString()).validate());
+  appConfigurationStore
+      .setCancellationChargeHours(data.cancellationChargeHours.validate());
+  await appConfigurationStore
+      .setUserDashboardType(data.userdashboardType ?? DEFAULT_USER_DASHBOARD);
 
   //Roles & Permission
   if (data.roleAndPermission != null) {
-    await rolesAndPermissionStore.setRole(data.roleAndPermission!.role.getBoolInt());
-    await rolesAndPermissionStore.setRoleList(data.roleAndPermission!.roleList.getBoolInt());
-    await rolesAndPermissionStore.setRoleAdd(data.roleAndPermission!.roleAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setRole(data.roleAndPermission!.role.getBoolInt());
+    await rolesAndPermissionStore
+        .setRoleList(data.roleAndPermission!.roleList.getBoolInt());
+    await rolesAndPermissionStore
+        .setRoleAdd(data.roleAndPermission!.roleAdd.getBoolInt());
 
-    await rolesAndPermissionStore.setPermission(data.roleAndPermission!.permission.getBoolInt());
-    await rolesAndPermissionStore.setPermissionList(data.roleAndPermission!.permissionList.getBoolInt());
-    await rolesAndPermissionStore.setPermissionAdd(data.roleAndPermission!.permissionAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setPermission(data.roleAndPermission!.permission.getBoolInt());
+    await rolesAndPermissionStore
+        .setPermissionList(data.roleAndPermission!.permissionList.getBoolInt());
+    await rolesAndPermissionStore
+        .setPermissionAdd(data.roleAndPermission!.permissionAdd.getBoolInt());
 
-    await rolesAndPermissionStore.setCategory(data.roleAndPermission!.category.getBoolInt());
-    await rolesAndPermissionStore.setCategoryAdd(data.roleAndPermission!.categoryAdd.getBoolInt());
-    await rolesAndPermissionStore.setCategoryEdit(data.roleAndPermission!.categoryEdit.getBoolInt());
-    await rolesAndPermissionStore.setCategoryList(data.roleAndPermission!.categoryList.getBoolInt());
-    await rolesAndPermissionStore.setCategoryDelete(data.roleAndPermission!.categoryDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setCategory(data.roleAndPermission!.category.getBoolInt());
+    await rolesAndPermissionStore
+        .setCategoryAdd(data.roleAndPermission!.categoryAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setCategoryEdit(data.roleAndPermission!.categoryEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setCategoryList(data.roleAndPermission!.categoryList.getBoolInt());
+    await rolesAndPermissionStore
+        .setCategoryDelete(data.roleAndPermission!.categoryDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setService(data.roleAndPermission!.service.getBoolInt());
-    await rolesAndPermissionStore.setServiceAdd(data.roleAndPermission!.serviceAdd.getBoolInt());
-    await rolesAndPermissionStore.setServiceList(data.roleAndPermission!.serviceList.getBoolInt());
-    await rolesAndPermissionStore.setServiceEdit(data.roleAndPermission!.serviceEdit.getBoolInt());
-    await rolesAndPermissionStore.setServiceDelete(data.roleAndPermission!.serviceDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setService(data.roleAndPermission!.service.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceAdd(data.roleAndPermission!.serviceAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceList(data.roleAndPermission!.serviceList.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceEdit(data.roleAndPermission!.serviceEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceDelete(data.roleAndPermission!.serviceDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setProvider(data.roleAndPermission!.provider.getBoolInt());
-    await rolesAndPermissionStore.setPermissionAdd(data.roleAndPermission!.permissionAdd.getBoolInt());
-    await rolesAndPermissionStore.setProviderList(data.roleAndPermission!.providerList.getBoolInt());
-    await rolesAndPermissionStore.setProviderEdit(data.roleAndPermission!.providerEdit.getBoolInt());
-    await rolesAndPermissionStore.setProviderDelete(data.roleAndPermission!.providerDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setProvider(data.roleAndPermission!.provider.getBoolInt());
+    await rolesAndPermissionStore
+        .setPermissionAdd(data.roleAndPermission!.permissionAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setProviderList(data.roleAndPermission!.providerList.getBoolInt());
+    await rolesAndPermissionStore
+        .setProviderEdit(data.roleAndPermission!.providerEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setProviderDelete(data.roleAndPermission!.providerDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setHandyman(data.roleAndPermission!.handyman.getBoolInt());
-    await rolesAndPermissionStore.setHandymanAdd(data.roleAndPermission!.handymanAdd.getBoolInt());
-    await rolesAndPermissionStore.setHandymanList(data.roleAndPermission!.handymanList.getBoolInt());
-    await rolesAndPermissionStore.setHandymanEdit(data.roleAndPermission!.handymanEdit.getBoolInt());
-    await rolesAndPermissionStore.setHandymanDelete(data.roleAndPermission!.handymanDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandyman(data.roleAndPermission!.handyman.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanAdd(data.roleAndPermission!.handymanAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanList(data.roleAndPermission!.handymanList.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanEdit(data.roleAndPermission!.handymanEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanDelete(data.roleAndPermission!.handymanDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setBooking(data.roleAndPermission!.booking.getBoolInt());
-    await rolesAndPermissionStore.setBookingEdit(data.roleAndPermission!.bookingEdit.getBoolInt());
-    await rolesAndPermissionStore.setBookingList(data.roleAndPermission!.bookingList.getBoolInt());
-    await rolesAndPermissionStore.setBookingView(data.roleAndPermission!.bookingView.getBoolInt());
-    await rolesAndPermissionStore.setBookingDelete(data.roleAndPermission!.bookingDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setBooking(data.roleAndPermission!.booking.getBoolInt());
+    await rolesAndPermissionStore
+        .setBookingEdit(data.roleAndPermission!.bookingEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setBookingList(data.roleAndPermission!.bookingList.getBoolInt());
+    await rolesAndPermissionStore
+        .setBookingView(data.roleAndPermission!.bookingView.getBoolInt());
+    await rolesAndPermissionStore
+        .setBookingDelete(data.roleAndPermission!.bookingDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setPayment(data.roleAndPermission!.payment.getBoolInt());
-    await rolesAndPermissionStore.setPaymentList(data.roleAndPermission!.paymentList.getBoolInt());
+    await rolesAndPermissionStore
+        .setPayment(data.roleAndPermission!.payment.getBoolInt());
+    await rolesAndPermissionStore
+        .setPaymentList(data.roleAndPermission!.paymentList.getBoolInt());
 
-    await rolesAndPermissionStore.setUser(data.roleAndPermission!.user.getBoolInt());
-    await rolesAndPermissionStore.setUserList(data.roleAndPermission!.userList.getBoolInt());
-    await rolesAndPermissionStore.setUserView(data.roleAndPermission!.userView.getBoolInt());
-    await rolesAndPermissionStore.setUserDelete(data.roleAndPermission!.userDelete.getBoolInt());
-    await rolesAndPermissionStore.setUserAdd(data.roleAndPermission!.userAdd.getBoolInt());
-    await rolesAndPermissionStore.setUserEdit(data.roleAndPermission!.userEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setUser(data.roleAndPermission!.user.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserList(data.roleAndPermission!.userList.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserView(data.roleAndPermission!.userView.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserDelete(data.roleAndPermission!.userDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserAdd(data.roleAndPermission!.userAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserEdit(data.roleAndPermission!.userEdit.getBoolInt());
 
-    await rolesAndPermissionStore.setProviderType(data.roleAndPermission!.providerType.getBoolInt());
-    await rolesAndPermissionStore.setProviderTypeList(data.roleAndPermission!.providerTypeList.getBoolInt());
-    await rolesAndPermissionStore.setProviderTypeAdd(data.roleAndPermission!.providerTypeAdd.getBoolInt());
-    await rolesAndPermissionStore.setProviderTypeEdit(data.roleAndPermission!.providerTypeEdit.getBoolInt());
-    await rolesAndPermissionStore.setProviderTypeDelete(data.roleAndPermission!.providerTypeDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setProviderType(data.roleAndPermission!.providerType.getBoolInt());
+    await rolesAndPermissionStore.setProviderTypeList(
+        data.roleAndPermission!.providerTypeList.getBoolInt());
+    await rolesAndPermissionStore.setProviderTypeAdd(
+        data.roleAndPermission!.providerTypeAdd.getBoolInt());
+    await rolesAndPermissionStore.setProviderTypeEdit(
+        data.roleAndPermission!.providerTypeEdit.getBoolInt());
+    await rolesAndPermissionStore.setProviderTypeDelete(
+        data.roleAndPermission!.providerTypeDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setCoupon(data.roleAndPermission!.coupon.getBoolInt());
-    await rolesAndPermissionStore.setCouponAdd(data.roleAndPermission!.couponAdd.getBoolInt());
-    await rolesAndPermissionStore.setCouponEdit(data.roleAndPermission!.couponEdit.getBoolInt());
-    await rolesAndPermissionStore.setCouponDelete(data.roleAndPermission!.couponDelete.getBoolInt());
-    await rolesAndPermissionStore.setCouponList(data.roleAndPermission!.couponList.getBoolInt());
+    await rolesAndPermissionStore
+        .setCoupon(data.roleAndPermission!.coupon.getBoolInt());
+    await rolesAndPermissionStore
+        .setCouponAdd(data.roleAndPermission!.couponAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setCouponEdit(data.roleAndPermission!.couponEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setCouponDelete(data.roleAndPermission!.couponDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setCouponList(data.roleAndPermission!.couponList.getBoolInt());
 
-    await rolesAndPermissionStore.setSlider(data.roleAndPermission!.slider.getBoolInt());
-    await rolesAndPermissionStore.setSliderAdd(data.roleAndPermission!.sliderAdd.getBoolInt());
-    await rolesAndPermissionStore.setSliderEdit(data.roleAndPermission!.sliderEdit.getBoolInt());
-    await rolesAndPermissionStore.setSliderList(data.roleAndPermission!.sliderList.getBoolInt());
-    await rolesAndPermissionStore.setSliderDelete(data.roleAndPermission!.sliderDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setSlider(data.roleAndPermission!.slider.getBoolInt());
+    await rolesAndPermissionStore
+        .setSliderAdd(data.roleAndPermission!.sliderAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setSliderEdit(data.roleAndPermission!.sliderEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setSliderList(data.roleAndPermission!.sliderList.getBoolInt());
+    await rolesAndPermissionStore
+        .setSliderDelete(data.roleAndPermission!.sliderDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setPendingHandyman(data.roleAndPermission!.pendingHandyman.getBoolInt());
-    await rolesAndPermissionStore.setPendingProvider(data.roleAndPermission!.pendingProvider.getBoolInt());
+    await rolesAndPermissionStore.setPendingHandyman(
+        data.roleAndPermission!.pendingHandyman.getBoolInt());
+    await rolesAndPermissionStore.setPendingProvider(
+        data.roleAndPermission!.pendingProvider.getBoolInt());
 
-    await rolesAndPermissionStore.setPages(data.roleAndPermission!.pages.getBoolInt());
-    await rolesAndPermissionStore.setHelpAndSupport(data.roleAndPermission!.helpAndSupport.getBoolInt());
-    await rolesAndPermissionStore.setTermCondition(data.roleAndPermission!.termsAndcondition.getBoolInt());
-    await rolesAndPermissionStore.setPrivacyPolicy(data.roleAndPermission!.privacyPolicy.getBoolInt());
-    await rolesAndPermissionStore.setAboutUs(data.roleAndPermission!.aboutUs.getBoolInt());
+    await rolesAndPermissionStore
+        .setPages(data.roleAndPermission!.pages.getBoolInt());
+    await rolesAndPermissionStore
+        .setHelpAndSupport(data.roleAndPermission!.helpAndSupport.getBoolInt());
+    await rolesAndPermissionStore.setTermCondition(
+        data.roleAndPermission!.termsAndcondition.getBoolInt());
+    await rolesAndPermissionStore
+        .setPrivacyPolicy(data.roleAndPermission!.privacyPolicy.getBoolInt());
+    await rolesAndPermissionStore
+        .setAboutUs(data.roleAndPermission!.aboutUs.getBoolInt());
 
-    await rolesAndPermissionStore.setProviderAddress(data.roleAndPermission!.providerAddress.getBoolInt());
-    await rolesAndPermissionStore.setProviderAddressList(data.roleAndPermission!.providerAddressList.getBoolInt());
-    await rolesAndPermissionStore.setProviderAddressEdit(data.roleAndPermission!.providerAddressEdit.getBoolInt());
-    await rolesAndPermissionStore.setProviderAddressAdd(data.roleAndPermission!.providerAddressAdd.getBoolInt());
-    await rolesAndPermissionStore.setProviderAddressDelete(data.roleAndPermission!.providerAddressDelete.getBoolInt());
+    await rolesAndPermissionStore.setProviderAddress(
+        data.roleAndPermission!.providerAddress.getBoolInt());
+    await rolesAndPermissionStore.setProviderAddressList(
+        data.roleAndPermission!.providerAddressList.getBoolInt());
+    await rolesAndPermissionStore.setProviderAddressEdit(
+        data.roleAndPermission!.providerAddressEdit.getBoolInt());
+    await rolesAndPermissionStore.setProviderAddressAdd(
+        data.roleAndPermission!.providerAddressAdd.getBoolInt());
+    await rolesAndPermissionStore.setProviderAddressDelete(
+        data.roleAndPermission!.providerAddressDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setDocument(data.roleAndPermission!.document.getBoolInt());
-    await rolesAndPermissionStore.setDocumentAdd(data.roleAndPermission!.documentAdd.getBoolInt());
-    await rolesAndPermissionStore.setDocumentEdit(data.roleAndPermission!.documentEdit.getBoolInt());
-    await rolesAndPermissionStore.setDocumentList(data.roleAndPermission!.documentList.getBoolInt());
-    await rolesAndPermissionStore.setDocumentDelete(data.roleAndPermission!.documentDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setDocument(data.roleAndPermission!.document.getBoolInt());
+    await rolesAndPermissionStore
+        .setDocumentAdd(data.roleAndPermission!.documentAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setDocumentEdit(data.roleAndPermission!.documentEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setDocumentList(data.roleAndPermission!.documentList.getBoolInt());
+    await rolesAndPermissionStore
+        .setDocumentDelete(data.roleAndPermission!.documentDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setProviderDocument(data.roleAndPermission!.providerDocument.getBoolInt());
-    await rolesAndPermissionStore.setProviderDocumentAdd(data.roleAndPermission!.providerDocumentAdd.getBoolInt());
-    await rolesAndPermissionStore.setProviderDocumentList(data.roleAndPermission!.providerDocumentList.getBoolInt());
-    await rolesAndPermissionStore.setProviderDocumentEdit(data.roleAndPermission!.providerDocumentEdit.getBoolInt());
-    await rolesAndPermissionStore.setProviderDocumentDelete(data.roleAndPermission!.providerDocumentDelete.getBoolInt());
+    await rolesAndPermissionStore.setProviderDocument(
+        data.roleAndPermission!.providerDocument.getBoolInt());
+    await rolesAndPermissionStore.setProviderDocumentAdd(
+        data.roleAndPermission!.providerDocumentAdd.getBoolInt());
+    await rolesAndPermissionStore.setProviderDocumentList(
+        data.roleAndPermission!.providerDocumentList.getBoolInt());
+    await rolesAndPermissionStore.setProviderDocumentEdit(
+        data.roleAndPermission!.providerDocumentEdit.getBoolInt());
+    await rolesAndPermissionStore.setProviderDocumentDelete(
+        data.roleAndPermission!.providerDocumentDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setHandymanPayout(data.roleAndPermission!.handymanPayout.getBoolInt());
-    await rolesAndPermissionStore.setProviderPayout(data.roleAndPermission!.providerPayout.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanPayout(data.roleAndPermission!.handymanPayout.getBoolInt());
+    await rolesAndPermissionStore
+        .setProviderPayout(data.roleAndPermission!.providerPayout.getBoolInt());
 
-    await rolesAndPermissionStore.setServiceFAQ(data.roleAndPermission!.serviceFAQ.getBoolInt());
-    await rolesAndPermissionStore.setServiceFAQList(data.roleAndPermission!.serviceFAQList.getBoolInt());
-    await rolesAndPermissionStore.setServiceFAQAdd(data.roleAndPermission!.serviceFAQAdd.getBoolInt());
-    await rolesAndPermissionStore.setServiceFAQEdit(data.roleAndPermission!.serviceFAQEdit.getBoolInt());
-    await rolesAndPermissionStore.setServiceFAQDelete(data.roleAndPermission!.serviceFAQDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceFAQ(data.roleAndPermission!.serviceFAQ.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceFAQList(data.roleAndPermission!.serviceFAQList.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceFAQAdd(data.roleAndPermission!.serviceFAQAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceFAQEdit(data.roleAndPermission!.serviceFAQEdit.getBoolInt());
+    await rolesAndPermissionStore.setServiceFAQDelete(
+        data.roleAndPermission!.serviceFAQDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setSubcategory(data.roleAndPermission!.subCategory.getBoolInt());
-    await rolesAndPermissionStore.setSubcategoryList(data.roleAndPermission!.subCategoryList.getBoolInt());
-    await rolesAndPermissionStore.setSubcategoryAdd(data.roleAndPermission!.subCategoryAdd.getBoolInt());
-    await rolesAndPermissionStore.setSubcategoryEdit(data.roleAndPermission!.subCategoryEdit.getBoolInt());
-    await rolesAndPermissionStore.setSubcategoryDelete(data.roleAndPermission!.subCategoryDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setSubcategory(data.roleAndPermission!.subCategory.getBoolInt());
+    await rolesAndPermissionStore.setSubcategoryList(
+        data.roleAndPermission!.subCategoryList.getBoolInt());
+    await rolesAndPermissionStore
+        .setSubcategoryAdd(data.roleAndPermission!.subCategoryAdd.getBoolInt());
+    await rolesAndPermissionStore.setSubcategoryEdit(
+        data.roleAndPermission!.subCategoryEdit.getBoolInt());
+    await rolesAndPermissionStore.setSubcategoryDelete(
+        data.roleAndPermission!.subCategoryDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setHandymanType(data.roleAndPermission!.handymanType.getBoolInt());
-    await rolesAndPermissionStore.setHandymanTypeAdd(data.roleAndPermission!.handymanTypeAdd.getBoolInt());
-    await rolesAndPermissionStore.setHandymanTypeList(data.roleAndPermission!.handymanTypeList.getBoolInt());
-    await rolesAndPermissionStore.setHandymanTypeEdit(data.roleAndPermission!.handymanTypeEdit.getBoolInt());
-    await rolesAndPermissionStore.setHandymanTypeDelete(data.roleAndPermission!.handymanTypeDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanType(data.roleAndPermission!.handymanType.getBoolInt());
+    await rolesAndPermissionStore.setHandymanTypeAdd(
+        data.roleAndPermission!.handymanTypeAdd.getBoolInt());
+    await rolesAndPermissionStore.setHandymanTypeList(
+        data.roleAndPermission!.handymanTypeList.getBoolInt());
+    await rolesAndPermissionStore.setHandymanTypeEdit(
+        data.roleAndPermission!.handymanTypeEdit.getBoolInt());
+    await rolesAndPermissionStore.setHandymanTypeDelete(
+        data.roleAndPermission!.handymanTypeDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setPostJob(data.roleAndPermission!.postJob.getBoolInt());
-    await rolesAndPermissionStore.setPostJobList(data.roleAndPermission!.postJobList.getBoolInt());
+    await rolesAndPermissionStore
+        .setPostJob(data.roleAndPermission!.postJob.getBoolInt());
+    await rolesAndPermissionStore
+        .setPostJobList(data.roleAndPermission!.postJobList.getBoolInt());
 
-    await rolesAndPermissionStore.setServicePackage(data.roleAndPermission!.servicePackage.getBoolInt());
-    await rolesAndPermissionStore.setServicePackageList(data.roleAndPermission!.servicePackageList.getBoolInt());
-    await rolesAndPermissionStore.setServicePackageAdd(data.roleAndPermission!.servicePackageAdd.getBoolInt());
-    await rolesAndPermissionStore.setServicePackageEdit(data.roleAndPermission!.servicePackageEdit.getBoolInt());
-    await rolesAndPermissionStore.setServicePackageDelete(data.roleAndPermission!.servicePackageDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setServicePackage(data.roleAndPermission!.servicePackage.getBoolInt());
+    await rolesAndPermissionStore.setServicePackageList(
+        data.roleAndPermission!.servicePackageList.getBoolInt());
+    await rolesAndPermissionStore.setServicePackageAdd(
+        data.roleAndPermission!.servicePackageAdd.getBoolInt());
+    await rolesAndPermissionStore.setServicePackageEdit(
+        data.roleAndPermission!.servicePackageEdit.getBoolInt());
+    await rolesAndPermissionStore.setServicePackageDelete(
+        data.roleAndPermission!.servicePackageDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setRefundAndCancellationPolicy(data.roleAndPermission!.refundAndCancellationPolicy.getBoolInt());
+    await rolesAndPermissionStore.setRefundAndCancellationPolicy(
+        data.roleAndPermission!.refundAndCancellationPolicy.getBoolInt());
 
-    await rolesAndPermissionStore.setBlog(data.roleAndPermission!.blog.getBoolInt());
-    await rolesAndPermissionStore.setBlogList(data.roleAndPermission!.blogList.getBoolInt());
-    await rolesAndPermissionStore.setBlogAdd(data.roleAndPermission!.blogAdd.getBoolInt());
-    await rolesAndPermissionStore.setBlogEdit(data.roleAndPermission!.blogEdit.getBoolInt());
-    await rolesAndPermissionStore.setBlogDelete(data.roleAndPermission!.blogDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setBlog(data.roleAndPermission!.blog.getBoolInt());
+    await rolesAndPermissionStore
+        .setBlogList(data.roleAndPermission!.blogList.getBoolInt());
+    await rolesAndPermissionStore
+        .setBlogAdd(data.roleAndPermission!.blogAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setBlogEdit(data.roleAndPermission!.blogEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setBlogDelete(data.roleAndPermission!.blogDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setServiceAddOn(data.roleAndPermission!.serviceAddOn.getBoolInt());
-    await rolesAndPermissionStore.setServiceAddOnList(data.roleAndPermission!.serviceAddOnList.getBoolInt());
-    await rolesAndPermissionStore.setServiceAddOnAdd(data.roleAndPermission!.serviceAddOnAdd.getBoolInt());
-    await rolesAndPermissionStore.setServiceAddOnEdit(data.roleAndPermission!.serviceAddOnEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setServiceAddOn(data.roleAndPermission!.serviceAddOn.getBoolInt());
+    await rolesAndPermissionStore.setServiceAddOnList(
+        data.roleAndPermission!.serviceAddOnList.getBoolInt());
+    await rolesAndPermissionStore.setServiceAddOnAdd(
+        data.roleAndPermission!.serviceAddOnAdd.getBoolInt());
+    await rolesAndPermissionStore.setServiceAddOnEdit(
+        data.roleAndPermission!.serviceAddOnEdit.getBoolInt());
 
-    await rolesAndPermissionStore.setFrontendSetting(data.roleAndPermission!.frontendSetting.getBoolInt());
-    await rolesAndPermissionStore.setFrontendSettingList(data.roleAndPermission!.frontendSettingList.getBoolInt());
+    await rolesAndPermissionStore.setFrontendSetting(
+        data.roleAndPermission!.frontendSetting.getBoolInt());
+    await rolesAndPermissionStore.setFrontendSettingList(
+        data.roleAndPermission!.frontendSettingList.getBoolInt());
 
-    await rolesAndPermissionStore.setBank(data.roleAndPermission!.bank.getBoolInt());
-    await rolesAndPermissionStore.setBankList(data.roleAndPermission!.bankList.getBoolInt());
-    await rolesAndPermissionStore.setBankAdd(data.roleAndPermission!.bankAdd.getBoolInt());
-    await rolesAndPermissionStore.setBankEdit(data.roleAndPermission!.bankEdit.getBoolInt());
-    await rolesAndPermissionStore.setBankDelete(data.roleAndPermission!.bankDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setBank(data.roleAndPermission!.bank.getBoolInt());
+    await rolesAndPermissionStore
+        .setBankList(data.roleAndPermission!.bankList.getBoolInt());
+    await rolesAndPermissionStore
+        .setBankAdd(data.roleAndPermission!.bankAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setBankEdit(data.roleAndPermission!.bankEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setBankDelete(data.roleAndPermission!.bankDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setTax(data.roleAndPermission!.tax.getBoolInt());
-    await rolesAndPermissionStore.setTaxAdd(data.roleAndPermission!.taxAdd.getBoolInt());
-    await rolesAndPermissionStore.setTaxList(data.roleAndPermission!.taxList.getBoolInt());
-    await rolesAndPermissionStore.setTaxEdit(data.roleAndPermission!.taxEdit.getBoolInt());
-    await rolesAndPermissionStore.setTaxDelete(data.roleAndPermission!.taxDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setTax(data.roleAndPermission!.tax.getBoolInt());
+    await rolesAndPermissionStore
+        .setTaxAdd(data.roleAndPermission!.taxAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setTaxList(data.roleAndPermission!.taxList.getBoolInt());
+    await rolesAndPermissionStore
+        .setTaxEdit(data.roleAndPermission!.taxEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setTaxDelete(data.roleAndPermission!.taxDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setWallet(data.roleAndPermission!.wallet.getBoolInt());
-    await rolesAndPermissionStore.setWalletList(data.roleAndPermission!.walletList.getBoolInt());
-    await rolesAndPermissionStore.setWalletAdd(data.roleAndPermission!.walletAdd.getBoolInt());
-    await rolesAndPermissionStore.setWalletEdit(data.roleAndPermission!.walletEdit.getBoolInt());
-    await rolesAndPermissionStore.setWalletDelete(data.roleAndPermission!.walletDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setWallet(data.roleAndPermission!.wallet.getBoolInt());
+    await rolesAndPermissionStore
+        .setWalletList(data.roleAndPermission!.walletList.getBoolInt());
+    await rolesAndPermissionStore
+        .setWalletAdd(data.roleAndPermission!.walletAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setWalletEdit(data.roleAndPermission!.walletEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setWalletDelete(data.roleAndPermission!.walletDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setEarning(data.roleAndPermission!.earning.getBoolInt());
-    await rolesAndPermissionStore.setEarningList(data.roleAndPermission!.earningList.getBoolInt());
+    await rolesAndPermissionStore
+        .setEarning(data.roleAndPermission!.earning.getBoolInt());
+    await rolesAndPermissionStore
+        .setEarningList(data.roleAndPermission!.earningList.getBoolInt());
 
-    await rolesAndPermissionStore.setUserRating(data.roleAndPermission!.userRating.getBoolInt());
-    await rolesAndPermissionStore.setUserRatingList(data.roleAndPermission!.userRatingList.getBoolInt());
-    await rolesAndPermissionStore.setHandymanRating(data.roleAndPermission!.handymanRating.getBoolInt());
-    await rolesAndPermissionStore.setHandymanRatingList(data.roleAndPermission!.handymanRatingList.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserRating(data.roleAndPermission!.userRating.getBoolInt());
+    await rolesAndPermissionStore
+        .setUserRatingList(data.roleAndPermission!.userRatingList.getBoolInt());
+    await rolesAndPermissionStore
+        .setHandymanRating(data.roleAndPermission!.handymanRating.getBoolInt());
+    await rolesAndPermissionStore.setHandymanRatingList(
+        data.roleAndPermission!.handymanRatingList.getBoolInt());
 
-    await rolesAndPermissionStore.setPlan(data.roleAndPermission!.plan.getBoolInt());
-    await rolesAndPermissionStore.setPlanAdd(data.roleAndPermission!.planAdd.getBoolInt());
-    await rolesAndPermissionStore.setPlanList(data.roleAndPermission!.planList.getBoolInt());
-    await rolesAndPermissionStore.setPlanEdit(data.roleAndPermission!.planEdit.getBoolInt());
-    await rolesAndPermissionStore.setPlanDelete(data.roleAndPermission!.planDelete.getBoolInt());
+    await rolesAndPermissionStore
+        .setPlan(data.roleAndPermission!.plan.getBoolInt());
+    await rolesAndPermissionStore
+        .setPlanAdd(data.roleAndPermission!.planAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setPlanList(data.roleAndPermission!.planList.getBoolInt());
+    await rolesAndPermissionStore
+        .setPlanEdit(data.roleAndPermission!.planEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setPlanDelete(data.roleAndPermission!.planDelete.getBoolInt());
 
-    await rolesAndPermissionStore.setUserServiceList(data.roleAndPermission!.userServiceList.getBoolInt());
-    await rolesAndPermissionStore.setSystemSetting(data.roleAndPermission!.systemSetting.getBoolInt());
-    await rolesAndPermissionStore.setProviderChangePassword(data.roleAndPermission!.providerChangePassword.getBoolInt());
-    await rolesAndPermissionStore.setDataDeletionRequest(data.roleAndPermission!.dataDeletionRequest.getBoolInt());
+    await rolesAndPermissionStore.setUserServiceList(
+        data.roleAndPermission!.userServiceList.getBoolInt());
+    await rolesAndPermissionStore
+        .setSystemSetting(data.roleAndPermission!.systemSetting.getBoolInt());
+    await rolesAndPermissionStore.setProviderChangePassword(
+        data.roleAndPermission!.providerChangePassword.getBoolInt());
+    await rolesAndPermissionStore.setDataDeletionRequest(
+        data.roleAndPermission!.dataDeletionRequest.getBoolInt());
 
-    await rolesAndPermissionStore.setHelpDesk(data.roleAndPermission!.helpDesk.getBoolInt());
-    await rolesAndPermissionStore.setHelpDeskAdd(data.roleAndPermission!.helpDeskAdd.getBoolInt());
-    await rolesAndPermissionStore.setHelpDeskList(data.roleAndPermission!.helpDeskList.getBoolInt());
-    await rolesAndPermissionStore.setHelpDeskEdit(data.roleAndPermission!.helpDeskEdit.getBoolInt());
+    await rolesAndPermissionStore
+        .setHelpDesk(data.roleAndPermission!.helpDesk.getBoolInt());
+    await rolesAndPermissionStore
+        .setHelpDeskAdd(data.roleAndPermission!.helpDeskAdd.getBoolInt());
+    await rolesAndPermissionStore
+        .setHelpDeskList(data.roleAndPermission!.helpDeskList.getBoolInt());
+    await rolesAndPermissionStore
+        .setHelpDeskEdit(data.roleAndPermission!.helpDeskEdit.getBoolInt());
 
-    await appConfigurationStore.setPromotionalBannerStatus(data.promotional_banner);
-    await appConfigurationStore.setEnableChat(data.enable_chat.validate().getBoolInt());
+    await appConfigurationStore
+        .setPromotionalBannerStatus(data.promotional_banner);
+    await appConfigurationStore
+        .setEnableChat(data.enable_chat.validate().getBoolInt());
   }
 
   /// Place ChatGPT Key Here
@@ -270,7 +447,8 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   appConfigurationStore.setFirebaseKey(data.firebaseKey.validate());
   appConfigurationStore.setISUserAuthorized(data.isUserAuthorized ?? false);
 
-  setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, DateTime.timestamp().millisecondsSinceEpoch);
+  setValue(LAST_APP_CONFIGURATION_SYNCED_TIME,
+      DateTime.timestamp().millisecondsSinceEpoch);
   await setValue(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE, true);
   //
 }
@@ -673,7 +851,9 @@ class AppConfigurationModel {
         refundPolicy = map["refund_policy"],
         aboutUs = map["about_us"],
         promotional_banner = _jsonToBoolStrict(map["promotional_banner"]),
-        roleAndPermission = map["role_and_permission"] != null ? RolesAndPermissionModel.fromJsonMap(map["role_and_permission"]) : null,
+        roleAndPermission = map["role_and_permission"] != null
+            ? RolesAndPermissionModel.fromJsonMap(map["role_and_permission"])
+            : null,
         enable_chat = _jsonToInt(map["enable_chat"]);
 
   Map<String, dynamic> toJson() {
@@ -941,32 +1121,45 @@ class RolesAndPermissionModel {
         roleAdd = map["role_add"] == null ? null : map["role_add"],
         roleList = map["role_list"] == null ? null : map["role_list"],
         permission = map["permission"] == null ? null : map["permission"],
-        permissionAdd = map["permission_add"] == null ? null : map["permission_add"],
-        permissionList = map["permission_list"] == null ? null : map["permission_list"],
+        permissionAdd =
+            map["permission_add"] == null ? null : map["permission_add"],
+        permissionList =
+            map["permission_list"] == null ? null : map["permission_list"],
         category = map["category"] == null ? null : map["category"],
         categoryAdd = map["category_add"] == null ? null : map["category_add"],
-        categoryList = map["category_list"] == null ? null : map["category_list"],
-        categoryEdit = map["category_edit"] == null ? null : map["category_edit"],
-        categoryDelete = map["category_delete"] == null ? null : map["category_delete"],
+        categoryList =
+            map["category_list"] == null ? null : map["category_list"],
+        categoryEdit =
+            map["category_edit"] == null ? null : map["category_edit"],
+        categoryDelete =
+            map["category_delete"] == null ? null : map["category_delete"],
         service = map["service"] == null ? null : map["service"],
         serviceAdd = map["service_add"] == null ? null : map["service_add"],
         serviceList = map["service_list"] == null ? null : map["service_list"],
         serviceEdit = map["service_edit"] == null ? null : map["service_edit"],
-        serviceDelete = map["service_delete"] == null ? null : map["service_delete"],
+        serviceDelete =
+            map["service_delete"] == null ? null : map["service_delete"],
         provider = map["provider"] == null ? null : map["provider"],
         providerAdd = map["provider_add"] == null ? null : map["provider_add"],
-        providerList = map["provider_list"] == null ? null : map["provider_list"],
-        providerEdit = map["provider_edit"] == null ? null : map["provider_edit"],
-        providerDelete = map["provider_delete"] == null ? null : map["provider_delete"],
+        providerList =
+            map["provider_list"] == null ? null : map["provider_list"],
+        providerEdit =
+            map["provider_edit"] == null ? null : map["provider_edit"],
+        providerDelete =
+            map["provider_delete"] == null ? null : map["provider_delete"],
         handyman = map["handyman"] == null ? null : map["handyman"],
-        handymanList = map["handyman_list"] == null ? null : map["handyman_list"],
+        handymanList =
+            map["handyman_list"] == null ? null : map["handyman_list"],
         handymanAdd = map["handyman_add"] == null ? null : map["handyman_add"],
-        handymanEdit = map["handyman_edit"] == null ? null : map["handyman_edit"],
-        handymanDelete = map["handyman_delete"] == null ? null : map["handyman_delete"],
+        handymanEdit =
+            map["handyman_edit"] == null ? null : map["handyman_edit"],
+        handymanDelete =
+            map["handyman_delete"] == null ? null : map["handyman_delete"],
         booking = map["booking"] == null ? null : map["booking"],
         bookingList = map["booking_list"] == null ? null : map["booking_list"],
         bookingEdit = map["booking_edit"] == null ? null : map["booking_edit"],
-        bookingDelete = map["booking_delete"] == null ? null : map["booking_delete"],
+        bookingDelete =
+            map["booking_delete"] == null ? null : map["booking_delete"],
         bookingView = map["booking_view"] == null ? null : map["booking_view"],
         payment = map["payment"] == null ? null : map["payment"],
         paymentList = map["payment_list"] == null ? null : map["payment_list"],
@@ -977,77 +1170,144 @@ class RolesAndPermissionModel {
         userAdd = map["user_add"] == null ? null : map["user_add"],
         userEdit = map["user_edit"] == null ? null : map["user_edit"],
         providerType = map["providertype"] == null ? null : map["providertype"],
-        providerTypeList = map["providertype_list"] == null ? null : map["providertype_list"],
-        providerTypeAdd = map["providertype_add"] == null ? null : map["providertype_add"],
-        providerTypeEdit = map["providertype_edit"] == null ? null : map["providertype_edit"],
-        providerTypeDelete = map["providertype_delete"] == null ? null : map["providertype_delete"],
+        providerTypeList =
+            map["providertype_list"] == null ? null : map["providertype_list"],
+        providerTypeAdd =
+            map["providertype_add"] == null ? null : map["providertype_add"],
+        providerTypeEdit =
+            map["providertype_edit"] == null ? null : map["providertype_edit"],
+        providerTypeDelete = map["providertype_delete"] == null
+            ? null
+            : map["providertype_delete"],
         coupon = map["coupon"] == null ? null : map["coupon"],
         couponList = map["coupon_list"] == null ? null : map["coupon_list"],
         couponAdd = map["coupon_add"] == null ? null : map["coupon_add"],
         couponEdit = map["coupon_edit"] == null ? null : map["coupon_edit"],
-        couponDelete = map["coupon_delete"] == null ? null : map["coupon_delete"],
+        couponDelete =
+            map["coupon_delete"] == null ? null : map["coupon_delete"],
         slider = map["slider"] == null ? null : map["slider"],
         sliderList = map["slider_list"] == null ? null : map["slider_list"],
         sliderAdd = map["slider_add"] == null ? null : map["slider_add"],
         sliderEdit = map["slider_edit"] == null ? null : map["slider_edit"],
-        sliderDelete = map["slider_delete"] == null ? null : map["slider_delete"],
-        pendingProvider = map["pending_provider"] == null ? null : map["pending_provider"],
-        pendingHandyman = map["pending_handyman"] == null ? null : map["pending_handyman"],
+        sliderDelete =
+            map["slider_delete"] == null ? null : map["slider_delete"],
+        pendingProvider =
+            map["pending_provider"] == null ? null : map["pending_provider"],
+        pendingHandyman =
+            map["pending_handyman"] == null ? null : map["pending_handyman"],
         pages = map["pages"] == null ? null : map["pages"],
         helpAndSupport = map["Help_and_support"] ?? 0,
         aboutUs = map["about_us"] ?? 0,
         privacyPolicy = map["privacy_policy"] ?? 0,
         termsAndcondition = map["terms_condition"] ?? 0,
-        providerAddress = map["provider_address"] == null ? null : map["provider_address"],
-        providerAddressList = map["provideraddress_list"] == null ? null : map["provideraddress_list"],
-        providerAddressAdd = map["provideraddress_add"] == null ? null : map["provideraddress_add"],
-        providerAddressEdit = map["provideraddress_edit"] == null ? null : map["provideraddress_edit"],
-        providerAddressDelete = map["provideraddress_delete"] == null ? null : map["provideraddress_delete"],
+        providerAddress =
+            map["provider_address"] == null ? null : map["provider_address"],
+        providerAddressList = map["provideraddress_list"] == null
+            ? null
+            : map["provideraddress_list"],
+        providerAddressAdd = map["provideraddress_add"] == null
+            ? null
+            : map["provideraddress_add"],
+        providerAddressEdit = map["provideraddress_edit"] == null
+            ? null
+            : map["provideraddress_edit"],
+        providerAddressDelete = map["provideraddress_delete"] == null
+            ? null
+            : map["provideraddress_delete"],
         document = map["document"] == null ? null : map["document"],
-        documentList = map["document_list"] == null ? null : map["document_list"],
+        documentList =
+            map["document_list"] == null ? null : map["document_list"],
         documentAdd = map["document_add"] == null ? null : map["document_add"],
-        documentEdit = map["document_edit"] == null ? null : map["document_edit"],
-        documentDelete = map["document_delete"] == null ? null : map["document_delete"],
-        providerDocument = map["provider_document"] == null ? null : map["provider_document"],
-        providerDocumentList = map["providerdocument_list"] == null ? null : map["providerdocument_list"],
-        providerDocumentAdd = map["providerdocument_add"] == null ? null : map["providerdocument_add"],
-        providerDocumentEdit = map["providerdocument_edit"] == null ? null : map["providerdocument_edit"],
-        providerDocumentDelete = map["providerdocument_delete"] == null ? null : map["providerdocument_delete"],
-        handymanPayout = map["handyman_payout"] == null ? null : map["handyman_payout"],
+        documentEdit =
+            map["document_edit"] == null ? null : map["document_edit"],
+        documentDelete =
+            map["document_delete"] == null ? null : map["document_delete"],
+        providerDocument =
+            map["provider_document"] == null ? null : map["provider_document"],
+        providerDocumentList = map["providerdocument_list"] == null
+            ? null
+            : map["providerdocument_list"],
+        providerDocumentAdd = map["providerdocument_add"] == null
+            ? null
+            : map["providerdocument_add"],
+        providerDocumentEdit = map["providerdocument_edit"] == null
+            ? null
+            : map["providerdocument_edit"],
+        providerDocumentDelete = map["providerdocument_delete"] == null
+            ? null
+            : map["providerdocument_delete"],
+        handymanPayout =
+            map["handyman_payout"] == null ? null : map["handyman_payout"],
         serviceFAQ = map["servicefaq"] == null ? null : map["servicefaq"],
-        serviceFAQAdd = map["servicefaq_add"] == null ? null : map["servicefaq_add"],
-        serviceFAQEdit = map["servicefaq_edit"] == null ? null : map["servicefaq_edit"],
-        serviceFAQDelete = map["servicefaq_delete"] == null ? null : map["servicefaq_delete"],
-        serviceFAQList = map["servicefaq_list"] == null ? null : map["servicefaq_list"],
+        serviceFAQAdd =
+            map["servicefaq_add"] == null ? null : map["servicefaq_add"],
+        serviceFAQEdit =
+            map["servicefaq_edit"] == null ? null : map["servicefaq_edit"],
+        serviceFAQDelete =
+            map["servicefaq_delete"] == null ? null : map["servicefaq_delete"],
+        serviceFAQList =
+            map["servicefaq_list"] == null ? null : map["servicefaq_list"],
         subCategory = map["subcategory"] == null ? null : map["subcategory"],
-        subCategoryAdd = map["subcategory_add"] == null ? null : map["subcategory_add"],
-        subCategoryEdit = map["subcategory_edit"] == null ? null : map["subcategory_edit"],
-        subCategoryDelete = map["subcategory_delete"] == null ? null : map["subcategory_delete"],
-        subCategoryList = map["subcategory_list"] == null ? null : map["subcategory_list"],
+        subCategoryAdd =
+            map["subcategory_add"] == null ? null : map["subcategory_add"],
+        subCategoryEdit =
+            map["subcategory_edit"] == null ? null : map["subcategory_edit"],
+        subCategoryDelete = map["subcategory_delete"] == null
+            ? null
+            : map["subcategory_delete"],
+        subCategoryList =
+            map["subcategory_list"] == null ? null : map["subcategory_list"],
         handymanType = map["handymantype"] == null ? null : map["handymantype"],
-        handymanTypeList = map["handymantype_list"] == null ? null : map["handymantype_list"],
-        handymanTypeAdd = map["handymantype_add"] == null ? null : map["handymantype_add"],
-        handymanTypeEdit = map["handymantype_edit"] == null ? null : map["handymantype_edit"],
-        handymanTypeDelete = map["handymantype_delete"] == null ? null : map["handymantype_delete"],
+        handymanTypeList =
+            map["handymantype_list"] == null ? null : map["handymantype_list"],
+        handymanTypeAdd =
+            map["handymantype_add"] == null ? null : map["handymantype_add"],
+        handymanTypeEdit =
+            map["handymantype_edit"] == null ? null : map["handymantype_edit"],
+        handymanTypeDelete = map["handymantype_delete"] == null
+            ? null
+            : map["handymantype_delete"],
         postJob = map["postjob"] == null ? null : map["postjob"],
         postJobList = map["postjob_list"] == null ? null : map["postjob_list"],
-        servicePackage = map["servicepackage"] == null ? null : map["servicepackage"],
-        servicePackageAdd = map["servicepackage_add"] == null ? null : map["servicepackage_add"],
-        servicePackageEdit = map["servicepackage_edit"] == null ? null : map["servicepackage_edit"],
-        servicePackageDelete = map["servicepackage_delete"] == null ? null : map["servicepackage_delete"],
-        servicePackageList = map["servicepackage_list"] == null ? null : map["servicepackage_list"],
-        refundAndCancellationPolicy = map["refund_and_cancellation_policy"] == null ? null : map["refund_and_cancellation_policy"],
+        servicePackage =
+            map["servicepackage"] == null ? null : map["servicepackage"],
+        servicePackageAdd = map["servicepackage_add"] == null
+            ? null
+            : map["servicepackage_add"],
+        servicePackageEdit = map["servicepackage_edit"] == null
+            ? null
+            : map["servicepackage_edit"],
+        servicePackageDelete = map["servicepackage_delete"] == null
+            ? null
+            : map["servicepackage_delete"],
+        servicePackageList = map["servicepackage_list"] == null
+            ? null
+            : map["servicepackage_list"],
+        refundAndCancellationPolicy =
+            map["refund_and_cancellation_policy"] == null
+                ? null
+                : map["refund_and_cancellation_policy"],
         blog = map["blog"] == null ? null : map["blog"],
         blogAdd = map["blog_add"] == null ? null : map["blog_add"],
         blogEdit = map["blog_edit"] == null ? null : map["blog_edit"],
         blogDelete = map["blog_delete"] == null ? null : map["blog_delete"],
         blogList = map["blog_list"] == null ? null : map["blog_list"],
-        serviceAddOn = map["service_add_on"] == null ? null : map["service_add_on"],
-        serviceAddOnAdd = map["service_add_on_add"] == null ? null : map["service_add_on_add"],
-        serviceAddOnEdit = map["service_add_on_edit"] == null ? null : map["service_add_on_edit"],
-        serviceAddOnList = map["service_add_on_list"] == null ? null : map["service_add_on_list"],
-        frontendSetting = map["frontend_setting"] == null ? null : map["frontend_setting"],
-        frontendSettingList = map["frontendsetting_list"] == null ? null : map["frontendsetting_list"],
+        serviceAddOn =
+            map["service_add_on"] == null ? null : map["service_add_on"],
+        serviceAddOnAdd = map["service_add_on_add"] == null
+            ? null
+            : map["service_add_on_add"],
+        serviceAddOnEdit = map["service_add_on_edit"] == null
+            ? null
+            : map["service_add_on_edit"],
+        serviceAddOnList = map["service_add_on_list"] == null
+            ? null
+            : map["service_add_on_list"],
+        frontendSetting =
+            map["frontend_setting"] == null ? null : map["frontend_setting"],
+        frontendSettingList = map["frontendsetting_list"] == null
+            ? null
+            : map["frontendsetting_list"],
         bank = map["bank"] == null ? null : map["bank"],
         bankAdd = map["bank_add"] == null ? null : map["bank_add"],
         bankEdit = map["bank_edit"] == null ? null : map["bank_edit"],
@@ -1063,26 +1323,40 @@ class RolesAndPermissionModel {
         wallet = map["wallet"] == null ? null : map["wallet"],
         walletAdd = map["wallet_add"] == null ? null : map["wallet_add"],
         walletEdit = map["wallet_edit"] == null ? null : map["wallet_edit"],
-        walletDelete = map["wallet_delete"] == null ? null : map["wallet_delete"],
+        walletDelete =
+            map["wallet_delete"] == null ? null : map["wallet_delete"],
         walletList = map["wallet_list"] == null ? null : map["wallet_list"],
         userRating = map["userrating"] == null ? null : map["userrating"],
-        userRatingList = map["userrating_list"] == null ? null : map["userrating_list"],
-        handymanRating = map["handymanrating"] == null ? null : map["handymanrating"],
-        handymanRatingList = map["handymanrating_list"] == null ? null : map["handymanrating_list"],
-        providerPayout = map["provider_payout"] == null ? null : map["provider_payout"],
+        userRatingList =
+            map["userrating_list"] == null ? null : map["userrating_list"],
+        handymanRating =
+            map["handymanrating"] == null ? null : map["handymanrating"],
+        handymanRatingList = map["handymanrating_list"] == null
+            ? null
+            : map["handymanrating_list"],
+        providerPayout =
+            map["provider_payout"] == null ? null : map["provider_payout"],
         plan = map["plan"] == null ? null : map["plan"],
         planAdd = map["plan_add"] == null ? null : map["plan_add"],
         planEdit = map["plan_edit"] == null ? null : map["plan_edit"],
         planDelete = map["plan_delete"] == null ? null : map["plan_delete"],
         planList = map["plan_list"] == null ? null : map["plan_list"],
-        userServiceList = map["userservice_list"] == null ? null : map["userservice_list"],
-        systemSetting = map["system_setting"] == null ? null : map["system_setting"],
-        providerChangePassword = map["provider_changepassword"] == null ? null : map["provider_changepassword"],
-        dataDeletionRequest = map["data_deletion_request"] == null ? null : map["data_deletion_request"],
+        userServiceList =
+            map["userservice_list"] == null ? null : map["userservice_list"],
+        systemSetting =
+            map["system_setting"] == null ? null : map["system_setting"],
+        providerChangePassword = map["provider_changepassword"] == null
+            ? null
+            : map["provider_changepassword"],
+        dataDeletionRequest = map["data_deletion_request"] == null
+            ? null
+            : map["data_deletion_request"],
         helpDesk = map["helpdesk"] == null ? null : map["helpdesk"],
         helpDeskAdd = map["helpdesk_add"] == null ? null : map["helpdesk_add"],
-        helpDeskEdit = map["helpdesk_edit"] == null ? null : map["helpdesk_edit"],
-        helpDeskList = map["helpdesk_list"] == null ? null : map["helpdesk_list"];
+        helpDeskEdit =
+            map["helpdesk_edit"] == null ? null : map["helpdesk_edit"],
+        helpDeskList =
+            map["helpdesk_list"] == null ? null : map["helpdesk_list"];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

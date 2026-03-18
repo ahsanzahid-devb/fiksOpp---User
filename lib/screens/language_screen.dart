@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 

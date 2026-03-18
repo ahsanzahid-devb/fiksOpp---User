@@ -1,8 +1,8 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/screens/blog/model/blog_response_model.dart';
-import 'package:booking_system_flutter/screens/gallery/gallery_component.dart';
-import 'package:booking_system_flutter/screens/gallery/gallery_screen.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/screens/blog/model/blog_response_model.dart';
+import 'package:fiksOpp/screens/gallery/gallery_component.dart';
+import 'package:fiksOpp/screens/gallery/gallery_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -12,7 +12,8 @@ class BlogDetailHeaderComponent extends StatefulWidget {
   BlogDetailHeaderComponent({required this.blogData});
 
   @override
-  State<BlogDetailHeaderComponent> createState() => _BlogDetailHeaderComponentState();
+  State<BlogDetailHeaderComponent> createState() =>
+      _BlogDetailHeaderComponentState();
 }
 
 class _BlogDetailHeaderComponentState extends State<BlogDetailHeaderComponent> {
@@ -49,7 +50,9 @@ class _BlogDetailHeaderComponentState extends State<BlogDetailHeaderComponent> {
             left: 8,
             child: Container(
               child: BackWidget(iconColor: context.iconColor),
-              decoration: BoxDecoration(shape: BoxShape.circle, color: context.cardColor.withValues(alpha:0.7)),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: context.cardColor.withValues(alpha: 0.7)),
             ),
           ),
           Positioned(
@@ -66,9 +69,14 @@ class _BlogDetailHeaderComponentState extends State<BlogDetailHeaderComponent> {
                       children: List.generate(
                         widget.blogData.attachment!.take(2).length,
                         (i) => Container(
-                          decoration: BoxDecoration(border: Border.all(color: white, width: 2), borderRadius: radius()),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: white, width: 2),
+                              borderRadius: radius()),
                           child: GalleryComponent(
-                            images: widget.blogData.attachment.validate().map((e) => e.url.validate()).toList(),
+                            images: widget.blogData.attachment
+                                .validate()
+                                .map((e) => e.url.validate())
+                                .toList(),
                             index: i,
                             padding: 32,
                             height: 60,
@@ -86,15 +94,27 @@ class _BlogDetailHeaderComponentState extends State<BlogDetailHeaderComponent> {
                           height: 60,
                           width: 60,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(border: Border.all(color: white, width: 2), borderRadius: radius()),
-                          child: Text('+' '${widget.blogData.attachment!.length - 2}', style: boldTextStyle(color: white)),
+                          decoration: BoxDecoration(
+                              border: Border.all(color: white, width: 2),
+                              borderRadius: radius()),
+                          child: Text(
+                              '+' '${widget.blogData.attachment!.length - 2}',
+                              style: boldTextStyle(color: white)),
                         ),
                       ).onTap(() {
                         GalleryScreen(
-                          attachments: widget.blogData.attachment.validate().map((e) => e.url.validate()).toList(),
+                          attachments: widget.blogData.attachment
+                              .validate()
+                              .map((e) => e.url.validate())
+                              .toList(),
                           serviceName: widget.blogData.title.validate(),
-                        ).launch(context, pageRouteAnimation: PageRouteAnimation.Fade, duration: 400.milliseconds).then((value) {
-                          setStatusBarColor(transparentColor, delayInMilliSeconds: 1000);
+                        )
+                            .launch(context,
+                                pageRouteAnimation: PageRouteAnimation.Fade,
+                                duration: 400.milliseconds)
+                            .then((value) {
+                          setStatusBarColor(transparentColor,
+                              delayInMilliSeconds: 1000);
                         });
                       }),
                   ],

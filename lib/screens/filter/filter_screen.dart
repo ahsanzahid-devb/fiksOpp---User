@@ -1,11 +1,11 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/category_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/filter/component/filter_category_component.dart';
-import 'package:booking_system_flutter/screens/filter/component/filter_price_component.dart';
-import 'package:booking_system_flutter/screens/filter/component/filter_provider_component.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/category_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/filter/component/filter_category_component.dart';
+import 'package:fiksOpp/screens/filter/component/filter_price_component.dart';
+import 'package:fiksOpp/screens/filter/component/filter_provider_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -43,8 +43,6 @@ class _FilterScreenState extends State<FilterScreen> {
     //Get all Provider List
     if (widget.isFromProvider) {
       await getProvider(type: FILTER_PROVIDER).then((value) {
-
-
         minPrice = value.min;
         maxPrice = value.max;
 
@@ -114,30 +112,47 @@ class _FilterScreenState extends State<FilterScreen> {
           Row(
             children: [
               Container(
-                decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor, borderRadius: radius(0)),
+                decoration: boxDecorationDefault(
+                    color: context.scaffoldBackgroundColor,
+                    borderRadius: radius(0)),
                 child: Column(
                   children: [
                     if (widget.isFromProvider)
-                      buildItem(isSelected: isSelected == 0, name: language.textProvider).onTap(() {
+                      buildItem(
+                              isSelected: isSelected == 0,
+                              name: language.textProvider)
+                          .onTap(() {
                         if (!appStore.isLoading) {
                           isSelected = 0;
                           setState(() {});
                         }
                       }),
                     if (!widget.isFromCategory)
-                      buildItem(isSelected: isSelected == ((widget.isFromProvider) ? 1 : 0), name: language.lblCategory).onTap(() {
+                      buildItem(
+                              isSelected: isSelected ==
+                                  ((widget.isFromProvider) ? 1 : 0),
+                              name: language.lblCategory)
+                          .onTap(() {
                         if (!appStore.isLoading) {
                           isSelected = (widget.isFromProvider) ? 1 : 0;
                           setState(() {});
                         }
                       }),
-                    buildItem(isSelected: isSelected == ((widget.isFromProvider) ? 2 : 1), name: language.lblPrice).onTap(() {
+                    buildItem(
+                            isSelected:
+                                isSelected == ((widget.isFromProvider) ? 2 : 1),
+                            name: language.lblPrice)
+                        .onTap(() {
                       if (!appStore.isLoading) {
                         isSelected = (widget.isFromProvider) ? 2 : 1;
                         setState(() {});
                       }
                     }),
-                    buildItem(isSelected: isSelected == ((widget.isFromProvider) ? 3 : 2), name: language.lblRating).onTap(() {
+                    buildItem(
+                            isSelected:
+                                isSelected == ((widget.isFromProvider) ? 3 : 2),
+                            name: language.lblRating)
+                        .onTap(() {
                       if (!appStore.isLoading) {
                         isSelected = (widget.isFromProvider) ? 3 : 2;
                         setState(() {});
@@ -150,7 +165,10 @@ class _FilterScreenState extends State<FilterScreen> {
                 if (appStore.isLoading) Offstage(),
                 FilterProviderComponent(providerList: providerList),
                 FilterCategoryComponent(catList: catList),
-                FilterPriceComponent(min: minPrice.validate() ,max: maxPrice.validate(),),
+                FilterPriceComponent(
+                  min: minPrice.validate(),
+                  max: maxPrice.validate(),
+                ),
                 FilterRatingComponent(),
               ][isSelected]
                   .flexible(flex: 5),
@@ -158,19 +176,23 @@ class _FilterScreenState extends State<FilterScreen> {
           ).expand(),
           Observer(
             builder: (_) => Container(
-              decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+              decoration:
+                  boxDecorationDefault(color: context.scaffoldBackgroundColor),
               width: context.width(),
               padding: EdgeInsets.all(16),
               child: Row(
                 children: [
                   if (filterStore.providerId.validate().isNotEmpty ||
                       filterStore.categoryId.validate().isNotEmpty ||
-                      (filterStore.isPriceMin.validate().isNotEmpty && filterStore.isPriceMax.validate().isNotEmpty) ||
+                      (filterStore.isPriceMin.validate().isNotEmpty &&
+                          filterStore.isPriceMax.validate().isNotEmpty) ||
                       filterStore.ratingId.validate().isNotEmpty)
                     AppButton(
                       text: language.lblClearFilter,
                       textColor: context.primaryColor,
-                      shapeBorder: RoundedRectangleBorder(side: BorderSide(color: context.primaryColor), borderRadius: radius()),
+                      shapeBorder: RoundedRectangleBorder(
+                          side: BorderSide(color: context.primaryColor),
+                          borderRadius: radius()),
                       onTap: () {
                         clearFilter();
                       },
@@ -185,7 +207,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
                       catList.forEach((element) {
                         if (element.isSelected) {
-                          filterStore.addToCategoryIdList(prodId: element.id.validate());
+                          filterStore.addToCategoryIdList(
+                              prodId: element.id.validate());
                         }
                       });
 
@@ -193,7 +216,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
                       providerList.forEach((element) {
                         if (element.isSelected) {
-                          filterStore.addToProviderList(prodId: element.id.validate());
+                          filterStore.addToProviderList(
+                              prodId: element.id.validate());
                         }
                       });
 

@@ -1,8 +1,8 @@
-import 'package:booking_system_flutter/screens/dashboard/component/promotional_banner_slider_component.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/component/app_bar_dashboard_component_4.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/component/service_list_dashboard_component_4.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/component/upcoming_booking_dashboard_component_4.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_4/shimmer/dashboard_shimmer_4.dart';
+import 'package:fiksOpp/screens/dashboard/component/promotional_banner_slider_component.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/component/app_bar_dashboard_component_4.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/component/service_list_dashboard_component_4.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/component/upcoming_booking_dashboard_component_4.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_4/shimmer/dashboard_shimmer_4.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -50,7 +50,10 @@ class _DashboardFragment4State extends State<DashboardFragment4> {
   }
 
   void init() async {
-    future = userDashboard(isCurrentLocation: appStore.isCurrentLocation, lat: getDoubleAsync(LATITUDE), long: getDoubleAsync(LONGITUDE));
+    future = userDashboard(
+        isCurrentLocation: appStore.isCurrentLocation,
+        lat: getDoubleAsync(LATITUDE),
+        long: getDoubleAsync(LONGITUDE));
     setStatusBarColorChange();
     setState(() {});
   }
@@ -81,7 +84,9 @@ class _DashboardFragment4State extends State<DashboardFragment4> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appStore.isDarkMode ? context.primaryColor.withValues(alpha: 0.01) : primaryLightColor,
+      backgroundColor: appStore.isDarkMode
+          ? context.primaryColor.withValues(alpha: 0.01)
+          : primaryLightColor,
       body: Stack(
         children: [
           SnapHelperWidget<DashboardResponse>(
@@ -126,8 +131,11 @@ class _DashboardFragment4State extends State<DashboardFragment4> {
                     },
                   ),
                   40.height,
-                  CategoryListDashboardComponent4(categoryList: snap.category.validate(), listTiTle: language.category),
-                  UpComingBookingDashboardComponent4(upComingBookingData: snap.upcomingData),
+                  CategoryListDashboardComponent4(
+                      categoryList: snap.category.validate(),
+                      listTiTle: language.category),
+                  UpComingBookingDashboardComponent4(
+                      upComingBookingData: snap.upcomingData),
                   30.height,
                   SliderDashboardComponent4(sliderList: snap.slider.validate()),
                   30.height,
@@ -136,7 +144,8 @@ class _DashboardFragment4State extends State<DashboardFragment4> {
                     serviceListTitle: language.service,
                   ),
                   16.height,
-                  if (snap.promotionalBanner.validate().isNotEmpty && appConfigurationStore.isPromotionalBanner)
+                  if (snap.promotionalBanner.validate().isNotEmpty &&
+                      appConfigurationStore.isPromotionalBanner)
                     PromotionalBannerSliderComponent(
                       promotionalBannerList: snap.promotionalBanner.validate(),
                     ).paddingTop(16),
@@ -147,12 +156,14 @@ class _DashboardFragment4State extends State<DashboardFragment4> {
                     isFeatured: true,
                   ),
                   16.height,
-                  if (appConfigurationStore.jobRequestStatus) JobRequestDashboardComponent4()
+                  if (appConfigurationStore.jobRequestStatus)
+                    JobRequestDashboardComponent4()
                 ],
               );
             },
           ),
-          Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
         ],
       ),
     );

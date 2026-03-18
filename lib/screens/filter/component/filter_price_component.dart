@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -26,7 +26,8 @@ class _FilterPriceComponentState extends State<FilterPriceComponent> {
     super.initState();
 
     // Use filterStore values if already set, else use widget.min/max
-    if (filterStore.isPriceMax.isNotEmpty && filterStore.isPriceMin.isNotEmpty) {
+    if (filterStore.isPriceMax.isNotEmpty &&
+        filterStore.isPriceMin.isNotEmpty) {
       rangeValues = RangeValues(
         filterStore.isPriceMin.toDouble(),
         filterStore.isPriceMax.toDouble(),
@@ -64,7 +65,6 @@ class _FilterPriceComponentState extends State<FilterPriceComponent> {
               });
             },
           ),
-
           16.height,
           Marquee(
             child: Row(

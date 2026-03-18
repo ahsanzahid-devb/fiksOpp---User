@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/screens/jobRequest/components/category_widget.dart';
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
-import 'package:booking_system_flutter/screens/jobRequest/my_post_detail_screen.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/screens/jobRequest/components/category_widget.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/screens/jobRequest/my_post_detail_screen.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 

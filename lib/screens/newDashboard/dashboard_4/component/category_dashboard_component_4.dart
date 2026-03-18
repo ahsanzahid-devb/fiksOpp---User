@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/model/category_model.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/model/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -17,7 +17,11 @@ class CategoryDashboardComponent4 extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ViewAllServiceScreen(categoryId: categoryData.id.validate(), categoryName: categoryData.name.validate(), isFromCategory: true).launch(context);
+        ViewAllServiceScreen(
+                categoryId: categoryData.id.validate(),
+                categoryName: categoryData.name.validate(),
+                isFromCategory: true)
+            .launch(context);
       },
       child: Stack(
         children: [
@@ -36,7 +40,9 @@ class CategoryDashboardComponent4 extends StatelessWidget {
                     height: 85,
                     width: width ?? context.width() / 4 - 22,
                     colorFilter: ColorFilter.mode(
-                      appStore.isDarkMode ? Colors.white : categoryData.color.validate(value: '000').toColor(),
+                      appStore.isDarkMode
+                          ? Colors.white
+                          : categoryData.color.validate(value: '000').toColor(),
                       BlendMode.srcIn,
                     ),
                     placeholderBuilder: (context) => PlaceHolderWidget(
@@ -51,10 +57,13 @@ class CategoryDashboardComponent4 extends StatelessWidget {
                   height: 85,
                   width: width ?? context.width() / 4 - 22,
                   decoration: BoxDecoration(
-                    color: appStore.isDarkMode ? Colors.white24 : context.cardColor,
+                    color: appStore.isDarkMode
+                        ? Colors.white24
+                        : context.cardColor,
                     shape: BoxShape.rectangle,
                     borderRadius: radius(8),
-                    border: appStore.isDarkMode ? Border.all(color: grey) : null,
+                    border:
+                        appStore.isDarkMode ? Border.all(color: grey) : null,
                   ),
                   child: CachedImageWidget(
                     url: categoryData.categoryImage.validate(),

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:cinetpay/cinetpay.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';

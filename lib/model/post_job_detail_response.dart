@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
 
 class PostJobDetailResponse {
   PostJobData? postRequestDetail;
@@ -7,7 +7,9 @@ class PostJobDetailResponse {
   PostJobDetailResponse({this.postRequestDetail, this.biderData});
 
   PostJobDetailResponse.fromJson(dynamic json) {
-    postRequestDetail = json['post_request_detail'] != null ? PostJobData.fromJson(json['post_request_detail']) : null;
+    postRequestDetail = json['post_request_detail'] != null
+        ? PostJobData.fromJson(json['post_request_detail'])
+        : null;
     if (json['bider_data'] != null) {
       biderData = [];
       json['bider_data'].forEach((v) {

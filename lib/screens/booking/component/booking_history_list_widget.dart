@@ -1,12 +1,14 @@
-import 'package:booking_system_flutter/model/booking_detail_model.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/dashed_rect.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/model/booking_detail_model.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/dashed_rect.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class BookingHistoryListWidget extends StatelessWidget {
-  const BookingHistoryListWidget({Key? key, required this.data, required this.index, required this.length}) : super(key: key);
+  const BookingHistoryListWidget(
+      {Key? key, required this.data, required this.index, required this.length})
+      : super(key: key);
 
   final BookingActivity data;
   final int index;
@@ -29,7 +31,8 @@ class BookingHistoryListWidget extends StatelessWidget {
             8.height,
             data.datetime.validate().toString().isNotEmpty
                 ? Text(
-                    formatDate(data.datetime..validate().toString(), isTime: true),
+                    formatDate(data.datetime..validate().toString(),
+                        isTime: true),
                     style: primaryTextStyle(size: 12),
                   )
                 : SizedBox(),
@@ -44,7 +47,8 @@ class BookingHistoryListWidget extends StatelessWidget {
               height: 12,
               width: 12,
               decoration: BoxDecoration(
-                color: data.activityType.validate().getBookingActivityStatusColor,
+                color:
+                    data.activityType.validate().getBookingActivityStatusColor,
                 borderRadius: radius(16),
               ),
             ),
@@ -52,7 +56,8 @@ class BookingHistoryListWidget extends StatelessWidget {
               height: 65,
               child: DashedRect(
                 gap: 3,
-                color: data.activityType.validate().getBookingActivityStatusColor,
+                color:
+                    data.activityType.validate().getBookingActivityStatusColor,
                 strokeWidth: 1.5,
               ),
             ).visible(index != length - 1),
@@ -65,7 +70,10 @@ class BookingHistoryListWidget extends StatelessWidget {
             TextIcon(
               expandedText: true,
               edgeInsets: EdgeInsets.only(right: 4, left: 4, bottom: 4),
-              text: data.activityType.validate().replaceAll('_', ' ').capitalizeFirstLetter(),
+              text: data.activityType
+                  .validate()
+                  .replaceAll('_', ' ')
+                  .capitalizeFirstLetter(),
             ),
             Text(
               data.activityMessage.validate().replaceAll('_', ' '),

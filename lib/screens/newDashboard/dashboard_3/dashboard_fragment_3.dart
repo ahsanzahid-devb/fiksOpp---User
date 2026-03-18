@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/appbar_dashboard_component_3.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/job_request_dahboard_component_3.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/component/service_list_dashboard_component_3.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_3/shimmer/dashboard_shimmer_3.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_3/component/appbar_dashboard_component_3.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_3/component/job_request_dahboard_component_3.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_3/component/service_list_dashboard_component_3.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_3/shimmer/dashboard_shimmer_3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';

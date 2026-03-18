@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/image_border_component.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/utils/common.dart';
+import 'package:fiksOpp/component/image_border_component.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -26,7 +26,9 @@ class ReviewWidget extends StatelessWidget {
           Row(
             children: [
               ImageBorder(
-                src: isCustomer ? data.customerProfileImage.validate() : data.profileImage.validate(),
+                src: isCustomer
+                    ? data.customerProfileImage.validate()
+                    : data.profileImage.validate(),
                 height: 50,
               ),
               16.width,
@@ -36,19 +38,37 @@ class ReviewWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(data.customerName.validate(), style: boldTextStyle(), maxLines: 1, overflow: TextOverflow.ellipsis).flexible(),
+                      Text(data.customerName.validate(),
+                              style: boldTextStyle(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis)
+                          .flexible(),
                       Container(
                         decoration: BoxDecoration(
-                          color: appStore.isDarkMode ? Colors.black : Colors.white,
-                          borderRadius: radius(5)
-                        ),
+                            color: appStore.isDarkMode
+                                ? Colors.black
+                                : Colors.white,
+                            borderRadius: radius(5)),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 3),
                           child: Row(
                             children: [
-                              Image.asset(ic_star_fill, height: 12, fit: BoxFit.fitWidth, color: getRatingBarColor(data.rating.validate().toInt())),
+                              Image.asset(ic_star_fill,
+                                  height: 12,
+                                  fit: BoxFit.fitWidth,
+                                  color: getRatingBarColor(
+                                      data.rating.validate().toInt())),
                               4.width,
-                              Text(data.rating.validate().toStringAsFixed(1).toString(), style: boldTextStyle(color: getRatingBarColor(data.rating.validate().toInt()), size: 12)),
+                              Text(
+                                  data.rating
+                                      .validate()
+                                      .toStringAsFixed(1)
+                                      .toString(),
+                                  style: boldTextStyle(
+                                      color: getRatingBarColor(
+                                          data.rating.validate().toInt()),
+                                      size: 12)),
                             ],
                           ),
                         ),
@@ -56,7 +76,10 @@ class ReviewWidget extends StatelessWidget {
                     ],
                   ),
                   4.height,
-                  data.createdAt.validate().isNotEmpty ? Text(formatDate(data.createdAt.validate()), style: secondaryTextStyle()) : SizedBox(),
+                  data.createdAt.validate().isNotEmpty
+                      ? Text(formatDate(data.createdAt.validate()),
+                          style: secondaryTextStyle())
+                      : SizedBox(),
                 ],
               ).flexible(),
             ],

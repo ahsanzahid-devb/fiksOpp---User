@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/configs.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/configs.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:uuid/uuid.dart';
@@ -25,11 +25,15 @@ class FlutterWaveServiceNew {
     String flutterWaveSecretKey = '';
 
     if (paymentSetting.isTest == 1) {
-      flutterWavePublicKey = paymentSetting.testValue!.flutterwavePublic.validate();
-      flutterWaveSecretKey = paymentSetting.testValue!.flutterwaveSecret.validate();
+      flutterWavePublicKey =
+          paymentSetting.testValue!.flutterwavePublic.validate();
+      flutterWaveSecretKey =
+          paymentSetting.testValue!.flutterwaveSecret.validate();
     } else {
-      flutterWavePublicKey = paymentSetting.liveValue!.flutterwavePublic.validate();
-      flutterWaveSecretKey = paymentSetting.liveValue!.flutterwaveSecret.validate();
+      flutterWavePublicKey =
+          paymentSetting.liveValue!.flutterwavePublic.validate();
+      flutterWaveSecretKey =
+          paymentSetting.liveValue!.flutterwaveSecret.validate();
     }
 
     Flutterwave flutterWave = Flutterwave(
@@ -38,10 +42,13 @@ class FlutterWaveServiceNew {
       currency: appConfigurationStore.currencyCode,
       redirectUrl: BASE_URL,
       txRef: transactionId,
-      amount: totalAmount.validate().toStringAsFixed(appConfigurationStore.priceDecimalPoint),
+      amount: totalAmount
+          .validate()
+          .toStringAsFixed(appConfigurationStore.priceDecimalPoint),
       customer: customer,
       paymentOptions: "card, payattitude, barter",
-      customization: Customization(title: language.payWithFlutterWave, logo: appLogo),
+      customization:
+          Customization(title: language.payWithFlutterWave, logo: appLogo),
       isTestMode: paymentSetting.isTest == 1,
     );
 
@@ -50,7 +57,10 @@ class FlutterWaveServiceNew {
       if (value.success.validate()) {
         appStore.setLoading(true);
 
-        verifyPayment(transactionId: value.transactionId.validate(), flutterWaveSecretKey: flutterWaveSecretKey).then((v) {
+        verifyPayment(
+                transactionId: value.transactionId.validate(),
+                flutterWaveSecretKey: flutterWaveSecretKey)
+            .then((v) {
           if (v.status == "success") {
             onComplete.call({
               'transaction_id': value.transactionId.validate(),

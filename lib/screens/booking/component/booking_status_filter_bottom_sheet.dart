@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -12,10 +12,12 @@ class BookingStatusFilterBottomSheet extends StatefulWidget {
   const BookingStatusFilterBottomSheet({Key? key}) : super(key: key);
 
   @override
-  State<BookingStatusFilterBottomSheet> createState() => _BookingStatusFilterBottomSheetState();
+  State<BookingStatusFilterBottomSheet> createState() =>
+      _BookingStatusFilterBottomSheetState();
 }
 
-class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBottomSheet> {
+class _BookingStatusFilterBottomSheetState
+    extends State<BookingStatusFilterBottomSheet> {
   Future<List<BookingStatusResponse>>? future;
 
   List<BookingStatusResponse> list = [];
@@ -45,7 +47,8 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
                 ? lightPrimaryColor
                 : context.scaffoldBackgroundColor,
         borderRadius: radius(8),
-        border: Border.all(color: appStore.isDarkMode ? Colors.white54 : lightPrimaryColor),
+        border: Border.all(
+            color: appStore.isDarkMode ? Colors.white54 : lightPrimaryColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -80,7 +83,10 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: boxDecorationWithRoundedCorners(borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius), backgroundColor: context.cardColor),
+      decoration: boxDecorationWithRoundedCorners(
+          borderRadius:
+              radiusOnly(topLeft: defaultRadius, topRight: defaultRadius),
+          backgroundColor: context.cardColor),
       padding: EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
@@ -93,7 +99,11 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
                 Text(language.lblFilterBy, style: boldTextStyle()),
                 IconButton(
                   padding: EdgeInsets.all(0),
-                  icon: Icon(Icons.close, color: appStore.isDarkMode ? lightPrimaryColor : context.primaryColor, size: 20),
+                  icon: Icon(Icons.close,
+                      color: appStore.isDarkMode
+                          ? lightPrimaryColor
+                          : context.primaryColor,
+                      size: 20),
                   visualDensity: VisualDensity.compact,
                   onPressed: () async {
                     finish(context);
@@ -102,7 +112,11 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
               ],
             ),
             8.height,
-            Container(width: context.width() - 16, height: 1, color: gray.withValues(alpha:0.3)).center(),
+            Container(
+                    width: context.width() - 16,
+                    height: 1,
+                    color: gray.withValues(alpha: 0.3))
+                .center(),
             24.height,
             Text(language.bookingStatus, style: primaryTextStyle()),
             24.height,
@@ -114,11 +128,13 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
                   return Wrap(
                     runSpacing: 12,
                     spacing: 12,
-                    children: List.generate(snap.data!.length, (index) => itemWidget(snap.data![index])),
+                    children: List.generate(snap.data!.length,
+                        (index) => itemWidget(snap.data![index])),
                   );
                 }
 
-                return snapWidgetHelper(snap, defaultErrorMessage: "", loadingWidget: Offstage());
+                return snapWidgetHelper(snap,
+                    defaultErrorMessage: "", loadingWidget: Offstage());
               },
             ),
             24.height,
@@ -127,7 +143,9 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
               children: [
                 AppButton(
                   text: language.clearFilter,
-                  color: appStore.isDarkMode ? context.scaffoldBackgroundColor : white,
+                  color: appStore.isDarkMode
+                      ? context.scaffoldBackgroundColor
+                      : white,
                   textColor: appStore.isDarkMode ? white : context.primaryColor,
                   width: context.width() - context.navigationBarHeight,
                   onTap: () {
@@ -143,9 +161,17 @@ class _BookingStatusFilterBottomSheetState extends State<BookingStatusFilterBott
                   textColor: white,
                   width: context.width() - context.navigationBarHeight,
                   onTap: () {
-                    int selectedCount = cachedBookingStatusDropdown.validate().where((element) => element.isSelected).length;
+                    int selectedCount = cachedBookingStatusDropdown
+                        .validate()
+                        .where((element) => element.isSelected)
+                        .length;
                     if (selectedCount >= 1) {
-                      finish(context, cachedBookingStatusDropdown!.where((element) => element.isSelected).map((e) => e.value).join(','));
+                      finish(
+                          context,
+                          cachedBookingStatusDropdown!
+                              .where((element) => element.isSelected)
+                              .map((e) => e.value)
+                              .join(','));
                     } else {
                       toast(language.serviceStatusPicMessage);
                     }

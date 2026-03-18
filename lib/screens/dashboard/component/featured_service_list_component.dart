@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/view_all_label_component.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/screens/service/component/service_component.dart';
+import 'package:fiksOpp/component/view_all_label_component.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/screens/service/component/service_component.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -21,7 +21,9 @@ class FeaturedServiceListComponent extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 16),
       width: context.width(),
       decoration: BoxDecoration(
-        color: appStore.isDarkMode ? context.cardColor : context.primaryColor.withValues(alpha:0.1),
+        color: appStore.isDarkMode
+            ? context.cardColor
+            : context.primaryColor.withValues(alpha: 0.1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +41,10 @@ class FeaturedServiceListComponent extends StatelessWidget {
               itemCount: serviceList.length,
               spacing: 16,
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              itemBuilder: (context, index) => ServiceComponent(serviceData: serviceList[index], width: 280, isBorderEnabled: true),
+              itemBuilder: (context, index) => ServiceComponent(
+                  serviceData: serviceList[index],
+                  width: 280,
+                  isBorderEnabled: true),
             )
           else
             Container(

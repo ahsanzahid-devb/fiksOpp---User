@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:path/path.dart' as path;
 
 import '../constant.dart';
@@ -16,11 +16,13 @@ extension StrExt on String {
 
   String get getFileExtension => path.extension(Uri.parse(this).path);
 
-  String get getFileNameWithoutExtension => path.basenameWithoutExtension(Uri.parse(this).path);
+  String get getFileNameWithoutExtension =>
+      path.basenameWithoutExtension(Uri.parse(this).path);
 
   String get getFileName => path.basename(Uri.parse(this).path);
 
-  String get getChatFileName => path.basename(Uri.parse(this).path).replaceFirst("$CHAT_FILES%2F", "");
+  String get getChatFileName =>
+      path.basename(Uri.parse(this).path).replaceFirst("$CHAT_FILES%2F", "");
 
   String get toPaymentMethodText {
     switch (this) {

@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/review/components/review_widget.dart';
-import 'package:booking_system_flutter/screens/review/shimmer/review_shimmer.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/review/components/review_widget.dart';
+import 'package:fiksOpp/screens/review/shimmer/review_shimmer.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -28,7 +28,9 @@ class _RatingViewAllScreenState extends State<RatingViewAllScreen> {
     return AppScaffold(
       appBarTitle: language.review,
       child: SnapHelperWidget<List<RatingData>>(
-        future: widget.serviceId != null ? serviceReviews({CommonKeys.serviceId: widget.serviceId}) : handymanReviews({CommonKeys.handymanId: widget.handymanId}),
+        future: widget.serviceId != null
+            ? serviceReviews({CommonKeys.serviceId: widget.serviceId})
+            : handymanReviews({CommonKeys.handymanId: widget.handymanId}),
         loadingWidget: ReviewShimmer(),
         onSuccess: (data) {
           return AnimatedListView(
@@ -39,7 +41,8 @@ class _RatingViewAllScreenState extends State<RatingViewAllScreen> {
             padding: EdgeInsets.all(16),
             itemCount: data.length,
             physics: AlwaysScrollableScrollPhysics(),
-            itemBuilder: (context, index) => ReviewWidget(data: data[index], isCustomer: widget.serviceId == null),
+            itemBuilder: (context, index) => ReviewWidget(
+                data: data[index], isCustomer: widget.serviceId == null),
             emptyWidget: NoDataWidget(
               title: language.lblNoServiceRatings,
               imageWidget: EmptyStateWidget(),

@@ -7,7 +7,7 @@
 
 ## Your fingerprints (add these in Firebase)
 
-Add **all four** below in Firebase → Project settings → Your apps → **buzz.inoor.fiksopp** → **Add fingerprint** (one at a time), then **Save**.
+Add **all four** below in Firebase → Project settings → Your apps → **com.fiksopp.fiksopp** → **Add fingerprint** (one at a time), then **Save**.
 
 | Variant  | Type    | Fingerprint |
 |----------|---------|-------------|
@@ -39,7 +39,7 @@ If you use both, add **all four** fingerprints (debug SHA-1, debug SHA-256, rele
 
 1. Open [Firebase Console](https://console.firebase.google.com/) → your project.
 2. Click the **gear** → **Project settings**.
-3. Under **Your apps**, select the **Android** app with package **`buzz.inoor.fiksopp`**.
+3. Under **Your apps**, select the **Android** app with package **`com.fiksopp.fiksopp`**.
 4. Click **Add fingerprint** and add **SHA-1** (paste the value from step 1).
 5. Click **Add fingerprint** again and add **SHA-256**.
 6. Repeat for the other variant (debug/release) if needed.

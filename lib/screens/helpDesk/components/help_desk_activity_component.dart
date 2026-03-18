@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -25,7 +25,8 @@ class HelpDeskActivityComponent extends StatefulWidget {
   });
 
   @override
-  State<HelpDeskActivityComponent> createState() => _HelpDeskActivityComponentState();
+  State<HelpDeskActivityComponent> createState() =>
+      _HelpDeskActivityComponentState();
 }
 
 class _HelpDeskActivityComponentState extends State<HelpDeskActivityComponent> {
@@ -62,12 +63,17 @@ class _HelpDeskActivityComponentState extends State<HelpDeskActivityComponent> {
               RichTextWidget(
                 list: [
                   TextSpan(
-                    text: widget.helpDeskActivityData.activityType.validate().toHelpDeskActivityType(),
+                    text: widget.helpDeskActivityData.activityType
+                        .validate()
+                        .toHelpDeskActivityType(),
                     style: secondaryTextStyle(),
                   ),
-                  TextSpan(text: ' ${widget.helpDeskActivityData.senderName} ', style: boldTextStyle(size: 12)),
                   TextSpan(
-                    text: '${language.on} ${formatBookingDate(widget.helpDeskActivityData.updatedAt.validate(), format: DATE_FORMAT_10, isTime: true)}',
+                      text: ' ${widget.helpDeskActivityData.senderName} ',
+                      style: boldTextStyle(size: 12)),
+                  TextSpan(
+                    text:
+                        '${language.on} ${formatBookingDate(widget.helpDeskActivityData.updatedAt.validate(), format: DATE_FORMAT_10, isTime: true)}',
                     style: secondaryTextStyle(),
                   ),
                 ],
@@ -97,9 +103,12 @@ class _HelpDeskActivityComponentState extends State<HelpDeskActivityComponent> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(language.showMessage, style: boldTextStyle(size: 12, color: primaryColor)),
+                      Text(language.showMessage,
+                          style: boldTextStyle(size: 12, color: primaryColor)),
                       8.width,
-                      Icon(isExpansionTile ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                      Icon(isExpansionTile
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down),
                     ],
                   ),
                   children: [
@@ -108,22 +117,37 @@ class _HelpDeskActivityComponentState extends State<HelpDeskActivityComponent> {
                       padding: EdgeInsets.all(16),
                       decoration: boxDecorationWithRoundedCorners(
                         borderRadius: radius(8),
-                        backgroundColor: appStore.isDarkMode ? appButtonColorDark : Colors.white,
+                        backgroundColor: appStore.isDarkMode
+                            ? appButtonColorDark
+                            : Colors.white,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (widget.helpDeskActivityData.activityType.validate() == ADD_HELP_DESK
-                              && widget.helpDeskActivityData.helDeskAttachments.validate().isNotEmpty
-                              && widget.helpDeskActivityData.attachments.validate().isEmpty)
+                          if (widget.helpDeskActivityData.activityType
+                                      .validate() ==
+                                  ADD_HELP_DESK &&
+                              widget.helpDeskActivityData.helDeskAttachments
+                                  .validate()
+                                  .isNotEmpty &&
+                              widget.helpDeskActivityData.attachments
+                                  .validate()
+                                  .isEmpty)
                             Wrap(
                               spacing: 16,
                               runSpacing: 16,
                               children: List.generate(
-                                widget.helpDeskActivityData.helDeskAttachments.validate().take(1).length,
+                                widget.helpDeskActivityData.helDeskAttachments
+                                    .validate()
+                                    .take(1)
+                                    .length,
                                 (i) {
                                   return GalleryComponent(
-                                    images: widget.helpDeskActivityData.helDeskAttachments.validate().map((e) => e.validate()).toList(),
+                                    images: widget
+                                        .helpDeskActivityData.helDeskAttachments
+                                        .validate()
+                                        .map((e) => e.validate())
+                                        .toList(),
                                     index: i,
                                     height: 60,
                                     width: 60,
@@ -131,30 +155,47 @@ class _HelpDeskActivityComponentState extends State<HelpDeskActivityComponent> {
                                 },
                               ),
                             ).paddingBottom(8)
-                          else if (widget.helpDeskActivityData.attachments.validate().isNotEmpty)
+                          else if (widget.helpDeskActivityData.attachments
+                              .validate()
+                              .isNotEmpty)
                             Wrap(
                               spacing: 16,
                               runSpacing: 16,
                               children: List.generate(
-                                widget.helpDeskActivityData.attachments.validate().take(1).length,
+                                widget.helpDeskActivityData.attachments
+                                    .validate()
+                                    .take(1)
+                                    .length,
                                 (i) => GalleryComponent(
-                                  images: widget.helpDeskActivityData.attachments.validate().map((e) => e.validate()).toList(),
+                                  images: widget
+                                      .helpDeskActivityData.attachments
+                                      .validate()
+                                      .map((e) => e.validate())
+                                      .toList(),
                                   index: i,
                                   height: 60,
                                   width: 60,
                                 ),
                               ),
                             ).paddingBottom(8),
-                          if (widget.helpDeskActivityData.activityType.validate() == CLOSED_HELP_DESK)
+                          if (widget.helpDeskActivityData.activityType
+                                  .validate() ==
+                              CLOSED_HELP_DESK)
                             RichTextWidget(
                               list: [
                                 TextSpan(
-                                  text: widget.helpDeskActivityData.activityType.validate().toHelpDeskActivityType(),
+                                  text: widget.helpDeskActivityData.activityType
+                                      .validate()
+                                      .toHelpDeskActivityType(),
                                   style: secondaryTextStyle(),
                                 ),
-                                TextSpan(text: ' ${widget.helpDeskActivityData.senderName} ', style: secondaryTextStyle(size: 12)),
                                 TextSpan(
-                                  text: '${language.on} ${formatBookingDate(widget.helpDeskActivityData.updatedAt.validate(), format: DATE_FORMAT_10, isTime: true)}',
+                                    text:
+                                        ' ${widget.helpDeskActivityData.senderName} ',
+                                    style: secondaryTextStyle(size: 12)),
+                                TextSpan(
+                                  text:
+                                      '${language.on} ${formatBookingDate(widget.helpDeskActivityData.updatedAt.validate(), format: DATE_FORMAT_10, isTime: true)}',
                                   style: secondaryTextStyle(),
                                 ),
                               ],

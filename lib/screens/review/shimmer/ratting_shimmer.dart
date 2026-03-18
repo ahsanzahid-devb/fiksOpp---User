@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -18,7 +18,8 @@ class RattingShimmer extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ShimmerWidget(height: 75, width: 75).cornerRadiusWithClipRRect(defaultRadius),
+                  ShimmerWidget(height: 75, width: 75)
+                      .cornerRadiusWithClipRRect(defaultRadius),
                   16.width,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,18 +33,22 @@ class RattingShimmer extends StatelessWidget {
               ),
               16.height,
               Container(
-                decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+                decoration: boxDecorationDefault(
+                    color: context.scaffoldBackgroundColor),
                 padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        ShimmerWidget(height: 10, width: context.width()).expand(),
+                        ShimmerWidget(height: 10, width: context.width())
+                            .expand(),
                         8.width,
-                        ShimmerWidget(height: 20, width: 20).cornerRadiusWithClipRRect(10),
+                        ShimmerWidget(height: 20, width: 20)
+                            .cornerRadiusWithClipRRect(10),
                         4.width,
-                        ShimmerWidget(height: 20, width: 20).cornerRadiusWithClipRRect(10),
+                        ShimmerWidget(height: 20, width: 20)
+                            .cornerRadiusWithClipRRect(10),
                       ],
                     ),
                     Divider(color: context.dividerColor),

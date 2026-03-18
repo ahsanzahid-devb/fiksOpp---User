@@ -1,8 +1,8 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -13,10 +13,12 @@ class InvoiceRequestDialogComponent extends StatefulWidget {
   InvoiceRequestDialogComponent({required this.bookingId});
 
   @override
-  State<InvoiceRequestDialogComponent> createState() => _InvoiceRequestDialogComponentState();
+  State<InvoiceRequestDialogComponent> createState() =>
+      _InvoiceRequestDialogComponentState();
 }
 
-class _InvoiceRequestDialogComponentState extends State<InvoiceRequestDialogComponent> {
+class _InvoiceRequestDialogComponentState
+    extends State<InvoiceRequestDialogComponent> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   TextEditingController emailCont = TextEditingController();
@@ -67,11 +69,15 @@ class _InvoiceRequestDialogComponentState extends State<InvoiceRequestDialogComp
             Container(
               padding: EdgeInsets.all(16),
               width: context.width(),
-              decoration: boxDecorationDefault(color: context.primaryColor, borderRadius: radiusOnly(topRight: defaultRadius, topLeft: defaultRadius)),
+              decoration: boxDecorationDefault(
+                  color: context.primaryColor,
+                  borderRadius: radiusOnly(
+                      topRight: defaultRadius, topLeft: defaultRadius)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(language.requestInvoice, style: boldTextStyle(color: Colors.white)),
+                  Text(language.requestInvoice,
+                      style: boldTextStyle(color: Colors.white)),
                   IconButton(
                     onPressed: () {
                       finish(context);
@@ -92,7 +98,8 @@ class _InvoiceRequestDialogComponentState extends State<InvoiceRequestDialogComp
                     textFieldType: TextFieldType.EMAIL_ENHANCED,
                     controller: emailCont,
                     errorThisFieldRequired: language.requiredText,
-                    decoration: inputDecoration(context, labelText: language.hintEmailTxt),
+                    decoration: inputDecoration(context,
+                        labelText: language.hintEmailTxt),
                   ).visible(!appStore.isLoading, defaultWidget: Loader()),
                 ),
                 30.height,

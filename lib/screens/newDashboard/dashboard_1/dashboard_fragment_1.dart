@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/dashboard/component/promotional_banner_slider_component.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_1/shimmer/dashboard_shimmer_1.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/dashboard/component/promotional_banner_slider_component.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_1/shimmer/dashboard_shimmer_1.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -49,7 +49,10 @@ class _DashboardFragment1State extends State<DashboardFragment1> {
   }
 
   void init() async {
-    future = userDashboard(isCurrentLocation: appStore.isCurrentLocation, lat: getDoubleAsync(LATITUDE), long: getDoubleAsync(LONGITUDE));
+    future = userDashboard(
+        isCurrentLocation: appStore.isCurrentLocation,
+        lat: getDoubleAsync(LATITUDE),
+        long: getDoubleAsync(LONGITUDE));
     setStatusBarColorChange();
     setState(() {});
   }
@@ -116,7 +119,8 @@ class _DashboardFragment1State extends State<DashboardFragment1> {
                   },
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).padding.top),
                       child: SliderDashboardComponent1(
                         sliderList: snap.slider.validate(),
                         featuredList: snap.featuredServices.validate(),
@@ -128,25 +132,34 @@ class _DashboardFragment1State extends State<DashboardFragment1> {
                         },
                       ),
                     ),
-                    BookingConfirmedComponent1(upcomingConfirmedBooking: snap.upcomingData),
+                    BookingConfirmedComponent1(
+                        upcomingConfirmedBooking: snap.upcomingData),
                     16.height,
-                    CategoryComponent(categoryList: snap.category.validate(), isNewDashboard: true),
-                    if (snap.promotionalBanner.validate().isNotEmpty && appConfigurationStore.isPromotionalBanner)
+                    CategoryComponent(
+                        categoryList: snap.category.validate(),
+                        isNewDashboard: true),
+                    if (snap.promotionalBanner.validate().isNotEmpty &&
+                        appConfigurationStore.isPromotionalBanner)
                       PromotionalBannerSliderComponent(
-                        promotionalBannerList: snap.promotionalBanner.validate(),
+                        promotionalBannerList:
+                            snap.promotionalBanner.validate(),
                       ).paddingTop(16),
                     16.height,
-                    ServiceListDashboardComponent1(serviceList: snap.service.validate()),
+                    ServiceListDashboardComponent1(
+                        serviceList: snap.service.validate()),
                     16.height,
-                    FeatureServicesDashboardComponent1(serviceList: snap.featuredServices.validate()),
+                    FeatureServicesDashboardComponent1(
+                        serviceList: snap.featuredServices.validate()),
                     16.height,
-                    if (appConfigurationStore.jobRequestStatus) NewJobRequestDashboardComponent1()
+                    if (appConfigurationStore.jobRequestStatus)
+                      NewJobRequestDashboardComponent1()
                   ],
                 );
               });
             },
           ),
-          Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
         ],
       ),
     );

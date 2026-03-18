@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/component/responsive_container.dart';
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/city_list_model.dart';
-import 'package:booking_system_flutter/model/country_list_model.dart';
-import 'package:booking_system_flutter/model/login_model.dart';
-import 'package:booking_system_flutter/model/state_list_model.dart';
-import 'package:booking_system_flutter/network/network_utils.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/component/responsive_container.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/city_list_model.dart';
+import 'package:fiksOpp/model/country_list_model.dart';
+import 'package:fiksOpp/model/login_model.dart';
+import 'package:fiksOpp/model/state_list_model.dart';
+import 'package:fiksOpp/network/network_utils.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -384,264 +384,237 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                Stack(
-                  children: [
-                    Container(
-                      decoration: boxDecorationDefault(
-                        border: Border.all(
-                            color: context.scaffoldBackgroundColor, width: 4),
-                        shape: BoxShape.circle,
-                      ),
-                      child: imageFile != null
-                          ? Image.file(
-                              imageFile!,
-                              width: 85,
-                              height: 85,
-                              fit: BoxFit.cover,
-                            ).cornerRadiusWithClipRRect(40)
-                          : Observer(
-                              builder: (_) => CachedImageWidget(
-                                url: appStore.userProfileImage,
-                                height: 85,
-                                width: 85,
-                                fit: BoxFit.cover,
-                                radius: 43,
-                              ),
-                            ),
-                    ),
-                    Positioned(
-                      bottom: 4,
-                      right: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(6),
-                        decoration: boxDecorationWithRoundedCorners(
-                          boxShape: BoxShape.circle,
-                          backgroundColor: primaryColor,
-                          border: Border.all(color: Colors.white),
-                        ),
-                        child: Icon(AntDesign.camera,
-                            color: Colors.white, size: 12),
-                      ).onTap(() async {
-                        _showBottomSheet(context);
-                      }),
-                    ).visible(!isLoginTypeGoogle && !isLoginTypeApple)
-                  ],
-                ),
-                16.height,
-                // Preferred app language selection
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    language.language,
-                    style: boldTextStyle(),
-                  ),
-                ),
-                8.height,
-                MultiLanguageWidget(
-                  onTap: (languageDetails) async {
-                    // Update app language and persist selection
-                    await appStore
-                        .setLanguage(languageDetails.languageCode.validate());
-                    appStore.setSelectedLanguage(languageDetails);
-                    // Rebuild app with new locale
-                    RestartAppWidget.init(context);
-                  },
-                ),
-                16.height,
-                AppTextField(
-                  textFieldType: TextFieldType.NAME,
-                  controller: fNameCont,
-                  focus: fNameFocus,
-                  errorThisFieldRequired: language.requiredText,
-                  nextFocus: lNameFocus,
-                  enabled: !isLoginTypeApple,
-                  decoration: inputDecoration(context,
-                      labelText: language.hintFirstNameTxt),
-                  suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-                ),
-                16.height,
-                AppTextField(
-                  textFieldType: TextFieldType.NAME,
-                  controller: lNameCont,
-                  focus: lNameFocus,
-                  errorThisFieldRequired: language.requiredText,
-                  nextFocus: userNameFocus,
-                  enabled: !isLoginTypeApple,
-                  decoration: inputDecoration(context,
-                      labelText: language.hintLastNameTxt),
-                  suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-                ),
-                16.height,
-                AppTextField(
-                  textFieldType: TextFieldType.NAME,
-                  controller: userNameCont,
-                  focus: userNameFocus,
-                  enabled: false,
-                  errorThisFieldRequired: language.requiredText,
-                  nextFocus: emailFocus,
-                  decoration: inputDecoration(context,
-                      labelText: language.hintUserNameTxt),
-                  suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
-                ),
-                16.height,
-                AppTextField(
-                  textFieldType: TextFieldType.EMAIL_ENHANCED,
-                  controller: emailCont,
-                  focus: emailFocus,
-                  nextFocus: mobileFocus,
-                  errorThisFieldRequired: language.requiredText,
-                  decoration: inputDecoration(context,
-                      labelText: language.hintEmailTxt),
-                  suffix: ic_message.iconImage(size: 10).paddingAll(14),
-                  autoFillHints: [AutofillHints.email],
-                  onFieldSubmitted: (email) async {
-                    if (emailCont.text.isNotEmpty) await verifyEmail();
-                  },
-                ),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: Wrap(
-                    spacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
+                  Stack(
                     children: [
-                      Text(
-                        isEmailVerified
-                            ? language.verified
-                            : language.verifyEmail,
-                        style: isEmailVerified
-                            ? secondaryTextStyle(color: Colors.green)
-                            : secondaryTextStyle(),
-                      ),
-                      if (!isEmailVerified && !showRefresh)
-                        ic_pending.iconImage(color: Colors.amber, size: 14)
-                      else
-                        Icon(
-                          isEmailVerified ? Icons.check_circle : Icons.refresh,
-                          color: isEmailVerified ? Colors.green : Colors.grey,
-                          size: 16,
-                        )
-                    ],
-                  ).paddingSymmetric(horizontal: 6, vertical: 2).onTap(
-                    () {
-                      verifyEmail();
-                    },
-                    borderRadius: radius(),
-                  ),
-                ).paddingSymmetric(vertical: 4),
-                10.height,
-                // AppTextField(
-                //   textFieldType: isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
-                //   controller: mobileCont,
-                //   focus: mobileFocus,
-                //   maxLength: 15,
-                //   buildCounter: (_, {required int currentLength, required bool isFocused, required int? maxLength}) {
-                //     return Offstage();
-                //   },
-                //   enabled: !isLoginTypeOTP,
-                //   errorThisFieldRequired: language.requiredText,
-                //   decoration: inputDecoration(context, labelText: language.hintContactNumberTxt),
-                //   suffix: ic_calling.iconImage(size: 10).paddingAll(14),
-                //   validator: (mobileCont) {
-                //     if (mobileCont!.isEmpty) return language.phnRequiredText;
-                //     if (isIOS && !RegExp(r"^([0-9]{1,5})-([0-9]{1,10})$").hasMatch(mobileCont)) {
-                //       return language.inputMustBeNumberOrDigit;
-                //     }
-                //     if (!mobileCont.trim().contains('-')) return '"-" ${language.requiredAfterCountryCode}';
-                //     return null;
-                //   },
-                // ),
-
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Country code ...
-                    Container(
-                      height: 48.0,
-                      margin: EdgeInsets.only(bottom: context.height() * 0.032),
-                      decoration: BoxDecoration(
-                        color: context.cardColor,
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Center(
-                        child: ValueListenableBuilder(
-                          valueListenable: _valueNotifier,
-                          builder: (context, value, child) => Row(
-                            children: [
-                              Text(
-                                "+${selectedCountryCode.phoneCode}",
-                                style: primaryTextStyle(size: 12),
+                      Container(
+                        decoration: boxDecorationDefault(
+                          border: Border.all(
+                              color: context.scaffoldBackgroundColor, width: 4),
+                          shape: BoxShape.circle,
+                        ),
+                        child: imageFile != null
+                            ? Image.file(
+                                imageFile!,
+                                width: 85,
+                                height: 85,
+                                fit: BoxFit.cover,
+                              ).cornerRadiusWithClipRRect(40)
+                            : Observer(
+                                builder: (_) => CachedImageWidget(
+                                  url: appStore.userProfileImage,
+                                  height: 85,
+                                  width: 85,
+                                  fit: BoxFit.cover,
+                                  radius: 43,
+                                ),
                               ),
-                              Icon(Icons.arrow_drop_down)
-                            ],
-                          ).paddingOnly(left: 8),
-                        ),
                       ),
-                    ).onTap(() => changeCountry()),
-                    10.width,
-                    // Mobile number text field...
-                    Expanded(
-                      child: AppTextField(
-                        textFieldType: isAndroid
-                            ? TextFieldType.PHONE
-                            : TextFieldType.NAME,
-                        controller: mobileCont,
-                        focus: mobileFocus,
-                        enabled: !isLoginTypeOTP,
-                        isValidationRequired: false,
-                        errorThisFieldRequired: language.requiredText,
-                        decoration: inputDecoration(context,
-                                hintText: '${language.hintContactNumberTxt}')
-                            .copyWith(
-                          // hintText: '${selectedCountry.example}',
-                          hintStyle: secondaryTextStyle(),
-                        ),
-                        maxLength: 15,
-                        suffix: ic_calling.iconImage(size: 10).paddingAll(14),
-                      ),
-                    ),
-                  ],
-                ),
-                16.height,
-                Row(
-                  children: [
-                    DropdownButtonFormField<CountryListResponse>(
-                      decoration: inputDecoration(context,
-                          labelText: language.selectCountry),
-                      isExpanded: true,
-                      initialValue: selectedCountry,
-                      dropdownColor: context.cardColor,
-                      items: countryList.map((CountryListResponse e) {
-                        return DropdownMenuItem<CountryListResponse>(
-                          value: e,
-                          child: Text(
-                            e.name!,
-                            style: primaryTextStyle(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      Positioned(
+                        bottom: 4,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: boxDecorationWithRoundedCorners(
+                            boxShape: BoxShape.circle,
+                            backgroundColor: primaryColor,
+                            border: Border.all(color: Colors.white),
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (CountryListResponse? value) async {
-                        hideKeyboard(context);
-                        countryId = value!.id!;
-                        selectedCountry = value;
-                        selectedState = null;
-                        selectedCity = null;
-                        getStates(value.id!);
-
-                        setState(() {});
+                          child: Icon(AntDesign.camera,
+                              color: Colors.white, size: 12),
+                        ).onTap(() async {
+                          _showBottomSheet(context);
+                        }),
+                      ).visible(!isLoginTypeGoogle && !isLoginTypeApple)
+                    ],
+                  ),
+                  16.height,
+                  // Preferred app language selection
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      language.language,
+                      style: boldTextStyle(),
+                    ),
+                  ),
+                  8.height,
+                  MultiLanguageWidget(
+                    onTap: (languageDetails) async {
+                      // Update app language and persist selection
+                      await appStore
+                          .setLanguage(languageDetails.languageCode.validate());
+                      appStore.setSelectedLanguage(languageDetails);
+                      // Rebuild app with new locale
+                      RestartAppWidget.init(context);
+                    },
+                  ),
+                  16.height,
+                  AppTextField(
+                    textFieldType: TextFieldType.NAME,
+                    controller: fNameCont,
+                    focus: fNameFocus,
+                    errorThisFieldRequired: language.requiredText,
+                    nextFocus: lNameFocus,
+                    enabled: !isLoginTypeApple,
+                    decoration: inputDecoration(context,
+                        labelText: language.hintFirstNameTxt),
+                    suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+                  ),
+                  16.height,
+                  AppTextField(
+                    textFieldType: TextFieldType.NAME,
+                    controller: lNameCont,
+                    focus: lNameFocus,
+                    errorThisFieldRequired: language.requiredText,
+                    nextFocus: userNameFocus,
+                    enabled: !isLoginTypeApple,
+                    decoration: inputDecoration(context,
+                        labelText: language.hintLastNameTxt),
+                    suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+                  ),
+                  16.height,
+                  AppTextField(
+                    textFieldType: TextFieldType.NAME,
+                    controller: userNameCont,
+                    focus: userNameFocus,
+                    enabled: false,
+                    errorThisFieldRequired: language.requiredText,
+                    nextFocus: emailFocus,
+                    decoration: inputDecoration(context,
+                        labelText: language.hintUserNameTxt),
+                    suffix: ic_profile2.iconImage(size: 10).paddingAll(14),
+                  ),
+                  16.height,
+                  AppTextField(
+                    textFieldType: TextFieldType.EMAIL_ENHANCED,
+                    controller: emailCont,
+                    focus: emailFocus,
+                    nextFocus: mobileFocus,
+                    errorThisFieldRequired: language.requiredText,
+                    decoration: inputDecoration(context,
+                        labelText: language.hintEmailTxt),
+                    suffix: ic_message.iconImage(size: 10).paddingAll(14),
+                    autoFillHints: [AutofillHints.email],
+                    onFieldSubmitted: (email) async {
+                      if (emailCont.text.isNotEmpty) await verifyEmail();
+                    },
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Wrap(
+                      spacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          isEmailVerified
+                              ? language.verified
+                              : language.verifyEmail,
+                          style: isEmailVerified
+                              ? secondaryTextStyle(color: Colors.green)
+                              : secondaryTextStyle(),
+                        ),
+                        if (!isEmailVerified && !showRefresh)
+                          ic_pending.iconImage(color: Colors.amber, size: 14)
+                        else
+                          Icon(
+                            isEmailVerified
+                                ? Icons.check_circle
+                                : Icons.refresh,
+                            color: isEmailVerified ? Colors.green : Colors.grey,
+                            size: 16,
+                          )
+                      ],
+                    ).paddingSymmetric(horizontal: 6, vertical: 2).onTap(
+                      () {
+                        verifyEmail();
                       },
-                    ).expand(),
-                    8.width.visible(stateList.isNotEmpty),
-                    if (stateList.isNotEmpty)
-                      DropdownButtonFormField<StateListResponse>(
+                      borderRadius: radius(),
+                    ),
+                  ).paddingSymmetric(vertical: 4),
+                  10.height,
+                  // AppTextField(
+                  //   textFieldType: isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
+                  //   controller: mobileCont,
+                  //   focus: mobileFocus,
+                  //   maxLength: 15,
+                  //   buildCounter: (_, {required int currentLength, required bool isFocused, required int? maxLength}) {
+                  //     return Offstage();
+                  //   },
+                  //   enabled: !isLoginTypeOTP,
+                  //   errorThisFieldRequired: language.requiredText,
+                  //   decoration: inputDecoration(context, labelText: language.hintContactNumberTxt),
+                  //   suffix: ic_calling.iconImage(size: 10).paddingAll(14),
+                  //   validator: (mobileCont) {
+                  //     if (mobileCont!.isEmpty) return language.phnRequiredText;
+                  //     if (isIOS && !RegExp(r"^([0-9]{1,5})-([0-9]{1,10})$").hasMatch(mobileCont)) {
+                  //       return language.inputMustBeNumberOrDigit;
+                  //     }
+                  //     if (!mobileCont.trim().contains('-')) return '"-" ${language.requiredAfterCountryCode}';
+                  //     return null;
+                  //   },
+                  // ),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Country code ...
+                      Container(
+                        height: 48.0,
+                        margin:
+                            EdgeInsets.only(bottom: context.height() * 0.032),
+                        decoration: BoxDecoration(
+                          color: context.cardColor,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Center(
+                          child: ValueListenableBuilder(
+                            valueListenable: _valueNotifier,
+                            builder: (context, value, child) => Row(
+                              children: [
+                                Text(
+                                  "+${selectedCountryCode.phoneCode}",
+                                  style: primaryTextStyle(size: 12),
+                                ),
+                                Icon(Icons.arrow_drop_down)
+                              ],
+                            ).paddingOnly(left: 8),
+                          ),
+                        ),
+                      ).onTap(() => changeCountry()),
+                      10.width,
+                      // Mobile number text field...
+                      Expanded(
+                        child: AppTextField(
+                          textFieldType: isAndroid
+                              ? TextFieldType.PHONE
+                              : TextFieldType.NAME,
+                          controller: mobileCont,
+                          focus: mobileFocus,
+                          enabled: !isLoginTypeOTP,
+                          isValidationRequired: false,
+                          errorThisFieldRequired: language.requiredText,
+                          decoration: inputDecoration(context,
+                                  hintText: '${language.hintContactNumberTxt}')
+                              .copyWith(
+                            // hintText: '${selectedCountry.example}',
+                            hintStyle: secondaryTextStyle(),
+                          ),
+                          maxLength: 15,
+                          suffix: ic_calling.iconImage(size: 10).paddingAll(14),
+                        ),
+                      ),
+                    ],
+                  ),
+                  16.height,
+                  Row(
+                    children: [
+                      DropdownButtonFormField<CountryListResponse>(
                         decoration: inputDecoration(context,
-                            labelText: language.selectState),
+                            labelText: language.selectCountry),
                         isExpanded: true,
+                        initialValue: selectedCountry,
                         dropdownColor: context.cardColor,
-                        initialValue: selectedState,
-                        items: stateList.map((StateListResponse e) {
-                          return DropdownMenuItem<StateListResponse>(
+                        items: countryList.map((CountryListResponse e) {
+                          return DropdownMenuItem<CountryListResponse>(
                             value: e,
                             child: Text(
                               e.name!,
@@ -651,69 +624,99 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (StateListResponse? value) async {
+                        onChanged: (CountryListResponse? value) async {
                           hideKeyboard(context);
+                          countryId = value!.id!;
+                          selectedCountry = value;
+                          selectedState = null;
                           selectedCity = null;
-                          selectedState = value;
-                          stateId = value!.id!;
-                          await getCity(value.id!);
+                          getStates(value.id!);
+
                           setState(() {});
                         },
                       ).expand(),
-                  ],
-                ),
-                16.height,
-                if (cityList.isNotEmpty)
-                  DropdownButtonFormField<CityListResponse>(
+                      8.width.visible(stateList.isNotEmpty),
+                      if (stateList.isNotEmpty)
+                        DropdownButtonFormField<StateListResponse>(
+                          decoration: inputDecoration(context,
+                              labelText: language.selectState),
+                          isExpanded: true,
+                          dropdownColor: context.cardColor,
+                          initialValue: selectedState,
+                          items: stateList.map((StateListResponse e) {
+                            return DropdownMenuItem<StateListResponse>(
+                              value: e,
+                              child: Text(
+                                e.name!,
+                                style: primaryTextStyle(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (StateListResponse? value) async {
+                            hideKeyboard(context);
+                            selectedCity = null;
+                            selectedState = value;
+                            stateId = value!.id!;
+                            await getCity(value.id!);
+                            setState(() {});
+                          },
+                        ).expand(),
+                    ],
+                  ),
+                  16.height,
+                  if (cityList.isNotEmpty)
+                    DropdownButtonFormField<CityListResponse>(
+                      decoration: inputDecoration(context,
+                          labelText: language.selectCity),
+                      isExpanded: true,
+                      initialValue: selectedCity,
+                      dropdownColor: context.cardColor,
+                      items: cityList.map((CityListResponse e) {
+                        return DropdownMenuItem<CityListResponse>(
+                          value: e,
+                          child: Text(e.name!,
+                              style: primaryTextStyle(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                        );
+                      }).toList(),
+                      onChanged: (CityListResponse? value) async {
+                        hideKeyboard(context);
+                        selectedCity = value;
+                        cityId = value!.id!;
+                        setState(() {});
+                      },
+                    ),
+                  16.height,
+                  AppTextField(
+                    controller: addressCont,
+                    textFieldType: TextFieldType.MULTILINE,
+                    maxLines: 5,
                     decoration: inputDecoration(context,
-                        labelText: language.selectCity),
-                    isExpanded: true,
-                    initialValue: selectedCity,
-                    dropdownColor: context.cardColor,
-                    items: cityList.map((CityListResponse e) {
-                      return DropdownMenuItem<CityListResponse>(
-                        value: e,
-                        child: Text(e.name!,
-                            style: primaryTextStyle(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                      );
-                    }).toList(),
-                    onChanged: (CityListResponse? value) async {
-                      hideKeyboard(context);
-                      selectedCity = value;
-                      cityId = value!.id!;
-                      setState(() {});
+                        labelText: language.hintAddress),
+                    suffix: ic_location.iconImage(size: 10).paddingAll(14),
+                    isValidationRequired: false,
+                  ),
+                  40.height,
+                  AppButton(
+                    text: language.save,
+                    color: primaryColor,
+                    textColor: white,
+                    width: context.width() >= 600
+                        ? 400
+                        : context.width() - context.navigationBarHeight,
+                    onTap: () {
+                      ifNotTester(() {
+                        update();
+                      });
                     },
                   ),
-                16.height,
-                AppTextField(
-                  controller: addressCont,
-                  textFieldType: TextFieldType.MULTILINE,
-                  maxLines: 5,
-                  decoration:
-                      inputDecoration(context, labelText: language.hintAddress),
-                  suffix: ic_location.iconImage(size: 10).paddingAll(14),
-                  isValidationRequired: false,
-                ),
-                40.height,
-                AppButton(
-                  text: language.save,
-                  color: primaryColor,
-                  textColor: white,
-                  width: context.width() >= 600
-                      ? 400
-                      : context.width() - context.navigationBarHeight,
-                  onTap: () {
-                    ifNotTester(() {
-                      update();
-                    });
-                  },
-                ),
-                24.height,
-              ],
+                  24.height,
+                ],
+              ),
             ),
-          ),
           ),
         ),
       ),

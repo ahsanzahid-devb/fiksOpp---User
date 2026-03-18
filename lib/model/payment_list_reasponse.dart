@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/model/service_detail_response.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
 
 import 'extra_charges_model.dart';
 
@@ -9,7 +9,8 @@ class PaymentListResponse {
 
   PaymentListResponse.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = (json['data'] as List).map((i) => PaymentData.fromJson(i)).toList();
+      data =
+          (json['data'] as List).map((i) => PaymentData.fromJson(i)).toList();
     }
   }
 
@@ -66,13 +67,21 @@ class PaymentData {
     paymentMethod = json['payment_method'];
     customerName = json['customer_name'];
     quantity = json['quantity'];
-    taxes = json['taxes'] != null ? (json['taxes'] as List).map((i) => TaxData.fromJson(i)).toList() : null;
-    couponData = json['coupon_data'] != null ? CouponData.fromJson(json['coupon_data']) : null;
+    taxes = json['taxes'] != null
+        ? (json['taxes'] as List).map((i) => TaxData.fromJson(i)).toList()
+        : null;
+    couponData = json['coupon_data'] != null
+        ? CouponData.fromJson(json['coupon_data'])
+        : null;
     discount = json['discount'];
     price = json['price'];
     date = json['date'];
     txnId = json['txn_id'];
-    extraCharges = json['extra_charges'] != null ? (json['extra_charges'] as List).map((i) => ExtraChargesModel.fromJson(i)).toList() : null;
+    extraCharges = json['extra_charges'] != null
+        ? (json['extra_charges'] as List)
+            .map((i) => ExtraChargesModel.fromJson(i))
+            .toList()
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -96,7 +105,8 @@ class PaymentData {
       data['coupon_data'] = this.couponData!.toJson();
     }
     if (this.extraCharges != null) {
-      data['extra_charges'] = this.extraCharges!.map((v) => v.toJson()).toList();
+      data['extra_charges'] =
+          this.extraCharges!.map((v) => v.toJson()).toList();
     }
     return data;
   }

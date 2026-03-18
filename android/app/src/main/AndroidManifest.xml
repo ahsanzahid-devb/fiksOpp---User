@@ -14,7 +14,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="Fiksopp"
+        android:label="FiksOpp"
         android:requestLegacyExternalStorage="true"
         tools:replace="android:label">
         <meta-data

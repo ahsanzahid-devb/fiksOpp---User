@@ -34,7 +34,7 @@ flutter build ipa
 - If you see code signing errors, open the project in Xcode and set signing there (see Step 3).
 
 Output IPA is at:  
-`build/ios/ipa/booking_system_flutter.ipa`
+`build/ios/ipa/fiksOpp.ipa`
 
 ---
 
@@ -74,7 +74,7 @@ flutter build ipa
 ### Option B: Using command line (Transporter or xcrun)
 
 1. Install **Transporter** from the Mac App Store, or use `xcrun altool`.
-2. Open **Transporter**, sign in with your Apple ID, and drag `build/ios/ipa/booking_system_flutter.ipa` into the window.
+2. Open **Transporter**, sign in with your Apple ID, and drag `build/ios/ipa/fiksOpp.ipa` into the window.
 3. Click **Deliver** to upload.
 
 ### Option C: Using Flutter’s built-in upload (when available)

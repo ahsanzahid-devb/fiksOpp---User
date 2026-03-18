@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/screens/booking/provider_info_screen.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/screens/booking/provider_info_screen.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -16,13 +16,19 @@ class FavouriteProviderComponent extends StatefulWidget {
   final Function? onUpdate;
   final bool isFavouriteProvider;
 
-  FavouriteProviderComponent({required this.width, this.data, this.onUpdate, this.isFavouriteProvider = true});
+  FavouriteProviderComponent(
+      {required this.width,
+      this.data,
+      this.onUpdate,
+      this.isFavouriteProvider = true});
 
   @override
-  State<FavouriteProviderComponent> createState() => _FavouriteProviderComponentState();
+  State<FavouriteProviderComponent> createState() =>
+      _FavouriteProviderComponentState();
 }
 
-class _FavouriteProviderComponentState extends State<FavouriteProviderComponent> {
+class _FavouriteProviderComponentState
+    extends State<FavouriteProviderComponent> {
   //Favourite provider
   Future<bool> addProviderToWishList({required int providerId}) async {
     Map req = {"id": "", "provider_id": providerId, "user_id": appStore.userId};
@@ -68,14 +74,19 @@ class _FavouriteProviderComponentState extends State<FavouriteProviderComponent>
       children: [
         Container(
           width: widget.width,
-          decoration: boxDecorationWithRoundedCorners(borderRadius: radius(), backgroundColor: appStore.isDarkMode ? context.scaffoldBackgroundColor : white),
+          decoration: boxDecorationWithRoundedCorners(
+              borderRadius: radius(),
+              backgroundColor: appStore.isDarkMode
+                  ? context.scaffoldBackgroundColor
+                  : white),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: radiusOnly(topLeft: defaultRadius, topRight: defaultRadius),
-                  color: primaryColor.withValues(alpha:0.2),
+                  borderRadius: radiusOnly(
+                      topLeft: defaultRadius, topRight: defaultRadius),
+                  color: primaryColor.withValues(alpha: 0.2),
                 ),
                 child: CachedImageWidget(
                   url: widget.data!.profileImage.validate(),
@@ -83,12 +94,15 @@ class _FavouriteProviderComponentState extends State<FavouriteProviderComponent>
                   height: 110,
                   fit: BoxFit.cover,
                   circle: false,
-                ).cornerRadiusWithClipRRectOnly(topRight: defaultRadius.toInt(), topLeft: defaultRadius.toInt()),
+                ).cornerRadiusWithClipRRectOnly(
+                    topRight: defaultRadius.toInt(),
+                    topLeft: defaultRadius.toInt()),
               ),
               16.height,
               Marquee(
                 directionMarguee: DirectionMarguee.oneDirection,
-                child: Text(widget.data!.displayName.validate(), style: boldTextStyle(), maxLines: 1),
+                child: Text(widget.data!.displayName.validate(),
+                    style: boldTextStyle(), maxLines: 1),
               ).center(),
               16.height,
 
@@ -138,14 +152,20 @@ class _FavouriteProviderComponentState extends State<FavouriteProviderComponent>
             child: Container(
               padding: EdgeInsets.all(8),
               margin: EdgeInsets.only(right: 8),
-              decoration: boxDecorationWithShadow(boxShape: BoxShape.circle, backgroundColor: context.cardColor),
-              child: widget.data!.isFavourite == 1 ? ic_fill_heart.iconImage(color: favouriteColor, size: 18) : ic_heart.iconImage(color: unFavouriteColor, size: 22),
+              decoration: boxDecorationWithShadow(
+                  boxShape: BoxShape.circle,
+                  backgroundColor: context.cardColor),
+              child: widget.data!.isFavourite == 1
+                  ? ic_fill_heart.iconImage(color: favouriteColor, size: 18)
+                  : ic_heart.iconImage(color: unFavouriteColor, size: 22),
             ).onTap(() async {
               if (widget.data!.isFavourite == 1) {
                 widget.data!.isFavourite = 0;
                 setState(() {});
 
-                await removeProviderToWishList(providerId: widget.data!.providerId.validate()).then((value) {
+                await removeProviderToWishList(
+                        providerId: widget.data!.providerId.validate())
+                    .then((value) {
                   if (!value) {
                     widget.data!.isFavourite = 1;
                     setState(() {});
@@ -157,7 +177,9 @@ class _FavouriteProviderComponentState extends State<FavouriteProviderComponent>
                 widget.data!.isFavourite = 1;
                 setState(() {});
 
-                await addProviderToWishList(providerId: widget.data!.providerId.validate()).then((value) {
+                await addProviderToWishList(
+                        providerId: widget.data!.providerId.validate())
+                    .then((value) {
                   if (!value) {
                     widget.data!.isFavourite = 0;
                     setState(() {});

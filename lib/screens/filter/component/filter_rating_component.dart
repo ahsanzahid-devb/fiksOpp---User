@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/component/disabled_rating_bar_widget.dart';
-import 'package:booking_system_flutter/component/selected_item_widget.dart';
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/component/disabled_rating_bar_widget.dart';
+import 'package:fiksOpp/component/selected_item_widget.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -37,7 +37,8 @@ class _FilterRatingComponentState extends State<FilterRatingComponent> {
                   children: [
                     SelectedItemWidget(isSelected: isSelected),
                     8.width,
-                    DisabledRatingBarWidget(rating: (index + 1).toDouble()).expand(),
+                    DisabledRatingBarWidget(rating: (index + 1).toDouble())
+                        .expand(),
                     Text('${(index + 1)}', style: primaryTextStyle(size: 14)),
                   ],
                 ),
@@ -47,7 +48,8 @@ class _FilterRatingComponentState extends State<FilterRatingComponent> {
                 if (!filterStore.ratingId.contains(selectedIndex)) {
                   filterStore.ratingId.add(selectedIndex);
                 } else {
-                  filterStore.ratingId.removeWhere((element) => element == selectedIndex);
+                  filterStore.ratingId
+                      .removeWhere((element) => element == selectedIndex);
                 }
                 setState(() {});
               });

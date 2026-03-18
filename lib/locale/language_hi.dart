@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/locale/languages.dart';
+import 'package:fiksOpp/locale/languages.dart';
 
 import '../utils/configs.dart';
 
@@ -2242,7 +2242,8 @@ class LanguageHi extends BaseLanguage {
   @override
   String get pleaseEnterValidDate => "कृपया मान्य तारीख दर्ज करें (YYYY-MM-DD)";
   @override
-  String get postJobTimedOutTryFromMyJobs => "सेवा सहेजी गई। पोस्ट जॉब टाइमआउट – माई जॉब्स से पुनः प्रयास करें।";
+  String get postJobTimedOutTryFromMyJobs =>
+      "सेवा सहेजी गई। पोस्ट जॉब टाइमआउट – माई जॉब्स से पुनः प्रयास करें।";
   @override
   String get serviceIncludedInThisPackage => "इस पैकेज में सेवा शामिल है";
   @override

@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -30,12 +30,19 @@ class ReviewShimmer extends StatelessWidget {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [ShimmerWidget(height: 10, width: context.width()).flexible(), 8.width, ShimmerWidget(height: 16, width: 16)],
+                        children: [
+                          ShimmerWidget(height: 10, width: context.width())
+                              .flexible(),
+                          8.width,
+                          ShimmerWidget(height: 16, width: 16)
+                        ],
                       ),
                       8.height,
                       ShimmerWidget(height: 10, width: context.width() * 0.15),
-                      ShimmerWidget(height: 10, width: context.width()).paddingTop(8),
-                      ShimmerWidget(height: 10, width: context.width()).paddingTop(8),
+                      ShimmerWidget(height: 10, width: context.width())
+                          .paddingTop(8),
+                      ShimmerWidget(height: 10, width: context.width())
+                          .paddingTop(8),
                     ],
                   ).flexible(),
                 ],

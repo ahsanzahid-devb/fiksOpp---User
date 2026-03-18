@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_1/component/service_dashboard_component_1.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_1/component/service_dashboard_component_1.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -23,7 +23,9 @@ class ServiceListDashboardComponent1 extends StatelessWidget {
       margin: EdgeInsets.only(top: 16),
       width: context.width(),
       decoration: BoxDecoration(
-        color: appStore.isDarkMode ? context.cardColor : context.primaryColor.withValues(alpha:0.1),
+        color: appStore.isDarkMode
+            ? context.cardColor
+            : context.primaryColor.withValues(alpha: 0.1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

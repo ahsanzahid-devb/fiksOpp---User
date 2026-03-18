@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/locale/language_en.dart';
+import 'package:fiksOpp/locale/language_en.dart';
 
 /// Norwegian language that builds on top of the full English implementation,
 /// overriding only the strings we want to localize now.
@@ -415,11 +415,14 @@ class LanguageNo extends LanguageEn {
   @override
   String get btnSubmit => 'Send inn';
   @override
-  String get walkThrough1 => 'Registrer deg eller logg inn med e-post eller sosiale medier. Fullfør profilen for en enkel bestilling.';
+  String get walkThrough1 =>
+      'Registrer deg eller logg inn med e-post eller sosiale medier. Fullfør profilen for en enkel bestilling.';
   @override
-  String get walkThrough2 => 'Utforsk tjenester i ditt område. Velg tjeneste, tid og adresse for å bestille raskt.';
+  String get walkThrough2 =>
+      'Utforsk tjenester i ditt område. Velg tjeneste, tid og adresse for å bestille raskt.';
   @override
-  String get walkThrough3 => 'Følg bestillingene i sanntid. Se og administrer nåværende og tidligere bestillinger.';
+  String get walkThrough3 =>
+      'Følg bestillingene i sanntid. Se og administrer nåværende og tidligere bestillinger.';
   @override
   String get lblNotification => 'Varsler';
   @override
@@ -447,9 +450,11 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblRateHandyman => 'Vurder håndverker';
   @override
-  String get msgForLocationOn => 'Posisjon er på. Fortsett å vise tjenester fra ALLE områder?';
+  String get msgForLocationOn =>
+      'Posisjon er på. Fortsett å vise tjenester fra ALLE områder?';
   @override
-  String get msgForLocationOff => 'Posisjon er av. Utforsk tjenester i valgt område.';
+  String get msgForLocationOff =>
+      'Posisjon er av. Utforsk tjenester i valgt område.';
   @override
   String get lblEnterPhnNumber => 'Skriv inn telefonnummer';
   @override
@@ -467,9 +472,11 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblAudio => 'Lyd';
   @override
-  String get lblChangePwdTitle => 'Nytt passord må være forskjellig fra tidligere passord';
+  String get lblChangePwdTitle =>
+      'Nytt passord må være forskjellig fra tidligere passord';
   @override
-  String get lblForgotPwdSubtitle => 'En tilbakestillingslenke sendes til e-postadressen over';
+  String get lblForgotPwdSubtitle =>
+      'En tilbakestillingslenke sendes til e-postadressen over';
   @override
   String get lblLoginTitle => 'Hei igjen';
   @override
@@ -577,7 +584,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblFeatured => 'Utvalgt';
   @override
-  String get lblNoServicesFound => 'Det er for øyeblikket ingen data i denne sonen';
+  String get lblNoServicesFound =>
+      'Det er for øyeblikket ingen data i denne sonen';
   @override
   String get lblGENERAL => 'GENERELLT';
   @override
@@ -629,7 +637,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblWelcomeToHandyman => 'Velkommen til FiksOpp';
   @override
-  String get lblWalkThroughSubTitle => 'FiksOpp – Bestill håndverkere og tjenester enkelt';
+  String get lblWalkThroughSubTitle =>
+      'FiksOpp – Bestill håndverkere og tjenester enkelt';
   @override
   String get textHandyman => 'Håndverker';
   @override
@@ -717,7 +726,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get confirmationRequestTxt => 'Vil du utføre denne handlingen?';
   @override
-  String get lblDeleteAccountConformation => 'Kontoen slettes permanent. Data kan ikke gjenopprettes.';
+  String get lblDeleteAccountConformation =>
+      'Kontoen slettes permanent. Data kan ikke gjenopprettes.';
   @override
   String get lblAutoSliderStatus => 'Automatisk slider';
   @override
@@ -743,11 +753,13 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblSignInWithApple => 'Logg inn med Apple';
   @override
-  String get lblWaitingForProviderApproval => 'Venter på godkjenning fra leverandør';
+  String get lblWaitingForProviderApproval =>
+      'Venter på godkjenning fra leverandør';
   @override
   String get lblFree => 'Gratis';
   @override
-  String get lblAppleSignInNotAvailable => 'Apple-innlogging er ikke tilgjengelig på enheten din';
+  String get lblAppleSignInNotAvailable =>
+      'Apple-innlogging er ikke tilgjengelig på enheten din';
   @override
   String get lblTotalExtraCharges => 'Totale ekstrakostnader';
   @override
@@ -757,7 +769,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get noConversation => 'Ingen samtale';
   @override
-  String get noConversationSubTitle => 'Du har ikke startet noen samtale ennå. Bestill en tjeneste for å chatte med leverandør.';
+  String get noConversationSubTitle =>
+      'Du har ikke startet noen samtale ennå. Bestill en tjeneste for å chatte med leverandør.';
   @override
   String get noBookingSubTitle => 'Du har ikke bestilt noe ennå';
   @override
@@ -785,13 +798,15 @@ class LanguageNo extends LanguageEn {
   @override
   String get disclaimer => 'Ansvarsfraskrivelse';
   @override
-  String get disclaimerContent => 'Du blir bedt om betaling når bestillingen er fullført.';
+  String get disclaimerContent =>
+      'Du blir bedt om betaling når bestillingen er fullført.';
   @override
   String get inputMustBeNumberOrDigit => 'Må være tall';
   @override
   String get requiredAfterCountryCode => 'påkrevd etter landskode';
   @override
-  String get selectedOtherBookingTime => 'Valgt tid er allerede passert. Velg annen tid.';
+  String get selectedOtherBookingTime =>
+      'Valgt tid er allerede passert. Velg annen tid.';
   @override
   String get myServices => 'Mine tjenester';
   @override
@@ -805,13 +820,15 @@ class LanguageNo extends LanguageEn {
   @override
   String get add => 'Legg til';
   @override
-  String get createPostJobWithoutSelectService => 'Du må velge tjeneste for å opprette jobbforespørsel';
+  String get createPostJobWithoutSelectService =>
+      'Du må velge tjeneste for å opprette jobbforespørsel';
   @override
   String get selectCategory => 'Velg kategori';
   @override
   String get pleaseAddImage => 'Vennligst legg til bilde';
   @override
-  String get selectedBookingTimeIsAlreadyPassed => 'Valgt tid er passert. Velg annen tid.';
+  String get selectedBookingTimeIsAlreadyPassed =>
+      'Valgt tid er passert. Velg annen tid.';
   @override
   String get jobPrice => 'Jobbpris';
   @override
@@ -835,7 +852,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get noPostJobFound => 'Ingen jobbforespørsel funnet';
   @override
-  String get noPostJobFoundSubtitle => 'Når du legger ut en jobb, varsles leverandører, og du kan velge hvem som skal utføre jobben.';
+  String get noPostJobFoundSubtitle =>
+      'Når du legger ut en jobb, varsles leverandører, og du kan velge hvem som skal utføre jobben.';
   @override
   String get pleaseEnterValidOTP => 'Vennligst skriv inn gyldig OTP';
   @override
@@ -843,7 +861,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get sendingOTP => 'Sender OTP';
   @override
-  String get pleaseSelectDifferentSlotThenPrevious => 'Velg annen tid enn forrige';
+  String get pleaseSelectDifferentSlotThenPrevious =>
+      'Velg annen tid enn forrige';
   @override
   String get pleaseSelectTheSlotsFirst => 'Velg tidspunkt først';
   @override
@@ -861,15 +880,19 @@ class LanguageNo extends LanguageEn {
   @override
   String get clearChat => 'Tøm chat';
   @override
-  String get jobRequestSubtitle => 'Fant du ikke tjenesten? Du kan legge ut en forespørsel.';
+  String get jobRequestSubtitle =>
+      'Fant du ikke tjenesten? Du kan legge ut en forespørsel.';
   @override
   String get verified => 'Verifisert';
   @override
-  String get theEnteredCodeIsInvalidPleaseTryAgain => 'Koden er ugyldig. Prøv igjen.';
+  String get theEnteredCodeIsInvalidPleaseTryAgain =>
+      'Koden er ugyldig. Prøv igjen.';
   @override
-  String get otpCodeIsSentToYourMobileNumber => 'OTP er sendt til mobilnummeret ditt';
+  String get otpCodeIsSentToYourMobileNumber =>
+      'OTP er sendt til mobilnummeret ditt';
   @override
-  String get yourPaymentFailedPleaseTryAgain => 'Betalingen mislyktes. Prøv igjen.';
+  String get yourPaymentFailedPleaseTryAgain =>
+      'Betalingen mislyktes. Prøv igjen.';
   @override
   String get yourPaymentHasBeenMadeSuccessfully => 'Betalingen er gjennomført.';
   @override
@@ -897,7 +920,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblInvalidTransaction => 'Ugyldig transaksjon';
   @override
-  String get getTheseServiceWithThisPackage => 'Disse tjenestene følger med pakken';
+  String get getTheseServiceWithThisPackage =>
+      'Disse tjenestene følger med pakken';
   @override
   String get lblNotValidUser => 'Du er ikke en gyldig bruker';
   @override
@@ -911,7 +935,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblThisService => 'denne tjenesten';
   @override
-  String get lblYourCurrenciesNotSupport => 'Valutaen din støttes ikke av CinetPay';
+  String get lblYourCurrenciesNotSupport =>
+      'Valutaen din støttes ikke av CinetPay';
   @override
   String get lblSignInFailed => 'Innlogging mislyktes';
   @override
@@ -925,7 +950,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblLocationPermissionDenied => 'Posisjonstilgang er avvist.';
   @override
-  String get lblLocationPermissionDeniedPermanently => 'Posisjonstilgang er permanent avvist.';
+  String get lblLocationPermissionDeniedPermanently =>
+      'Posisjonstilgang er permanent avvist.';
   @override
   String get lblEnableLocation => 'Slå på posisjonstjenester.';
   @override
@@ -985,15 +1011,18 @@ class LanguageNo extends LanguageEn {
   @override
   String get advancePaid => 'Forskuddsbetalt';
   @override
-  String get insufficientBalanceMessage => 'Utilstrekkelig saldo. Velg annen betalingsmetode.';
+  String get insufficientBalanceMessage =>
+      'Utilstrekkelig saldo. Velg annen betalingsmetode.';
   @override
-  String get cinetPayNotSupportedMessage => 'CinetPay støttes ikke for valutaen din';
+  String get cinetPayNotSupportedMessage =>
+      'CinetPay støttes ikke for valutaen din';
   @override
   String get walletBalance => 'Lommeboksaldo';
   @override
   String get payAdvance => 'Betal forskudd';
   @override
-  String get advancePaymentMessage => 'Betal forskudd for å fullføre bestillingen';
+  String get advancePaymentMessage =>
+      'Betal forskudd for å fullføre bestillingen';
   @override
   String get advancePayAmount => 'Forskuddsbeløp';
   @override
@@ -1067,7 +1096,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get priceAmountValidationMessage => 'Beløpet må være større enn 0';
   @override
-  String get pleaseWaitWhileWeLoadChatDetails => 'Vennligst vent mens chat lastes…';
+  String get pleaseWaitWhileWeLoadChatDetails =>
+      'Vennligst vent mens chat lastes…';
   @override
   String get isNotAvailableForChat => 'er ikke tilgjengelig for chat';
   @override
@@ -1077,9 +1107,11 @@ class LanguageNo extends LanguageEn {
   @override
   String get providerAddedToFavourite => 'Leverandør lagt til i favoritter';
   @override
-  String get providerRemovedFromFavourite => 'Leverandør fjernet fra favoritter';
+  String get providerRemovedFromFavourite =>
+      'Leverandør fjernet fra favoritter';
   @override
-  String get provideValidCurrentPasswordMessage => 'Skriv inn gyldig nåværende passord';
+  String get provideValidCurrentPasswordMessage =>
+      'Skriv inn gyldig nåværende passord';
   @override
   String get copied => 'Kopiert';
   @override
@@ -1097,7 +1129,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get topUpAmountQuestion => 'Hvor mye vil du fylle på?';
   @override
-  String get selectYourPaymentMethodToAddBalance => 'Velg betalingsmetode for å fylle på';
+  String get selectYourPaymentMethodToAddBalance =>
+      'Velg betalingsmetode for å fylle på';
   @override
   String get proceedToTopUp => 'Fortsett til oppfyling';
   @override
@@ -1125,7 +1158,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get appliedTaxes => 'MVA';
   @override
-  String get accessDeniedContactYourAdmin => 'Tilgang nektet. Kontakt administrator.';
+  String get accessDeniedContactYourAdmin =>
+      'Tilgang nektet. Kontakt administrator.';
   @override
   String get yourWalletIsUpdated => 'Lommeboken er oppdatert!';
   @override
@@ -1161,17 +1195,21 @@ class LanguageNo extends LanguageEn {
   @override
   String get serviceVisitType => 'Type besøk';
   @override
-  String get thisServiceIsOnlineRemote => 'Denne tjenesten utføres på nett/fjernstyrt.';
+  String get thisServiceIsOnlineRemote =>
+      'Denne tjenesten utføres på nett/fjernstyrt.';
   @override
-  String get deleteMessageForAddOnService => 'Vil du fjerne dette tilleggstjenesten?';
+  String get deleteMessageForAddOnService =>
+      'Vil du fjerne dette tilleggstjenesten?';
   @override
   String get confirmation => 'Bekreftelse';
   @override
-  String get pleaseNoteThatAllServiceMarkedCompleted => 'Merk at alle tillegg er merket som fullført.';
+  String get pleaseNoteThatAllServiceMarkedCompleted =>
+      'Merk at alle tillegg er merket som fullført.';
   @override
   String get writeHere => 'Skriv her';
   @override
-  String get isAvailableGoTo => 'er tilgjengelig. Gå til Play Store og last ned ny versjon.';
+  String get isAvailableGoTo =>
+      'er tilgjengelig. Gå til Play Store og last ned ny versjon.';
   @override
   String get later => 'Senere';
   @override
@@ -1217,23 +1255,27 @@ class LanguageNo extends LanguageEn {
   @override
   String get transactionIsInProcess => 'Transaksjon pågår…';
   @override
-  String get pleaseCheckThePayment => 'Sjekk at betalingsforespørselen er sendt til nummeret ditt';
+  String get pleaseCheckThePayment =>
+      'Sjekk at betalingsforespørselen er sendt til nummeret ditt';
   @override
   String get enterYourMsisdnHere => 'Skriv inn mobilnummer her';
   @override
-  String get theTransactionIsStill => 'Transaksjonen behandles fortsatt. Sjekk status senere.';
+  String get theTransactionIsStill =>
+      'Transaksjonen behandles fortsatt. Sjekk status senere.';
   @override
   String get transactionIsSuccessful => 'Transaksjonen er vellykket';
   @override
   String get incorrectPinHasBeen => 'Feil PIN er oppgitt';
   @override
-  String get theUserHasExceeded => 'Brukeren har overskredet transaksjonsgrensen';
+  String get theUserHasExceeded =>
+      'Brukeren har overskredet transaksjonsgrensen';
   @override
   String get theAmountUserIs => 'Beløpet er under minimumsgrensen';
   @override
   String get userDidnTEnterThePin => 'Brukeren oppga ikke PIN';
   @override
-  String get transactionInPendingState => 'Transaksjon venter. Sjekk igjen senere.';
+  String get transactionInPendingState =>
+      'Transaksjon venter. Sjekk igjen senere.';
   @override
   String get userWalletDoesNot => 'Lommeboken har ikke nok penger';
   @override
@@ -1347,13 +1389,16 @@ class LanguageNo extends LanguageEn {
   @override
   String get removeThisFile => 'Fjern denne filen';
   @override
-  String get areYouSureWantToRemoveThisFile => 'Er du sikker på at du vil fjerne denne filen?';
+  String get areYouSureWantToRemoveThisFile =>
+      'Er du sikker på at du vil fjerne denne filen?';
   @override
   String get sendMessage => 'Send melding';
   @override
-  String get youAreNotConnectedWithChatServer => 'Du er ikke koblet til chattserveren';
+  String get youAreNotConnectedWithChatServer =>
+      'Du er ikke koblet til chattserveren';
   @override
-  String get NotConnectedWithChatServerMessage => 'Sjekk internett og prøv igjen';
+  String get NotConnectedWithChatServerMessage =>
+      'Sjekk internett og prøv igjen';
   @override
   String get sentYouAMessage => 'sendte deg en melding';
   @override
@@ -1413,9 +1458,11 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblPleaseEnterAccountNumber => 'Oppgi kontonummer';
   @override
-  String get lblAccountNumberMustContainOnlyDigits => 'Kontonummer må kun inneholde tall';
+  String get lblAccountNumberMustContainOnlyDigits =>
+      'Kontonummer må kun inneholde tall';
   @override
-  String get lblAccountNumberMustBetween11And16Digits => 'Kontonummer må ha 11–16 siffer';
+  String get lblAccountNumberMustBetween11And16Digits =>
+      'Kontonummer må ha 11–16 siffer';
   @override
   String get noBankDataTitle => 'Ingen bank lagt til';
   @override
@@ -1441,7 +1488,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get successful => 'Vellykket';
   @override
-  String get yourWithdrawalRequestHasBeenSuccessfullySubmitted => 'Uttaksforespørselen er sendt inn.';
+  String get yourWithdrawalRequestHasBeenSuccessfullySubmitted =>
+      'Uttaksforespørselen er sendt inn.';
   @override
   String get eg3000 => 'f.eks. 3000';
   @override
@@ -1453,7 +1501,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblEnterAmount => 'Skriv inn beløp';
   @override
-  String get pleaseAddLessThanOrEqualTo => 'Beløpet må være mindre enn eller lik';
+  String get pleaseAddLessThanOrEqualTo =>
+      'Beløpet må være mindre enn eller lik';
   @override
   String get topUp => 'Fyll på';
   @override
@@ -1654,7 +1703,8 @@ class LanguageNo extends LanguageEn {
   String get selectSubcategory => 'Velg underkategori';
 
   @override
-  String get pleaseEnterValidDate => 'Vennligst skriv inn en gyldig dato (ÅÅÅÅ-MM-DD)';
+  String get pleaseEnterValidDate =>
+      'Vennligst skriv inn en gyldig dato (ÅÅÅÅ-MM-DD)';
 
   @override
   String get postJobTimedOutTryFromMyJobs =>

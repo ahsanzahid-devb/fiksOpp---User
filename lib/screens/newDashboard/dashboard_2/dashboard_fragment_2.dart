@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/screens/dashboard/component/promotional_banner_slider_component.dart';
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_2/shimmer/dashboard_shimmer_2.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
+import 'package:fiksOpp/screens/dashboard/component/promotional_banner_slider_component.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_2/shimmer/dashboard_shimmer_2.dart';
+import 'package:fiksOpp/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -49,7 +49,10 @@ class _DashboardFragment2State extends State<DashboardFragment2> {
   }
 
   void init() async {
-    future = userDashboard(isCurrentLocation: appStore.isCurrentLocation, lat: getDoubleAsync(LATITUDE), long: getDoubleAsync(LONGITUDE));
+    future = userDashboard(
+        isCurrentLocation: appStore.isCurrentLocation,
+        lat: getDoubleAsync(LATITUDE),
+        long: getDoubleAsync(LONGITUDE));
     setStatusBarColorChange();
     setState(() {});
   }
@@ -80,7 +83,9 @@ class _DashboardFragment2State extends State<DashboardFragment2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appStore.isDarkMode ? context.primaryColor.withValues(alpha: 0.01) : primaryLightColor,
+      backgroundColor: appStore.isDarkMode
+          ? context.primaryColor.withValues(alpha: 0.01)
+          : primaryLightColor,
       body: Stack(
         children: [
           SnapHelperWidget<DashboardResponse>(
@@ -126,26 +131,38 @@ class _DashboardFragment2State extends State<DashboardFragment2> {
                       },
                     ),
                     16.height,
-                    SliderDashboardComponent2(sliderList: snap.slider.validate()),
-                    ConfirmDashboardBookingComponent2(upcomingConfirmedBooking: snap.upcomingData),
+                    SliderDashboardComponent2(
+                        sliderList: snap.slider.validate()),
+                    ConfirmDashboardBookingComponent2(
+                        upcomingConfirmedBooking: snap.upcomingData),
                     16.height,
-                    CategoryListDashboardComponent2(categoryList: snap.category.validate()),
-                    if (snap.promotionalBanner.validate().isNotEmpty && appConfigurationStore.isPromotionalBanner)
+                    CategoryListDashboardComponent2(
+                        categoryList: snap.category.validate()),
+                    if (snap.promotionalBanner.validate().isNotEmpty &&
+                        appConfigurationStore.isPromotionalBanner)
                       PromotionalBannerSliderComponent(
-                        promotionalBannerList: snap.promotionalBanner.validate(),
+                        promotionalBannerList:
+                            snap.promotionalBanner.validate(),
                       ).paddingTop(16),
                     20.height,
-                    ServiceListDashboardComponent2(serviceList: snap.service.validate(), serviceListTitle: language.service),
+                    ServiceListDashboardComponent2(
+                        serviceList: snap.service.validate(),
+                        serviceListTitle: language.service),
                     16.height,
-                    ServiceListDashboardComponent2(serviceList: snap.featuredServices.validate(), serviceListTitle: language.featuredServices, isFeatured: true),
+                    ServiceListDashboardComponent2(
+                        serviceList: snap.featuredServices.validate(),
+                        serviceListTitle: language.featuredServices,
+                        isFeatured: true),
                     16.height,
-                    if (appConfigurationStore.jobRequestStatus) JobRequestDashboardComponent2(),
+                    if (appConfigurationStore.jobRequestStatus)
+                      JobRequestDashboardComponent2(),
                   ],
                 );
               });
             },
           ),
-          Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
         ],
       ),
     );

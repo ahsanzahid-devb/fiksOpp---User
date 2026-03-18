@@ -1,36 +1,36 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/base_response_model.dart';
-import 'package:booking_system_flutter/model/booking_data_model.dart';
-import 'package:booking_system_flutter/model/booking_detail_model.dart';
-import 'package:booking_system_flutter/model/booking_list_model.dart';
-import 'package:booking_system_flutter/model/booking_status_model.dart';
-import 'package:booking_system_flutter/model/category_model.dart';
-import 'package:booking_system_flutter/model/city_list_model.dart';
-import 'package:booking_system_flutter/model/country_list_model.dart';
-import 'package:booking_system_flutter/model/dashboard_model.dart';
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
-import 'package:booking_system_flutter/model/login_model.dart';
-import 'package:booking_system_flutter/model/notification_model.dart';
-import 'package:booking_system_flutter/model/post_job_detail_response.dart';
-import 'package:booking_system_flutter/model/provider_info_response.dart';
-import 'package:booking_system_flutter/model/provider_list_model.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/model/service_response.dart';
-import 'package:booking_system_flutter/model/service_review_response.dart';
-import 'package:booking_system_flutter/model/state_list_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/model/user_wallet_history.dart';
-import 'package:booking_system_flutter/model/verify_transaction_response.dart';
-import 'package:booking_system_flutter/network/network_utils.dart';
-import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/configs.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/base_response_model.dart';
+import 'package:fiksOpp/model/booking_data_model.dart';
+import 'package:fiksOpp/model/booking_detail_model.dart';
+import 'package:fiksOpp/model/booking_list_model.dart';
+import 'package:fiksOpp/model/booking_status_model.dart';
+import 'package:fiksOpp/model/category_model.dart';
+import 'package:fiksOpp/model/city_list_model.dart';
+import 'package:fiksOpp/model/country_list_model.dart';
+import 'package:fiksOpp/model/dashboard_model.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/model/login_model.dart';
+import 'package:fiksOpp/model/notification_model.dart';
+import 'package:fiksOpp/model/post_job_detail_response.dart';
+import 'package:fiksOpp/model/provider_info_response.dart';
+import 'package:fiksOpp/model/provider_list_model.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/model/service_response.dart';
+import 'package:fiksOpp/model/service_review_response.dart';
+import 'package:fiksOpp/model/state_list_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/model/user_wallet_history.dart';
+import 'package:fiksOpp/model/verify_transaction_response.dart';
+import 'package:fiksOpp/network/network_utils.dart';
+import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/configs.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -325,19 +325,15 @@ Future<void> getAppConfigurations(
       final endpoint =
           'configurations?is_authenticated=${appStore.isLoggedIn.getIntBool()}';
       final req = appStore.isLoggedIn ? {"user_id": appStore.userId} : null;
-      log(
-          'CONFIG | ${DateTime.now().toIso8601String()} | request start | endpoint=$endpoint | req=$req');
+      log('CONFIG | ${DateTime.now().toIso8601String()} | request start | endpoint=$endpoint | req=$req');
       AppConfigurationModel? res = AppConfigurationModel.fromJsonMap(
           await handleResponse(await buildHttpResponse(endpoint,
               method: HttpMethodType.POST, request: req)));
-      log(
-          'CONFIG | ${DateTime.now().toIso8601String()} | request success | endpoint=$endpoint');
+      log('CONFIG | ${DateTime.now().toIso8601String()} | request success | endpoint=$endpoint');
       await setAppConfigurations(res);
-      log(
-          'CONFIG | ${DateTime.now().toIso8601String()} | setAppConfigurations done');
+      log('CONFIG | ${DateTime.now().toIso8601String()} | setAppConfigurations done');
     } catch (e) {
-      log(
-          'CONFIG | ${DateTime.now().toIso8601String()} | request failed | $e');
+      log('CONFIG | ${DateTime.now().toIso8601String()} | request failed | $e');
       throw e;
     }
   }

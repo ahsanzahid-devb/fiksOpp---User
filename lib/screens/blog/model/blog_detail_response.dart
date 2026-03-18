@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/blog/model/blog_response_model.dart';
+import 'package:fiksOpp/screens/blog/model/blog_response_model.dart';
 
 class BlogDetailResponse {
   BlogData? blogDetail;
@@ -6,7 +6,9 @@ class BlogDetailResponse {
   BlogDetailResponse({this.blogDetail});
 
   BlogDetailResponse.fromJson(Map<String, dynamic> json) {
-    blogDetail = json['blog_detail'] != null ? BlogData.fromJson(json['blog_detail']) : null;
+    blogDetail = json['blog_detail'] != null
+        ? BlogData.fromJson(json['blog_detail'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

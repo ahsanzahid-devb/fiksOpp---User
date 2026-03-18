@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "fiksopp.inoor" "\0"
-            VALUE "FileDescription", "booking_system_flutter" "\0"
+            VALUE "FileDescription", "fiksOpp" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "booking_system_flutter" "\0"
+            VALUE "InternalName", "fiksOpp" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 fiksopp.inoor. All rights reserved." "\0"
-            VALUE "OriginalFilename", "booking_system_flutter.exe" "\0"
-            VALUE "ProductName", "booking_system_flutter" "\0"
+            VALUE "OriginalFilename", "fiksOpp.exe" "\0"
+            VALUE "ProductName", "fiksOpp" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/disabled_rating_bar_widget.dart';
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/disabled_rating_bar_widget.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -18,13 +18,18 @@ class ServiceDetailShimmer extends StatelessWidget {
             width: context.width(),
             child: Stack(
               children: [
-                SizedBox(height: 400, width: context.width(), child: ShimmerWidget()),
+                SizedBox(
+                    height: 400,
+                    width: context.width(),
+                    child: ShimmerWidget()),
                 Positioned(
                   top: context.statusBarHeight + 8,
                   left: 16,
                   child: Container(
                     child: BackWidget(iconColor: context.iconColor),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: context.cardColor.withValues(alpha:0.7)),
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: context.cardColor.withValues(alpha: 0.7)),
                   ),
                 ),
                 Positioned(
@@ -41,7 +46,8 @@ class ServiceDetailShimmer extends StatelessWidget {
                             children: List.generate(
                               3,
                               (i) => Container(
-                                decoration: BoxDecoration(borderRadius: radius()),
+                                decoration:
+                                    BoxDecoration(borderRadius: radius()),
                                 child: ShimmerWidget(height: 60, width: 60),
                               ),
                             ),
@@ -63,14 +69,17 @@ class ServiceDetailShimmer extends StatelessWidget {
                           children: [
                             ShimmerWidget(height: 10, width: context.width()),
                             4.height,
-                            ShimmerWidget(height: 10, width: context.width() * 0.2),
+                            ShimmerWidget(
+                                height: 10, width: context.width() * 0.2),
                             4.height,
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                ShimmerWidget(height: 10, width: context.width() * 0.2),
+                                ShimmerWidget(
+                                    height: 10, width: context.width() * 0.2),
                                 4.width,
-                                ShimmerWidget(height: 10, width: context.width() * 0.2),
+                                ShimmerWidget(
+                                    height: 10, width: context.width() * 0.2),
                               ],
                             ),
                             8.height,
@@ -117,7 +126,8 @@ class ServiceDetailShimmer extends StatelessWidget {
                   return Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: boxDecorationDefault(color: context.cardColor),
-                    child: ShimmerWidget(height: 20, width: context.width() * 0.12),
+                    child: ShimmerWidget(
+                        height: 20, width: context.width() * 0.12),
                   );
                 }),
               ),
@@ -139,9 +149,12 @@ class ServiceDetailShimmer extends StatelessWidget {
                     5,
                     (index) {
                       return Container(
-                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        decoration: boxDecorationDefault(color: context.cardColor),
-                        child: ShimmerWidget(height: 20, width: context.width() * 0.12),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        decoration:
+                            boxDecorationDefault(color: context.cardColor),
+                        child: ShimmerWidget(
+                            height: 20, width: context.width() * 0.12),
                       );
                     },
                   ),
@@ -166,7 +179,8 @@ class ServiceDetailShimmer extends StatelessWidget {
                       children: [
                         Container(
                           decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: ShimmerWidget(height: 70, width: 70).cornerRadiusWithClipRRect(35),
+                          child: ShimmerWidget(height: 70, width: 70)
+                              .cornerRadiusWithClipRRect(35),
                         ),
                         16.width,
                         Column(
@@ -194,7 +208,8 @@ class ServiceDetailShimmer extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ShimmerWidget(height: 10, width: context.width() * 0.25).paddingSymmetric(horizontal: 16, vertical: 16),
+              ShimmerWidget(height: 10, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 16, vertical: 16),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: 2,
@@ -208,12 +223,15 @@ class ServiceDetailShimmer extends StatelessWidget {
                     decoration: boxDecorationWithRoundedCorners(
                       borderRadius: radius(),
                       backgroundColor: context.cardColor,
-                      border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+                      border: appStore.isDarkMode
+                          ? Border.all(color: context.dividerColor)
+                          : null,
                     ),
                     child: Row(
                       children: [
                         Container(
-                          decoration: BoxDecoration(borderRadius: radius(defaultRadius)),
+                          decoration: BoxDecoration(
+                              borderRadius: radius(defaultRadius)),
                           child: ShimmerWidget(height: 60, width: 60),
                         ),
                         16.width,
@@ -223,18 +241,22 @@ class ServiceDetailShimmer extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ShimmerWidget(height: 10, width: context.width() * 0.12),
+                                ShimmerWidget(
+                                    height: 10, width: context.width() * 0.12),
                                 4.height,
-                                ShimmerWidget(height: 10, width: context.width() * 0.25),
+                                ShimmerWidget(
+                                    height: 10, width: context.width() * 0.25),
                                 4.height,
-                                ShimmerWidget(height: 10, width: context.width() * 0.12),
+                                ShimmerWidget(
+                                    height: 10, width: context.width() * 0.12),
                               ],
                             ),
                           ],
                         ).expand(),
                         16.width,
                         Container(
-                          decoration: BoxDecoration(borderRadius: radius(defaultRadius)),
+                          decoration: BoxDecoration(
+                              borderRadius: radius(defaultRadius)),
                           child: ShimmerWidget(height: 45, width: 70),
                         ),
                       ],
@@ -249,7 +271,8 @@ class ServiceDetailShimmer extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ShimmerWidget(height: 10, width: context.width() * 0.25).paddingSymmetric(horizontal: 16, vertical: 16),
+              ShimmerWidget(height: 10, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 16, vertical: 16),
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: 2,
@@ -263,7 +286,9 @@ class ServiceDetailShimmer extends StatelessWidget {
                     decoration: boxDecorationWithRoundedCorners(
                       borderRadius: radius(),
                       backgroundColor: context.cardColor,
-                      border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+                      border: appStore.isDarkMode
+                          ? Border.all(color: context.dividerColor)
+                          : null,
                     ),
                     child: Column(
                       children: [
@@ -282,7 +307,8 @@ class ServiceDetailShimmer extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ShimmerWidget(height: 10, width: context.width() * 0.25).paddingSymmetric(horizontal: 16, vertical: 16),
+              ShimmerWidget(height: 10, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 16, vertical: 16),
               Wrap(
                 children: List.generate(
                   2,
@@ -298,21 +324,33 @@ class ServiceDetailShimmer extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              decoration: BoxDecoration(border: Border.all(color: white, width: 2), shape: BoxShape.circle),
-                              child: ShimmerWidget(height: 50, width: 50).cornerRadiusWithClipRRect(25),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: white, width: 2),
+                                  shape: BoxShape.circle),
+                              child: ShimmerWidget(height: 50, width: 50)
+                                  .cornerRadiusWithClipRRect(25),
                             ),
                             16.width,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [ShimmerWidget(height: 10, width: context.width() * 0.25).flexible(), ShimmerWidget(height: 16, width: 16)],
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ShimmerWidget(
+                                            height: 10,
+                                            width: context.width() * 0.25)
+                                        .flexible(),
+                                    ShimmerWidget(height: 16, width: 16)
+                                  ],
                                 ),
                                 4.height,
-                                ShimmerWidget(height: 10, width: context.width()),
+                                ShimmerWidget(
+                                    height: 10, width: context.width()),
                                 8.height,
-                                ShimmerWidget(height: 20, width: context.width()),
+                                ShimmerWidget(
+                                    height: 20, width: context.width()),
                               ],
                             ).flexible(),
                           ],
@@ -330,7 +368,8 @@ class ServiceDetailShimmer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               8.height,
-              ShimmerWidget(height: 10, width: context.width() * 0.25).paddingSymmetric(horizontal: 16),
+              ShimmerWidget(height: 10, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 16),
               HorizontalList(
                 itemCount: 4,
                 padding: EdgeInsets.all(16),
@@ -341,14 +380,18 @@ class ServiceDetailShimmer extends StatelessWidget {
                   decoration: boxDecorationWithRoundedCorners(
                     borderRadius: radius(),
                     backgroundColor: context.cardColor,
-                    border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+                    border: appStore.isDarkMode
+                        ? Border.all(color: context.dividerColor)
+                        : null,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ShimmerWidget(height: 205, width: context.width() / 2 - 24),
+                      ShimmerWidget(
+                          height: 205, width: context.width() / 2 - 24),
                       16.height,
-                      ShimmerWidget(height: 10, width: 100).paddingSymmetric(horizontal: 16),
+                      ShimmerWidget(height: 10, width: 100)
+                          .paddingSymmetric(horizontal: 16),
                       16.height,
                       Row(
                         children: [
@@ -356,11 +399,14 @@ class ServiceDetailShimmer extends StatelessWidget {
                             child: Container(
                               height: 30,
                               width: 30,
-                              decoration: boxDecorationDefault(shape: BoxShape.circle, color: context.cardColor),
+                              decoration: boxDecorationDefault(
+                                  shape: BoxShape.circle,
+                                  color: context.cardColor),
                             ),
                           ),
                           8.width,
-                          ShimmerWidget(height: 10, width: context.width()).expand(),
+                          ShimmerWidget(height: 10, width: context.width())
+                              .expand(),
                         ],
                       ).paddingSymmetric(horizontal: 16),
                       16.height,

@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -48,13 +48,17 @@ class SlotWidget extends StatelessWidget {
         width: context.width() / 3 - 22,
         decoration: boxDecorationDefault(
           boxShadow: defaultBoxShadow(blurRadius: 0, spreadRadius: 0),
-          border: Border.all(color: isAvailable ? activeColor : transparentColor),
+          border:
+              Border.all(color: isAvailable ? activeColor : transparentColor),
           color: _getBackgroundColor(context),
         ),
         padding: EdgeInsets.all(12),
         child: Observer(builder: (context) {
           return Text(
-            appStore.is24HourFormat ? value.splitBefore(':00') : TimeOfDay(hour: value.split(':').first.toInt(), minute: 00).format(context),
+            appStore.is24HourFormat
+                ? value.splitBefore(':00')
+                : TimeOfDay(hour: value.split(':').first.toInt(), minute: 00)
+                    .format(context),
             style: primaryTextStyle(color: _getTextColor()),
           ).center();
         }),

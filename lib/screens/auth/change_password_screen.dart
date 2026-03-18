@@ -1,13 +1,13 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/dashboard/dashboard_screen.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -60,7 +60,8 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
       await changeUserPassword(request).then((res) async {
         toast(res.message.validate());
         await setValue(USER_PASSWORD, newPasswordCont.text);
-        DashboardScreen(initialTabIndex: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        DashboardScreen(initialTabIndex: 0).launch(context,
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       }).catchError((e) {
         toast(e.toString(), print: true);
       });
@@ -87,8 +88,10 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 focus: oldPasswordFocus,
                 nextFocus: newPasswordFocus,
                 obscureText: true,
-                suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-                suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
+                suffixPasswordVisibleWidget:
+                    ic_show.iconImage(size: 10).paddingAll(14),
+                suffixPasswordInvisibleWidget:
+                    ic_hide.iconImage(size: 10).paddingAll(14),
                 decoration: inputDecoration(
                   context,
                   labelText: language.hintOldPasswordTxt,
@@ -110,9 +113,12 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 focus: newPasswordFocus,
                 obscureText: true,
                 nextFocus: reenterPasswordFocus,
-                suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-                suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
-                decoration: inputDecoration(context, labelText: language.hintNewPasswordTxt),
+                suffixPasswordVisibleWidget:
+                    ic_show.iconImage(size: 10).paddingAll(14),
+                suffixPasswordInvisibleWidget:
+                    ic_hide.iconImage(size: 10).paddingAll(14),
+                decoration: inputDecoration(context,
+                    labelText: language.hintNewPasswordTxt),
                 isValidationRequired: true,
                 validator: (val) {
                   if (val == null || val.isEmpty) {
@@ -129,8 +135,10 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 controller: reenterPasswordCont,
                 obscureText: true,
                 focus: reenterPasswordFocus,
-                suffixPasswordVisibleWidget: ic_show.iconImage(size: 10).paddingAll(14),
-                suffixPasswordInvisibleWidget: ic_hide.iconImage(size: 10).paddingAll(14),
+                suffixPasswordVisibleWidget:
+                    ic_show.iconImage(size: 10).paddingAll(14),
+                suffixPasswordInvisibleWidget:
+                    ic_hide.iconImage(size: 10).paddingAll(14),
                 validator: (v) {
                   if (v == null || v.isEmpty) {
                     return errorThisFieldRequired;
@@ -148,7 +156,8 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     changePassword();
                   });
                 },
-                decoration: inputDecoration(context, labelText: language.hintReenterPasswordTxt),
+                decoration: inputDecoration(context,
+                    labelText: language.hintReenterPasswordTxt),
               ),
               24.height,
               AppButton(

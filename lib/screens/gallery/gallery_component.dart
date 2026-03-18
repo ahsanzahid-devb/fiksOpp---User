@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/screens/zoom_image_screen.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/screens/zoom_image_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -10,13 +10,20 @@ class GalleryComponent extends StatelessWidget {
   final double? height;
   final double? width;
 
-  GalleryComponent({required this.images, required this.index, this.padding, this.height, this.width});
+  GalleryComponent(
+      {required this.images,
+      required this.index,
+      this.padding,
+      this.height,
+      this.width});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ZoomImageScreen(galleryImages: images, index: index).launch(context, pageRouteAnimation: PageRouteAnimation.Fade, duration: 200.milliseconds);
+        ZoomImageScreen(galleryImages: images, index: index).launch(context,
+            pageRouteAnimation: PageRouteAnimation.Fade,
+            duration: 200.milliseconds);
       },
       child: CachedImageWidget(
         url: images[index],

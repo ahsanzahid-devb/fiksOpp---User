@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/chat_message_model.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/chat_message_model.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -61,15 +61,19 @@ class LastMessageChat extends StatelessWidget {
           var docList = snapshot.data!.docs;
 
           if (docList.isNotEmpty) {
-            ChatMessageModel message = ChatMessageModel.fromJson(docList.last.data() as Map<String, dynamic>);
+            ChatMessageModel message = ChatMessageModel.fromJson(
+                docList.last.data() as Map<String, dynamic>);
             String time = '';
-            DateTime date = DateTime.fromMicrosecondsSinceEpoch(message.createdAt! * 1000);
+            DateTime date =
+                DateTime.fromMicrosecondsSinceEpoch(message.createdAt! * 1000);
             if (date.isToday) {
-              time = formatDate(message.createdAt.validate().toString(), isFromMicrosecondsSinceEpoch: true, isTime: true);
+              time = formatDate(message.createdAt.validate().toString(),
+                  isFromMicrosecondsSinceEpoch: true, isTime: true);
             } else if (date.isYesterday) {
               time = language.yesterday;
             } else {
-              time = formatDate(message.createdAt.validate().toString(), isFromMicrosecondsSinceEpoch: true);
+              time = formatDate(message.createdAt.validate().toString(),
+                  isFromMicrosecondsSinceEpoch: true);
             }
             message.isMe = message.senderId == appStore.uid;
 
@@ -78,8 +82,10 @@ class LastMessageChat extends StatelessWidget {
               children: [
                 message.isMe.validate()
                     ? !message.isMessageRead.validate()
-                        ? Icon(Icons.done, size: 12, color: textSecondaryColorGlobal)
-                        : Icon(Icons.done_all, size: 12, color: textSecondaryColorGlobal)
+                        ? Icon(Icons.done,
+                            size: 12, color: textSecondaryColorGlobal)
+                        : Icon(Icons.done_all,
+                            size: 12, color: textSecondaryColorGlobal)
                     : Offstage(),
                 typeWidget(message).expand(),
                 16.width,

@@ -1,24 +1,24 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/component/disabled_rating_bar_widget.dart';
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/component/price_widget.dart';
-import 'package:booking_system_flutter/component/view_all_label_component.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/get_my_post_job_list_response.dart';
-import 'package:booking_system_flutter/model/post_job_detail_response.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/booking/provider_info_screen.dart';
-import 'package:booking_system_flutter/screens/jobRequest/book_post_job_request_screen.dart';
-import 'package:booking_system_flutter/screens/jobRequest/components/bidder_item_component.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/component/disabled_rating_bar_widget.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/component/price_widget.dart';
+import 'package:fiksOpp/component/view_all_label_component.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
+import 'package:fiksOpp/model/post_job_detail_response.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/booking/provider_info_screen.dart';
+import 'package:fiksOpp/screens/jobRequest/book_post_job_request_screen.dart';
+import 'package:fiksOpp/screens/jobRequest/components/bidder_item_component.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:booking_system_flutter/screens/jobRequest/components/category_widget.dart';
+import 'package:fiksOpp/screens/jobRequest/components/category_widget.dart';
 import '../../component/empty_error_state_widget.dart';
 import '../../component/responsive_container.dart';
 
@@ -82,15 +82,23 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
   /// Post job detail card: all sections always visible with default values for null/empty.
   Widget postJobDetailWidget({required PostJobData data}) {
     String title = data.title.validate().isNotEmpty ? data.title! : '—';
-    String description = data.description.validate().isNotEmpty ? data.description! : '—';
+    String description =
+        data.description.validate().isNotEmpty ? data.description! : '—';
     String? categoryName = data.service.validate().isNotEmpty
-        ? (data.service!.first.categoryName.validate().isNotEmpty ? data.service!.first.categoryName : null)
+        ? (data.service!.first.categoryName.validate().isNotEmpty
+            ? data.service!.first.categoryName
+            : null)
         : null;
     String? subCategoryName = data.service.validate().isNotEmpty
-        ? (data.service!.first.subCategoryName.validate().isNotEmpty ? data.service!.first.subCategoryName : null)
+        ? (data.service!.first.subCategoryName.validate().isNotEmpty
+            ? data.service!.first.subCategoryName
+            : null)
         : null;
     num jobPrice = data.jobPrice ?? 0;
-    String datePriceInfo = (data.price.validate().isNotEmpty && data.price != "0") ? data.price! : '—';
+    String datePriceInfo =
+        (data.price.validate().isNotEmpty && data.price != "0")
+            ? data.price!
+            : '—';
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -401,8 +409,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
                     postJobServiceWidget(
                         serviceList:
                             data.postRequestDetail!.service.validate()),
-                    providerWidget(
-                        data.biderData.validate(),
+                    providerWidget(data.biderData.validate(),
                         data.postRequestDetail!.providerId),
                     bidderWidget(data.biderData.validate(),
                         postJobDetailResponse: data),

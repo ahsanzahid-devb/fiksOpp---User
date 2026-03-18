@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/loader_widget.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -31,15 +31,16 @@ class AppScaffold extends StatelessWidget {
     return Scaffold(
       appBar: appBarTitle != null
           ? AppBar(
-        title: Text(
-          appBarTitle.validate(),
-          style: boldTextStyle(color: Colors.white, size: APP_BAR_TEXT_SIZE),
-        ),
-        elevation: 0.0,
-        backgroundColor: context.primaryColor,
-        leading: context.canPop ? BackWidget() : null,
-        actions: actions,
-      )
+              title: Text(
+                appBarTitle.validate(),
+                style:
+                    boldTextStyle(color: Colors.white, size: APP_BAR_TEXT_SIZE),
+              ),
+              elevation: 0.0,
+              backgroundColor: context.primaryColor,
+              leading: context.canPop ? BackWidget() : null,
+              actions: actions,
+            )
           : null,
       backgroundColor: scaffoldBackgroundColor,
       body: isLoading != null
@@ -62,7 +63,8 @@ class AppScaffold extends StatelessWidget {
                 child,
                 if (showLoader)
                   Observer(
-                    builder: (_) => LoaderWidget().center().visible(appStore.isLoading),
+                    builder: (_) =>
+                        LoaderWidget().center().visible(appStore.isLoading),
                   ),
               ],
             ),

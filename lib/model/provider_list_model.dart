@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/model/pagination_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
+import 'package:fiksOpp/model/pagination_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
 
 class ProviderListResponse {
   Pagination? pagination;
@@ -10,12 +10,17 @@ class ProviderListResponse {
   ProviderListResponse({this.pagination, this.providerList});
 
   ProviderListResponse.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? new Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? new Pagination.fromJson(json['pagination'])
+        : null;
     if (json['data'] != null) {
-      providerList = json['data'] != null ? (json['data'] as List).map((i) => UserData.fromJson(i)).toList() : null;
-    };
-    max = json['max_price'] != null ? json['max_price']: 0.0;
-    min = json['min_price'] != null ? json['min_price']: 0.0;
+      providerList = json['data'] != null
+          ? (json['data'] as List).map((i) => UserData.fromJson(i)).toList()
+          : null;
+    }
+    ;
+    max = json['max_price'] != null ? json['max_price'] : 0.0;
+    min = json['min_price'] != null ? json['min_price'] : 0.0;
   }
 
   Map<String, dynamic> toJson() {

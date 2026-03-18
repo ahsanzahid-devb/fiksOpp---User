@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -24,7 +24,10 @@ class BookingShimmer extends StatelessWidget {
                 width: context.width(),
                 padding: EdgeInsets.all(8),
                 margin: EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(color: context.scaffoldBackgroundColor, border: Border.all(color: context.dividerColor), borderRadius: radius()),
+                decoration: BoxDecoration(
+                    color: context.scaffoldBackgroundColor,
+                    border: Border.all(color: context.dividerColor),
+                    borderRadius: radius()),
                 child: Column(
                   children: [
                     Row(
@@ -42,8 +45,12 @@ class BookingShimmer extends StatelessWidget {
                                 8.width,
                                 Container(
                                   padding: EdgeInsets.symmetric(vertical: 4),
-                                  decoration: BoxDecoration(borderRadius: radius(8), color: Colors.transparent),
-                                  child: ShimmerWidget(height: 20, width: context.width() * 0.24),
+                                  decoration: BoxDecoration(
+                                      borderRadius: radius(8),
+                                      color: Colors.transparent),
+                                  child: ShimmerWidget(
+                                      height: 20,
+                                      width: context.width() * 0.24),
                                 ).flexible(),
                               ],
                             ),
@@ -90,20 +97,25 @@ class BookingShimmer extends StatelessWidget {
                           ),
                           8.height,
                           DottedLine(
-                            dashColor: appStore.isDarkMode ? lightGray.withValues(alpha:0.4) : lightGray,
+                            dashColor: appStore.isDarkMode
+                                ? lightGray.withValues(alpha: 0.4)
+                                : lightGray,
                             dashGapLength: 5,
                             dashLength: 8,
                           ).paddingAll(8),
                           8.height,
                           Row(
                             children: [
-                              ShimmerWidget(height: 40, width: 40).cornerRadiusWithClipRRect(22),
+                              ShimmerWidget(height: 40, width: 40)
+                                  .cornerRadiusWithClipRRect(22),
                               16.width,
                               Column(
                                 children: [
-                                  ShimmerWidget(height: 10, width: context.width()),
+                                  ShimmerWidget(
+                                      height: 10, width: context.width()),
                                   8.height,
-                                  ShimmerWidget(height: 10, width: context.width()),
+                                  ShimmerWidget(
+                                      height: 10, width: context.width()),
                                 ],
                               ).expand(),
                             ],

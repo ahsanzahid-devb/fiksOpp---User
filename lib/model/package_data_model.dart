@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/model/service_data_model.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class BookingPackage {
@@ -17,7 +17,14 @@ class BookingPackage {
   String? packageType;
   num originalPrice = 0;
   bool get isPackageDiscountApplied => originalPrice >= price.validate();
-  bool get isAllServiceOnline => serviceList.validate().map((e) => e.isOnlineService).toList().where((element) => element == false).length == 0;
+  bool get isAllServiceOnline =>
+      serviceList
+          .validate()
+          .map((e) => e.isOnlineService)
+          .toList()
+          .where((element) => element == false)
+          .length ==
+      0;
 
   BookingPackage({
     this.id,
@@ -44,14 +51,25 @@ class BookingPackage {
     endDate = json['end_date'];
     status = json['status'];
     if (json['services'] != null) {
-      serviceList = json['services'] != null ? (json['services'] as List).map((i) => ServiceData.fromJson(i)).toList() : null;
+      serviceList = json['services'] != null
+          ? (json['services'] as List)
+              .map((i) => ServiceData.fromJson(i))
+              .toList()
+          : null;
     }
-    attchments = json['attchments_array'] != null ? (json['attchments_array'] as List).map((i) => Attachments.fromJson(i)).toList() : null;
-    imageAttachments = json['attchments'] != null ? List<String>.from(json['attchments']) : null;
+    attchments = json['attchments_array'] != null
+        ? (json['attchments_array'] as List)
+            .map((i) => Attachments.fromJson(i))
+            .toList()
+        : null;
+    imageAttachments = json['attchments'] != null
+        ? List<String>.from(json['attchments'])
+        : null;
     categoryId = json['category_id'];
     isFeatured = json['is_featured'];
     packageType = json['package_type'];
-    originalPrice = serviceList.validate().sumByDouble((e) => e.price.validate());
+    originalPrice =
+        serviceList.validate().sumByDouble((e) => e.price.validate());
   }
 
   Map<String, dynamic> toJson() {
@@ -71,7 +89,8 @@ class BookingPackage {
     data['category_id'] = this.categoryId;
     data['is_featured'] = this.isFeatured;
     if (this.attchments != null) {
-      data['attchments_array'] = this.attchments!.map((v) => v.toJson()).toList();
+      data['attchments_array'] =
+          this.attchments!.map((v) => v.toJson()).toList();
     }
     if (this.imageAttachments != null) {
       data['attchments'] = this.imageAttachments;

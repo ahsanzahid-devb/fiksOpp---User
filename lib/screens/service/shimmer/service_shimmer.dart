@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -12,7 +12,8 @@ class ServiceShimmer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ShimmerWidget(height: 20, width: context.width() * 0.25).paddingSymmetric(horizontal: 8),
+              ShimmerWidget(height: 20, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 8),
               Column(
                 children: [
                   Row(
@@ -37,13 +38,16 @@ class ServiceShimmer extends StatelessWidget {
                                 width: CATEGORY_ICON_SIZE,
                                 height: CATEGORY_ICON_SIZE,
                                 padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(color: context.cardColor, shape: BoxShape.circle),
+                                decoration: BoxDecoration(
+                                    color: context.cardColor,
+                                    shape: BoxShape.circle),
                               ),
                               4.height,
                               Container(
                                 width: 60,
                                 height: 10,
-                                decoration: boxDecorationWithRoundedCorners(backgroundColor: context.cardColor),
+                                decoration: boxDecorationWithRoundedCorners(
+                                    backgroundColor: context.cardColor),
                               ),
                             ],
                           ),
@@ -53,7 +57,8 @@ class ServiceShimmer extends StatelessWidget {
                   ),
                 ],
               ).paddingSymmetric(vertical: 16),
-              ShimmerWidget(height: 20, width: context.width() * 0.25).paddingSymmetric(horizontal: 8),
+              ShimmerWidget(height: 20, width: context.width() * 0.25)
+                  .paddingSymmetric(horizontal: 8),
               AnimatedWrap(
                 itemCount: 20,
                 listAnimationType: ListAnimationType.None,

@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -23,8 +23,12 @@ class _UpiPayScreenState extends State<UpiPayScreen> {
     upiApps.addAll(
       UpiApps()
           .upiAppList
-          .where((p0) => widget.installedUpiAppList.any((installedList) => installedList.packageName == p0['packageName']))
-          .map((element) => UpiApps(name: element['name'], imagePath: element['image'], packageName: element['packageName'])),
+          .where((p0) => widget.installedUpiAppList.any((installedList) =>
+              installedList.packageName == p0['packageName']))
+          .map((element) => UpiApps(
+              name: element['name'],
+              imagePath: element['image'],
+              packageName: element['packageName'])),
     );
     super.initState();
   }
@@ -34,7 +38,8 @@ class _UpiPayScreenState extends State<UpiPayScreen> {
     return AppScaffold(
       appBarTitle: language.upiApps,
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
         itemCount: upiApps.length,
         itemBuilder: (BuildContext context, int index) {
           UpiApps data = upiApps[index];

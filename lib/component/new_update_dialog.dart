@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/configs.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/configs.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,7 +42,9 @@ class NewUpdateDialog extends StatelessWidget {
                   AppButton(
                     text: canClose ? language.later : language.closeApp,
                     textStyle: boldTextStyle(color: primaryColor, size: 14),
-                    shapeBorder: RoundedRectangleBorder(borderRadius: radius(), side: BorderSide(color: primaryColor)),
+                    shapeBorder: RoundedRectangleBorder(
+                        borderRadius: radius(),
+                        side: BorderSide(color: primaryColor)),
                     elevation: 0,
                     onTap: () async {
                       if (canClose) {
@@ -93,7 +95,8 @@ class NewUpdateDialog extends StatelessWidget {
         ),
         Positioned(
           top: -42,
-          child: Image.asset(imgForceUpdate, height: 100, width: 100, fit: BoxFit.cover),
+          child: Image.asset(imgForceUpdate,
+              height: 100, width: 100, fit: BoxFit.cover),
         ),
       ],
     );

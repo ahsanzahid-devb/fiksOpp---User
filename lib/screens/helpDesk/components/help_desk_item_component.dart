@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -46,17 +46,21 @@ class _HelpDeskItemComponentState extends State<HelpDeskItemComponent> {
         decoration: boxDecorationWithRoundedCorners(
           borderRadius: radius(),
           backgroundColor: context.cardColor,
-          border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+          border: appStore.isDarkMode
+              ? Border.all(color: context.dividerColor)
+              : null,
         ),
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('#${widget.helpDeskData.id}', style: boldTextStyle(color: primaryColor)),
+                Text('#${widget.helpDeskData.id}',
+                    style: boldTextStyle(color: primaryColor)),
                 8.height,
                 Text(
-                  formatBookingDate(widget.helpDeskData.createdAt.validate(), format: DATE_FORMAT_10),
+                  formatBookingDate(widget.helpDeskData.createdAt.validate(),
+                      format: DATE_FORMAT_10),
                   style: secondaryTextStyle(),
                 ),
                 16.height,
@@ -86,7 +90,9 @@ class _HelpDeskItemComponentState extends State<HelpDeskItemComponent> {
                             style: boldTextStyle(size: 12, color: Colors.green),
                           ).expand(),
                           Text(
-                            formatBookingDate(widget.helpDeskData.updatedAt.validate(), format: DATE_FORMAT_10),
+                            formatBookingDate(
+                                widget.helpDeskData.updatedAt.validate(),
+                                format: DATE_FORMAT_10),
                             style: secondaryTextStyle(),
                           ),
                         ],
@@ -97,9 +103,12 @@ class _HelpDeskItemComponentState extends State<HelpDeskItemComponent> {
                 if (widget.helpDeskData.status != CLOSED) 16.height,
                 TextButton(
                   onPressed: () async {
-                    HelpDeskDetailScreen(helpDeskData: widget.helpDeskData).launch(context);
+                    HelpDeskDetailScreen(helpDeskData: widget.helpDeskData)
+                        .launch(context);
                   },
-                  style: ButtonStyle(padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 2, horizontal: 0))),
+                  style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 2, horizontal: 0))),
                   child: Text(
                     language.viewDetail,
                     style: boldTextStyle(color: primaryColor, size: 12),
@@ -113,7 +122,9 @@ class _HelpDeskItemComponentState extends State<HelpDeskItemComponent> {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: boxDecorationWithRoundedCorners(
                   borderRadius: radiusOnly(topRight: 8, bottomLeft: 8),
-                  backgroundColor: widget.helpDeskData.status.validate().getHelpDeskStatusBackgroundColor,
+                  backgroundColor: widget.helpDeskData.status
+                      .validate()
+                      .getHelpDeskStatusBackgroundColor,
                 ),
                 child: Text(
                   widget.helpDeskData.status.validate().toHelpDeskStatus(),

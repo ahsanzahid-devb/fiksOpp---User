@@ -1,9 +1,9 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/chat_message_model.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/extensions/string_extentions.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/chat_message_model.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/extensions/string_extentions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -248,24 +248,16 @@ class _ChatItemWidgetState extends State<ChatItemWidget> {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                  color: gray,
-                  blurRadius: 0.1,
-                  spreadRadius: 0.2), //BoxShadow
+                  color: gray, blurRadius: 0.1, spreadRadius: 0.2), //BoxShadow
             ],
             color: widget.chatItemData.isMe.validate()
                 ? primaryColor
                 : context.cardColor,
             borderRadius: widget.chatItemData.isMe.validate()
                 ? radiusOnly(
-                    bottomLeft: 12,
-                    topLeft: 12,
-                    bottomRight: 0,
-                    topRight: 12)
+                    bottomLeft: 12, topLeft: 12, bottomRight: 0, topRight: 12)
                 : radiusOnly(
-                    bottomLeft: 0,
-                    topLeft: 12,
-                    bottomRight: 12,
-                    topRight: 12),
+                    bottomLeft: 0, topLeft: 12, bottomRight: 12, topRight: 12),
           ),
           child: chatItem(widget.chatItemData.messageType ?? ""),
         ),

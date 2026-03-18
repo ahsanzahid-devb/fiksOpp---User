@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -65,7 +65,12 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
       };
 
       log("Save Help Desk Query Request: $req");
-      saveHelpDeskMultiPart(value: req, imageFile: imageFiles.where((element) => !element.path.contains('http')).toList()).then((value) {
+      saveHelpDeskMultiPart(
+              value: req,
+              imageFile: imageFiles
+                  .where((element) => !element.path.contains('http'))
+                  .toList())
+          .then((value) {
         widget.callback.call(true);
       }).catchError((e) {
         toast(e.toString());
@@ -92,7 +97,8 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(language.subject, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                        Text(language.subject,
+                            style: boldTextStyle(size: LABEL_TEXT_SIZE)),
                         8.height,
                         AppTextField(
                           controller: subjectCont,
@@ -105,10 +111,12 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
                             hintText: language.eGDamagedFurniture,
                           ),
                           maxLength: 120,
-                          suffix: ic_document.iconImage(size: 10).paddingAll(14),
+                          suffix:
+                              ic_document.iconImage(size: 10).paddingAll(14),
                         ),
                         16.height,
-                        Text(language.hintDescription, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                        Text(language.hintDescription,
+                            style: boldTextStyle(size: LABEL_TEXT_SIZE)),
                         8.height,
                         AppTextField(
                           textFieldType: TextFieldType.MULTILINE,
@@ -117,13 +125,15 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
                           maxLines: 10,
                           minLines: 3,
                           enableChatGPT: appConfigurationStore.chatGPTStatus,
-                          promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
+                          promptFieldInputDecorationChatGPT:
+                              inputDecoration(context).copyWith(
                             hintText: language.writeHere,
                             fillColor: context.scaffoldBackgroundColor,
                             filled: true,
                             hintStyle: primaryTextStyle(),
                           ),
-                          testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
+                          testWithoutKeyChatGPT:
+                              appConfigurationStore.testWithoutKey,
                           loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
                           decoration: inputDecoration(
                             context,
@@ -140,7 +150,8 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
                               positiveText: language.lblDelete,
                               negativeText: language.lblCancel,
                               onAccept: (p0) {
-                                imageFiles.removeWhere((element) => element.path == value);
+                                imageFiles.removeWhere(
+                                    (element) => element.path == value);
                                 setState(() {});
                               },
                             );
@@ -160,7 +171,9 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
                   margin: EdgeInsets.only(left: 16, bottom: 16, right: 16),
                   text: language.btnSubmit,
                   height: 40,
-                  color: appStore.isLoading ? primaryColor.withValues(alpha:0.5) : primaryColor,
+                  color: appStore.isLoading
+                      ? primaryColor.withValues(alpha: 0.5)
+                      : primaryColor,
                   textStyle: boldTextStyle(color: white),
                   width: context.width() - context.navigationBarHeight,
                   onTap: appStore.isLoading
@@ -172,7 +185,9 @@ class _AddHelpDeskScreenState extends State<AddHelpDeskScreen> {
               ),
             ],
           ),
-          Observer(builder: (_) => LoaderWidget().center().visible(appStore.isLoading)),
+          Observer(
+              builder: (_) =>
+                  LoaderWidget().center().visible(appStore.isLoading)),
         ],
       ),
     );

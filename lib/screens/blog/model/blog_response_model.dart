@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/model/package_data_model.dart';
-import 'package:booking_system_flutter/model/pagination_model.dart';
+import 'package:fiksOpp/model/package_data_model.dart';
+import 'package:fiksOpp/model/pagination_model.dart';
 
 class BlogResponse {
   Pagination? pagination;
@@ -9,8 +9,12 @@ class BlogResponse {
 
   factory BlogResponse.fromJson(Map<String, dynamic> json) {
     return BlogResponse(
-      data: json["data"] != null ? (json['data'] as List).map((i) => BlogData.fromJson(i)).toList() : null,
-      pagination: json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null,
+      data: json["data"] != null
+          ? (json['data'] as List).map((i) => BlogData.fromJson(i)).toList()
+          : null,
+      pagination: json['pagination'] != null
+          ? Pagination.fromJson(json['pagination'])
+          : null,
     );
   }
 
@@ -96,7 +100,8 @@ class BlogData {
     data['publish_date'] = this.publishDate;
     data['attchments'] = this.imageAttachments;
     if (this.attachment != null) {
-      data['attchments_array'] = this.attachment!.map((v) => v.toJson()).toList();
+      data['attchments_array'] =
+          this.attachment!.map((v) => v.toJson()).toList();
     }
     data['deleted_at'] = this.deletedAt;
     data['created_at'] = this.createdAt;

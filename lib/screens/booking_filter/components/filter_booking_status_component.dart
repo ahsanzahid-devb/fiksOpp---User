@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -14,10 +14,12 @@ class FilterBookingStatusComponent extends StatefulWidget {
   FilterBookingStatusComponent({required this.bookingStatusList});
 
   @override
-  _FilterBookingStatusComponent createState() => _FilterBookingStatusComponent();
+  _FilterBookingStatusComponent createState() =>
+      _FilterBookingStatusComponent();
 }
 
-class _FilterBookingStatusComponent extends State<FilterBookingStatusComponent> {
+class _FilterBookingStatusComponent
+    extends State<FilterBookingStatusComponent> {
   @override
   Widget build(BuildContext context) {
     if (widget.bookingStatusList.isEmpty)
@@ -52,7 +54,10 @@ class _FilterBookingStatusComponent extends State<FilterBookingStatusComponent> 
                         ? lightPrimaryColor
                         : context.cardColor,
                 borderRadius: radius(8),
-                border: Border.all(color: appStore.isDarkMode ? Colors.white54 : lightPrimaryColor),
+                border: Border.all(
+                    color: appStore.isDarkMode
+                        ? Colors.white54
+                        : lightPrimaryColor),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -61,7 +66,8 @@ class _FilterBookingStatusComponent extends State<FilterBookingStatusComponent> 
                     Container(
                       padding: EdgeInsets.all(2),
                       margin: EdgeInsets.only(right: 1),
-                      child: Icon(Icons.done, size: 16, color: context.primaryColor),
+                      child: Icon(Icons.done,
+                          size: 16, color: context.primaryColor),
                     ),
                   Text(
                     res.value.validate().toBookingStatus(),

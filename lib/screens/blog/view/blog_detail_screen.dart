@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/blog/blog_repository.dart';
-import 'package:booking_system_flutter/screens/blog/component/blog_detail_header_component.dart';
-import 'package:booking_system_flutter/screens/blog/model/blog_detail_response.dart';
-import 'package:booking_system_flutter/utils/extensions/string_extentions.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/blog/blog_repository.dart';
+import 'package:fiksOpp/screens/blog/component/blog_detail_header_component.dart';
+import 'package:fiksOpp/screens/blog/model/blog_detail_response.dart';
+import 'package:fiksOpp/utils/extensions/string_extentions.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -43,7 +43,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
     return AppScaffold(
       child: SnapHelperWidget<BlogDetailResponse>(
         future: future,
-        initialData: cachedBlogDetail.firstWhere((element) => element?.$1 == widget.blogId.validate(), orElse: () => null)?.$2,
+        initialData: cachedBlogDetail
+            .firstWhere((element) => element?.$1 == widget.blogId.validate(),
+                orElse: () => null)
+            ?.$2,
         loadingWidget: BlogDetailShimmer(),
         onSuccess: (data) {
           return AnimatedScrollView(
@@ -58,7 +61,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(data.blogDetail!.title.validate(), style: boldTextStyle(size: 20)),
+                  Text(data.blogDetail!.title.validate(),
+                      style: boldTextStyle(size: 20)),
                   8.height,
                   Row(
                     children: [
@@ -70,9 +74,17 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(data.blogDetail!.authorName.validate(), style: primaryTextStyle(size: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
-                          if (data.blogDetail!.publishDate.validate().isNotEmpty) 2.height,
-                          if (data.blogDetail!.publishDate.validate().isNotEmpty)
+                          Text(data.blogDetail!.authorName.validate(),
+                              style: primaryTextStyle(size: 14),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                          if (data.blogDetail!.publishDate
+                              .validate()
+                              .isNotEmpty)
+                            2.height,
+                          if (data.blogDetail!.publishDate
+                              .validate()
+                              .isNotEmpty)
                             Text(
                               "${data.blogDetail!.publishDate.validate()}",
                               style: secondaryTextStyle(size: 10),
@@ -105,7 +117,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     data: data.blogDetail!.description.validate(),
                     style: {
                       "span": Style(
-                        color: appStore.isDarkMode ? Colors.white : Colors.black,
+                        color:
+                            appStore.isDarkMode ? Colors.white : Colors.black,
                       ),
                     },
                   )

@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/model/booking_data_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
+import 'package:fiksOpp/model/booking_data_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
 
 import 'pagination_model.dart';
 
@@ -11,8 +11,12 @@ class BookingListResponse {
 
   factory BookingListResponse.fromJson(Map<String, dynamic> json) {
     return BookingListResponse(
-      data: json['data'] != null ? (json['data'] as List).map((i) => BookingData.fromJson(i)).toList() : null,
-      pagination: json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null,
+      data: json['data'] != null
+          ? (json['data'] as List).map((i) => BookingData.fromJson(i)).toList()
+          : null,
+      pagination: json['pagination'] != null
+          ? Pagination.fromJson(json['pagination'])
+          : null,
     );
   }
 
@@ -37,7 +41,14 @@ class Handyman {
   int? id;
   String? updatedAt;
 
-  Handyman({this.bookingId, this.createdAt, this.deletedAt, this.handyman, this.handymanId, this.id, this.updatedAt});
+  Handyman(
+      {this.bookingId,
+      this.createdAt,
+      this.deletedAt,
+      this.handyman,
+      this.handymanId,
+      this.id,
+      this.updatedAt});
 
   static int? _parseInt(dynamic v) {
     if (v == null) return null;
@@ -52,7 +63,8 @@ class Handyman {
       bookingId: _parseInt(json['booking_id']),
       createdAt: json['created_at'],
       deletedAt: json['deleted_at'],
-      handyman: json['handyman'] != null ? UserData.fromJson(json['handyman']) : null,
+      handyman:
+          json['handyman'] != null ? UserData.fromJson(json['handyman']) : null,
       handymanId: _parseInt(json['handyman_id']),
       id: _parseInt(json['id']),
       updatedAt: json['updated_at'],

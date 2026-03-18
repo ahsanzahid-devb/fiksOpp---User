@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/base_scaffold_body.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/auth/sign_up_screen.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/base_scaffold_body.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/auth/sign_up_screen.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -61,12 +61,13 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withValues(alpha:0.2),
+              color: const Color(0xFF8C98A8).withValues(alpha: 0.2),
             ),
           ),
         ),
       ),
-      showPhoneCode: true, // optional. Shows phone code before the country name.
+      showPhoneCode:
+          true, // optional. Shows phone code before the country name.
       onSelect: (Country country) {
         selectedCountry = country;
         log(jsonEncode(selectedCountry.toJson()));
@@ -86,7 +87,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
       try {
         await FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: "+${selectedCountry.phoneCode}${numberController.text.trim()}",
+          phoneNumber:
+              "+${selectedCountry.phoneCode}${numberController.text.trim()}",
           verificationCompleted: (PhoneAuthCredential credential) async {
             toast(language.verified);
 
@@ -97,7 +99,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
           verificationFailed: (FirebaseAuthException e) {
             appStore.setLoading(false);
             if (e.code == 'invalid-phone-number') {
-              toast(language.theEnteredCodeIsInvalidPleaseTryAgain, print: true);
+              toast(language.theEnteredCodeIsInvalidPleaseTryAgain,
+                  print: true);
             } else {
               toast(e.toString(), print: true);
             }
@@ -139,8 +142,10 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
         appStore.setLoading(true);
 
         try {
-          PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: otpCode);
-          UserCredential credentials = await FirebaseAuth.instance.signInWithCredential(credential);
+          PhoneAuthCredential credential = PhoneAuthProvider.credential(
+              verificationId: verificationId, smsCode: otpCode);
+          UserCredential credentials =
+              await FirebaseAuth.instance.signInWithCredential(credential);
 
           Map<String, dynamic> request = {
             'username': numberController.text.trim(),
@@ -150,11 +155,14 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
           };
 
           try {
-            await loginUser(request, isSocialLogin: true).then((loginResponse) async {
+            await loginUser(request, isSocialLogin: true)
+                .then((loginResponse) async {
               if (loginResponse.isUserExist.validate(value: true)) {
                 await saveUserData(loginResponse.userData!);
                 await appStore.setLoginType(LOGIN_TYPE_OTP);
-                DashboardScreen(initialTabIndex: 0).launch(context, isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+                DashboardScreen(initialTabIndex: 0).launch(context,
+                    isNewTask: true,
+                    pageRouteAnimation: PageRouteAnimation.Fade);
               } else {
                 appStore.setLoading(false);
                 finish(context);
@@ -274,7 +282,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
                   focus: _mobileNumberFocus,
                   textFieldType: TextFieldType.PHONE,
                   decoration: inputDecoration(context).copyWith(
-                    hintText: '${language.lblExample}: ${selectedCountry.example}',
+                    hintText:
+                        '${language.lblExample}: ${selectedCountry.example}',
                     hintStyle: secondaryTextStyle(),
                   ),
                   autoFocus: true,
@@ -311,12 +320,19 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       onTap: () => hideKeyboard(context),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(isCodeSent ? language.confirmOTP : language.lblEnterPhnNumber, style: boldTextStyle(size: APP_BAR_TEXT_SIZE)),
+          title: Text(
+              isCodeSent ? language.confirmOTP : language.lblEnterPhnNumber,
+              style: boldTextStyle(size: APP_BAR_TEXT_SIZE)),
           elevation: 0,
           backgroundColor: context.scaffoldBackgroundColor,
-          leading: Navigator.of(context).canPop() ? BackWidget(iconColor: context.iconColor) : null,
+          leading: Navigator.of(context).canPop()
+              ? BackWidget(iconColor: context.iconColor)
+              : null,
           scrolledUnderElevation: 0,
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarIconBrightness: appStore.isDarkMode ? Brightness.light : Brightness.dark, statusBarColor: context.scaffoldBackgroundColor),
+          systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  appStore.isDarkMode ? Brightness.light : Brightness.dark,
+              statusBarColor: context.scaffoldBackgroundColor),
         ),
         body: Body(
           child: Container(

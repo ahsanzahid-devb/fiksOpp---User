@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -16,7 +16,8 @@ class FavouriteServiceShimmer extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             listAnimationType: ListAnimationType.None,
-            scaleConfiguration: ScaleConfiguration(duration: 300.milliseconds, delay: 50.milliseconds),
+            scaleConfiguration: ScaleConfiguration(
+                duration: 300.milliseconds, delay: 50.milliseconds),
             itemCount: 20,
             itemBuilder: (_, index) {
               return ShimmerWidget(
@@ -26,7 +27,9 @@ class FavouriteServiceShimmer extends StatelessWidget {
                   decoration: boxDecorationWithRoundedCorners(
                     borderRadius: radius(),
                     backgroundColor: context.cardColor,
-                    border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+                    border: appStore.isDarkMode
+                        ? Border.all(color: context.dividerColor)
+                        : null,
                   ),
                 ),
               ).paddingSymmetric(vertical: 16);
@@ -37,7 +40,8 @@ class FavouriteServiceShimmer extends StatelessWidget {
             spacing: 16,
             runSpacing: 16,
             listAnimationType: ListAnimationType.None,
-            scaleConfiguration: ScaleConfiguration(duration: 300.milliseconds, delay: 50.milliseconds),
+            scaleConfiguration: ScaleConfiguration(
+                duration: 300.milliseconds, delay: 50.milliseconds),
             itemCount: 20,
             itemBuilder: (_, index) {
               return Container(
@@ -45,7 +49,9 @@ class FavouriteServiceShimmer extends StatelessWidget {
                 decoration: boxDecorationWithRoundedCorners(
                   borderRadius: radius(),
                   backgroundColor: context.cardColor,
-                  border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+                  border: appStore.isDarkMode
+                      ? Border.all(color: context.dividerColor)
+                      : null,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,11 +72,14 @@ class FavouriteServiceShimmer extends StatelessWidget {
                           child: Container(
                             height: 30,
                             width: 30,
-                            decoration: boxDecorationDefault(shape: BoxShape.circle, color: context.cardColor),
+                            decoration: boxDecorationDefault(
+                                shape: BoxShape.circle,
+                                color: context.cardColor),
                           ),
                         ),
                         8.width,
-                        ShimmerWidget(height: 10, width: context.width()).expand(),
+                        ShimmerWidget(height: 10, width: context.width())
+                            .expand(),
                       ],
                     ).paddingSymmetric(horizontal: 16),
                     16.height,

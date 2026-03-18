@@ -1,8 +1,8 @@
-import 'package:booking_system_flutter/component/cached_image_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/category_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/cached_image_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/category_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +15,8 @@ class SubCategoryComponent extends StatefulWidget {
   final Function(bool val) onDataLoaded;
   final Function(CategoryData categoryData)? onCategoryTap;
 
-  SubCategoryComponent({required this.catId, required this.onDataLoaded, this.onCategoryTap});
+  SubCategoryComponent(
+      {required this.catId, required this.onDataLoaded, this.onCategoryTap});
 
   @override
   _SubCategoryComponentState createState() => _SubCategoryComponentState();
@@ -52,7 +53,8 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
             widget.onDataLoaded.call(false);
             return Offstage();
           } else {
-            if (!snap.data!.categoryList!.any((element) => element.id == allValue.id)) {
+            if (!snap.data!.categoryList!
+                .any((element) => element.id == allValue.id)) {
               snap.data!.categoryList!.insert(0, allValue);
             }
             widget.onDataLoaded.call(true);
@@ -61,7 +63,9 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 16.height,
-                Text(language.lblSubcategories, style: boldTextStyle(size: LABEL_TEXT_SIZE)).paddingLeft(16),
+                Text(language.lblSubcategories,
+                        style: boldTextStyle(size: LABEL_TEXT_SIZE))
+                    .paddingLeft(16),
                 HorizontalList(
                   itemCount: snap.data!.categoryList.validate().length,
                   padding: EdgeInsets.only(left: 16, right: 16),
@@ -72,14 +76,16 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
 
                     return Observer(
                       builder: (_) {
-                        bool isSelected = filterStore.selectedSubCategoryId == index;
+                        bool isSelected =
+                            filterStore.selectedSubCategoryId == index;
 
                         return GestureDetector(
                           onTap: () {
                             filterStore.setSelectedSubCategory(catId: index);
                             widget.onCategoryTap?.call(data);
 
-                            LiveStream().emit(LIVESTREAM_UPDATE_SERVICE_LIST, data.id.validate());
+                            LiveStream().emit(LIVESTREAM_UPDATE_SERVICE_LIST,
+                                data.id.validate());
                           },
                           child: SizedBox(
                             width: context.width() / 4 - 20,
@@ -93,33 +99,56 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
                                       Container(
                                         height: CATEGORY_ICON_SIZE,
                                         width: CATEGORY_ICON_SIZE,
-                                        decoration: BoxDecoration(color: context.cardColor, shape: BoxShape.circle, border: Border.all(color: grey)),
+                                        decoration: BoxDecoration(
+                                            color: context.cardColor,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: grey)),
                                         alignment: Alignment.center,
-                                        child: Text(data.name.validate(), style: boldTextStyle(size: 12)),
+                                        child: Text(data.name.validate(),
+                                            style: boldTextStyle(size: 12)),
                                       ),
                                     if (index != 0)
-                                      data.categoryImage.validate().endsWith('.svg')
+                                      data.categoryImage
+                                              .validate()
+                                              .endsWith('.svg')
                                           ? Container(
                                               width: CATEGORY_ICON_SIZE,
                                               height: CATEGORY_ICON_SIZE,
                                               padding: EdgeInsets.all(8),
-                                              decoration: BoxDecoration(color: context.cardColor, shape: BoxShape.circle),
+                                              decoration: BoxDecoration(
+                                                  color: context.cardColor,
+                                                  shape: BoxShape.circle),
                                               child: SvgPicture.network(
                                                 data.categoryImage.validate(),
                                                 height: CATEGORY_ICON_SIZE,
                                                 width: CATEGORY_ICON_SIZE,
                                                 colorFilter: ColorFilter.mode(
-                                                  appStore.isDarkMode ? Colors.white : data.color.validate(value: '000').toColor(),
+                                                  appStore.isDarkMode
+                                                      ? Colors.white
+                                                      : data.color
+                                                          .validate(
+                                                              value: '000')
+                                                          .toColor(),
                                                   BlendMode.srcIn,
                                                 ),
-                                                placeholderBuilder: (context) => PlaceHolderWidget(height: CATEGORY_ICON_SIZE, width: CATEGORY_ICON_SIZE, color: transparentColor),
+                                                placeholderBuilder: (context) =>
+                                                    PlaceHolderWidget(
+                                                        height:
+                                                            CATEGORY_ICON_SIZE,
+                                                        width:
+                                                            CATEGORY_ICON_SIZE,
+                                                        color:
+                                                            transparentColor),
                                               ),
                                             )
                                           : Container(
                                               padding: EdgeInsets.all(12),
-                                              decoration: BoxDecoration(color: context.cardColor, shape: BoxShape.circle),
+                                              decoration: BoxDecoration(
+                                                  color: context.cardColor,
+                                                  shape: BoxShape.circle),
                                               child: CachedImageWidget(
-                                                url: data.categoryImage.validate(),
+                                                url: data.categoryImage
+                                                    .validate(),
                                                 fit: BoxFit.fitWidth,
                                                 width: SUBCATEGORY_ICON_SIZE,
                                                 height: SUBCATEGORY_ICON_SIZE,
@@ -127,8 +156,17 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
                                               ),
                                             ),
                                     4.height,
-                                    if (index == 0) Text(language.lblViewAll, style: boldTextStyle(size: 12), textAlign: TextAlign.center, maxLines: 1),
-                                    if (index != 0) Marquee(child: Text('${data.name.validate()}', style: boldTextStyle(size: 12), textAlign: TextAlign.center, maxLines: 1)),
+                                    if (index == 0)
+                                      Text(language.lblViewAll,
+                                          style: boldTextStyle(size: 12),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1),
+                                    if (index != 0)
+                                      Marquee(
+                                          child: Text('${data.name.validate()}',
+                                              style: boldTextStyle(size: 12),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1)),
                                   ],
                                 ),
                                 Positioned(
@@ -136,8 +174,10 @@ class _SubCategoryComponentState extends State<SubCategoryComponent> {
                                   right: 0,
                                   child: Container(
                                     padding: EdgeInsets.all(2),
-                                    decoration: boxDecorationDefault(color: context.primaryColor),
-                                    child: Icon(Icons.done, size: 16, color: Colors.white),
+                                    decoration: boxDecorationDefault(
+                                        color: context.primaryColor),
+                                    child: Icon(Icons.done,
+                                        size: 16, color: Colors.white),
                                   ).visible(isSelected),
                                 )
                               ],

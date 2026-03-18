@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -78,7 +78,9 @@ class _CustomerRatingScreenState extends State<CustomerRatingScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CachedImageWidget(
-                                    url: data.attachments.validate().isNotEmpty ? data.attachments!.first : '',
+                                    url: data.attachments.validate().isNotEmpty
+                                        ? data.attachments!.first
+                                        : '',
                                     height: 75,
                                     width: 75,
                                     fit: BoxFit.cover,
@@ -86,15 +88,26 @@ class _CustomerRatingScreenState extends State<CustomerRatingScreen> {
                                   ),
                                   16.width,
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('${data.serviceName.validate()}', style: boldTextStyle(size: LABEL_TEXT_SIZE), maxLines: 3, overflow: TextOverflow.ellipsis),
+                                      Text('${data.serviceName.validate()}',
+                                          style: boldTextStyle(
+                                              size: LABEL_TEXT_SIZE),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis),
                                       TextButton(
-                                        style: ButtonStyle(padding: WidgetStateProperty.all(EdgeInsets.all(0))),
+                                        style: ButtonStyle(
+                                            padding: WidgetStateProperty.all(
+                                                EdgeInsets.all(0))),
                                         onPressed: () {
-                                          ServiceDetailScreen(serviceId: data.serviceId.validate()).launch(context);
+                                          ServiceDetailScreen(
+                                                  serviceId:
+                                                      data.serviceId.validate())
+                                              .launch(context);
                                         },
-                                        child: Text(language.viewDetail, style: secondaryTextStyle()),
+                                        child: Text(language.viewDetail,
+                                            style: secondaryTextStyle()),
                                       ),
                                     ],
                                   ).flexible()
@@ -105,16 +118,23 @@ class _CustomerRatingScreenState extends State<CustomerRatingScreen> {
                         ),
                         16.height,
                         Container(
-                          decoration: boxDecorationDefault(color: context.scaffoldBackgroundColor),
+                          decoration: boxDecorationDefault(
+                              color: context.scaffoldBackgroundColor),
                           padding: EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  Text(language.lblYourComment, style: boldTextStyle()).expand(),
-                                  ic_edit_square.iconImage(size: 16).paddingAll(8).onTap(() async {
-                                    Map<String, dynamic>? dialogData = await showInDialog(
+                                  Text(language.lblYourComment,
+                                          style: boldTextStyle())
+                                      .expand(),
+                                  ic_edit_square
+                                      .iconImage(size: 16)
+                                      .paddingAll(8)
+                                      .onTap(() async {
+                                    Map<String, dynamic>? dialogData =
+                                        await showInDialog(
                                       context,
                                       contentPadding: EdgeInsets.zero,
                                       builder: (p0) {
@@ -141,22 +161,30 @@ class _CustomerRatingScreenState extends State<CustomerRatingScreen> {
 
                                       setState(() {});
 
-                                      LiveStream().emit(LIVESTREAM_UPDATE_DASHBOARD);
+                                      LiveStream()
+                                          .emit(LIVESTREAM_UPDATE_DASHBOARD);
                                     }
                                   }),
-                                  ic_delete.iconImage(size: 16).paddingAll(8).onTap(() {
+                                  ic_delete
+                                      .iconImage(size: 16)
+                                      .paddingAll(8)
+                                      .onTap(() {
                                     showConfirmDialogCustom(
                                       context,
                                       title: language.lblDeleteReview,
-                                      subTitle: language.lblConfirmReviewSubTitle,
+                                      subTitle:
+                                          language.lblConfirmReviewSubTitle,
                                       positiveText: language.lblYes,
                                       negativeText: language.lblNo,
                                       dialogType: DialogType.DELETE,
                                       onAccept: (p0) async {
                                         appStore.setLoading(true);
 
-                                        if (getStringAsync(USER_EMAIL) != DEFAULT_EMAIL) {
-                                          await deleteReview(id: data.id.validate()).then((value) {
+                                        if (getStringAsync(USER_EMAIL) !=
+                                            DEFAULT_EMAIL) {
+                                          await deleteReview(
+                                                  id: data.id.validate())
+                                              .then((value) {
                                             toast(value.message);
                                             init();
                                           }).catchError((e) {
@@ -175,9 +203,11 @@ class _CustomerRatingScreenState extends State<CustomerRatingScreen> {
                                 ],
                               ),
                               Divider(color: context.dividerColor),
-                              DisabledRatingBarWidget(rating: data.rating.validate().toDouble()),
+                              DisabledRatingBarWidget(
+                                  rating: data.rating.validate().toDouble()),
                               8.height,
-                              Text(data.review.validate(), style: secondaryTextStyle()),
+                              Text(data.review.validate(),
+                                  style: secondaryTextStyle()),
                             ],
                           ),
                         )

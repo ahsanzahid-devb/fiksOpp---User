@@ -1,8 +1,8 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/blog/blog_repository.dart';
-import 'package:booking_system_flutter/screens/blog/component/blog_item_component.dart';
-import 'package:booking_system_flutter/screens/blog/model/blog_response_model.dart';
-import 'package:booking_system_flutter/screens/blog/shimmer/blog_shimmer.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/blog/blog_repository.dart';
+import 'package:fiksOpp/screens/blog/component/blog_item_component.dart';
+import 'package:fiksOpp/screens/blog/model/blog_response_model.dart';
+import 'package:fiksOpp/screens/blog/shimmer/blog_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -60,7 +60,9 @@ class _BlogListScreenState extends State<BlogListScreen> {
                 listAnimationType: ListAnimationType.FadeIn,
                 fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
                 itemCount: snap.length,
-                emptyWidget: NoDataWidget(title: language.noBlogsFound, imageWidget: EmptyStateWidget()),
+                emptyWidget: NoDataWidget(
+                    title: language.noBlogsFound,
+                    imageWidget: EmptyStateWidget()),
                 shrinkWrap: true,
                 onNextPage: () {
                   if (!isLastPage) {

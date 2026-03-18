@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
 
 class ServiceDetailResponse {
   List<CouponData>? couponData;

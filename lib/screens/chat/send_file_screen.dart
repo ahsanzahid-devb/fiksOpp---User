@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:booking_system_flutter/utils/extensions/string_extentions.dart';
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/extensions/string_extentions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -44,7 +44,10 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
         "",
         backWidget: BackWidget(iconColor: white),
         color: context.primaryColor,
-        systemUiOverlayStyle: SystemUiOverlayStyle(statusBarColor: context.primaryColor, statusBarBrightness: Brightness.dark, statusBarIconBrightness: Brightness.light),
+        systemUiOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: context.primaryColor,
+            statusBarBrightness: Brightness.dark,
+            statusBarIconBrightness: Brightness.light),
         titleWidget: Text(
           language.sendMessage,
           style: boldTextStyle(color: white, size: APP_BAR_TEXT_SIZE),
@@ -62,7 +65,9 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
                 return Stack(
                   fit: StackFit.expand,
                   children: [
-                    files[index].path.contains(RegExp(r'\.jpeg|\.jpg|\.gif|\.png|\.bmp'))
+                    files[index]
+                            .path
+                            .contains(RegExp(r'\.jpeg|\.jpg|\.gif|\.png|\.bmp'))
                         ? CachedImageWidget(
                             url: files[index].path,
                             width: context.width(),
@@ -72,7 +77,9 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
                           )
                         : Container(
                             padding: EdgeInsets.all(4),
-                            decoration: boxDecorationRoundedWithShadow(defaultRadius.toInt(), backgroundColor: lightPrimaryColor),
+                            decoration: boxDecorationRoundedWithShadow(
+                                defaultRadius.toInt(),
+                                backgroundColor: lightPrimaryColor),
                             child: CommonPdfPlaceHolder(
                               text: "${files[index].path.getChatFileName}",
                               fileExt: files[index].path.getFileExtension,
@@ -85,8 +92,12 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
                         height: 40,
                         width: 40,
                         child: Container(
-                          decoration: boxDecorationRoundedWithShadow(100, backgroundColor: context.cardColor),
-                          child: ic_delete.iconImage(size: 16, color: Colors.redAccent).paddingAll(8).onTap(() {
+                          decoration: boxDecorationRoundedWithShadow(100,
+                              backgroundColor: context.cardColor),
+                          child: ic_delete
+                              .iconImage(size: 16, color: Colors.redAccent)
+                              .paddingAll(8)
+                              .onTap(() {
                             showConfirmDialogCustom(
                               context,
                               title: language.removeThisFile,
@@ -123,7 +134,10 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
                   text: language.btnSubmit,
                   color: context.primaryColor,
                   onTap: () {
-                    finish(context, {MessageType.TEXT.name: messageCont.text, MessageType.Files.name: files});
+                    finish(context, {
+                      MessageType.TEXT.name: messageCont.text,
+                      MessageType.Files.name: files
+                    });
                   },
                 ).expand(),
               ],
@@ -151,7 +165,8 @@ class _SendFilePreviewScreenState extends State<SendFilePreviewScreen> {
           cursorColor: appStore.isDarkMode ? Colors.white : Colors.black,
           textCapitalization: TextCapitalization.sentences,
           keyboardType: TextInputType.multiline,
-          decoration: inputDecoration(context).copyWith(hintText: language.message, hintStyle: secondaryTextStyle()),
+          decoration: inputDecoration(context).copyWith(
+              hintText: language.message, hintStyle: secondaryTextStyle()),
         ).expand(),
       ],
     );

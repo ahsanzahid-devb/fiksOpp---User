@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -103,21 +103,18 @@ class UserService extends BaseService {
       {required String senderId, required String receiverId}) async {
     log("🟡 [CHAT DEBUG] saveToContacts called - Sender: $senderId, Receiver: $receiverId");
     try {
-      final contactRef = ref!
-          .doc(senderId)
-          .collection(CONTACT_COLLECTION)
-          .doc(receiverId);
-      
+      final contactRef =
+          ref!.doc(senderId).collection(CONTACT_COLLECTION).doc(receiverId);
+
       log("🟡 [CHAT DEBUG] Checking if contact document exists...");
       // Check if document exists first
       final contactSnapshot = await contactRef.get();
-      
+
       if (contactSnapshot.exists) {
         log("🟡 [CHAT DEBUG] Contact document exists, updating lastMessageTime...");
         // Document exists, update it
-        await contactRef.update({
-          'lastMessageTime': DateTime.now().millisecondsSinceEpoch
-        });
+        await contactRef
+            .update({'lastMessageTime': DateTime.now().millisecondsSinceEpoch});
         log("🟡 [CHAT DEBUG] ✅ Contact document updated successfully");
       } else {
         log("🟡 [CHAT DEBUG] Contact document doesn't exist, creating it...");

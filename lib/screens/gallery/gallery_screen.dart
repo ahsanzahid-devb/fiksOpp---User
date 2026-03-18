@@ -1,6 +1,6 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/screens/gallery/gallery_component.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/screens/gallery/gallery_component.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -46,7 +46,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
         runSpacing: 16,
         listAnimationType: ListAnimationType.FadeIn,
         fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-        scaleConfiguration: ScaleConfiguration(duration: 300.milliseconds, delay: 50.milliseconds),
+        scaleConfiguration: ScaleConfiguration(
+            duration: 300.milliseconds, delay: 50.milliseconds),
         itemCount: widget.attachments.length,
         itemBuilder: (context, i) {
           return GalleryComponent(images: widget.attachments, index: i);

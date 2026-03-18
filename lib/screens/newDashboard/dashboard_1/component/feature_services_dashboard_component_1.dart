@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/screens/newDashboard/dashboard_1/component/service_dashboard_component_1.dart';
+import 'package:fiksOpp/screens/newDashboard/dashboard_1/component/service_dashboard_component_1.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 

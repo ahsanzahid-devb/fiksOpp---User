@@ -1,4 +1,4 @@
-import 'package:booking_system_flutter/model/pagination_model.dart';
+import 'package:fiksOpp/model/pagination_model.dart';
 
 class CategoryResponse {
   List<CategoryData>? categoryList;

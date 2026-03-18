@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -69,12 +69,14 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width: context.width(),
               decoration: boxDecorationDefault(
                 color: context.primaryColor,
-                borderRadius: radiusOnly(topRight: defaultRadius, topLeft: defaultRadius),
+                borderRadius:
+                    radiusOnly(topRight: defaultRadius, topLeft: defaultRadius),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(language.forgotPassword, style: boldTextStyle(color: Colors.white)),
+                  Text(language.forgotPassword,
+                      style: boldTextStyle(color: Colors.white)),
                   IconButton(
                     onPressed: () {
                       finish(context);
@@ -90,7 +92,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               children: [
                 Text("${language.hintEmailAddressTxt}", style: boldTextStyle()),
                 6.height,
-                Text(language.lblForgotPwdSubtitle, style: secondaryTextStyle()),
+                Text(language.lblForgotPwdSubtitle,
+                    style: secondaryTextStyle()),
                 24.height,
                 Observer(
                   builder: (_) => AppTextField(
@@ -98,7 +101,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     controller: emailCont,
                     autoFocus: true,
                     errorThisFieldRequired: language.requiredText,
-                    decoration: inputDecoration(context, labelText: language.hintEmailTxt),
+                    decoration: inputDecoration(context,
+                        labelText: language.hintEmailTxt),
                   ).visible(!appStore.isLoading, defaultWidget: Loader()),
                 ),
                 16.height,

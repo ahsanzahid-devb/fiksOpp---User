@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:booking_system_flutter/utils/string_extensions.dart';
+import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -126,18 +126,23 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
               alignment: Alignment.center,
               height: widget.height,
               width: widget.weight,
-              decoration: boxDecorationWithShadow(blurRadius: 0, backgroundColor: context.cardColor, borderRadius: radius()),
+              decoration: boxDecorationWithShadow(
+                  blurRadius: 0,
+                  backgroundColor: context.cardColor,
+                  borderRadius: radius()),
               child: Column(
                 children: [
                   ic_no_photo.iconImage(size: widget.iconSize ?? 46),
                   8.height,
-                  Text(language.chooseImage, style: secondaryTextStyle(size: widget.textSize)),
+                  Text(language.chooseImage,
+                      style: secondaryTextStyle(size: widget.textSize)),
                 ],
               ),
             ),
           ),
         ),
         16.height,
+
         /// Uncomment when multiple images upload and set condition
         // Text('Note: You can upload images with \'jpg\', \'png\', \'jpeg\' extensions & you can select multiple images', style: secondaryTextStyle(size: 10)),
         Text(language.noteYouCanUpload, style: secondaryTextStyle(size: 10)),
@@ -165,7 +170,8 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
                     width: widget.imageSize ?? 80,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
-                      return PlaceHolderWidget(height: 80, alignment: Alignment.center);
+                      return PlaceHolderWidget(
+                          height: 80, alignment: Alignment.center);
                     },
                   ).cornerRadiusWithClipRRect(defaultRadius),
                 Positioned(

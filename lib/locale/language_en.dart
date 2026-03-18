@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/locale/languages.dart';
-import 'package:booking_system_flutter/utils/configs.dart';
+import 'package:fiksOpp/locale/languages.dart';
+import 'package:fiksOpp/utils/configs.dart';
 
 class LanguageEn extends BaseLanguage {
   @override
@@ -2247,8 +2247,7 @@ class LanguageEn extends BaseLanguage {
       "Service saved. Posting job timed out – try again from My Jobs.";
 
   @override
-  String get serviceIncludedInThisPackage =>
-      "Service included in this package";
+  String get serviceIncludedInThisPackage => "Service included in this package";
 
   @override
   String get lblPurchase => "Purchase";

@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/component/base_scaffold_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_detail_response.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/booking/component/coupon_card_widget.dart';
-import 'package:booking_system_flutter/screens/booking/shimmer/coupon_list_shimmer.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
+import 'package:fiksOpp/component/base_scaffold_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_detail_response.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/booking/component/coupon_card_widget.dart';
+import 'package:fiksOpp/screens/booking/shimmer/coupon_list_shimmer.dart';
+import 'package:fiksOpp/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -16,7 +16,8 @@ class CouponsScreen extends StatefulWidget {
   final CouponData? appliedCouponData;
   final num? servicePrice;
 
-  CouponsScreen({required this.serviceId, this.servicePrice, this.appliedCouponData});
+  CouponsScreen(
+      {required this.serviceId, this.servicePrice, this.appliedCouponData});
 
   @override
   _CouponsScreenState createState() => _CouponsScreenState();
@@ -88,10 +89,13 @@ class _CouponsScreenState extends State<CouponsScreen> {
               },
               itemBuilder: (context, index) {
                 CouponData data = couponsRes.validCupon[index];
-                if (widget.appliedCouponData != null && widget.appliedCouponData!.code == data.code) {
+                if (widget.appliedCouponData != null &&
+                    widget.appliedCouponData!.code == data.code) {
                   data.isApplied = widget.appliedCouponData!.isApplied;
                 }
-                return CouponCardWidget(data: data, servicePrice: widget.servicePrice).paddingOnly(top: 16);
+                return CouponCardWidget(
+                        data: data, servicePrice: widget.servicePrice)
+                    .paddingOnly(top: 16);
               },
             );
         },

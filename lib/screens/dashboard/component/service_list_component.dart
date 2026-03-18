@@ -1,7 +1,7 @@
-import 'package:booking_system_flutter/component/view_all_label_component.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/screens/service/component/service_component.dart';
+import 'package:fiksOpp/component/view_all_label_component.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/screens/service/component/service_component.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -32,7 +32,9 @@ class ServiceListComponent extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 16,
                 children: List.generate(serviceList.length, (index) {
-                  return ServiceComponent(serviceData: serviceList[index], width: context.width() / 2 - 26);
+                  return ServiceComponent(
+                      serviceData: serviceList[index],
+                      width: context.width() / 2 - 26);
                 }),
               ).paddingSymmetric(horizontal: 16, vertical: 8)
             : Container(

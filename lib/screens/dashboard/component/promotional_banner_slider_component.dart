@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,10 +19,12 @@ class PromotionalBannerSliderComponent extends StatefulWidget {
   PromotionalBannerSliderComponent({required this.promotionalBannerList});
 
   @override
-  _PromotionalBannerSliderComponentState createState() => _PromotionalBannerSliderComponentState();
+  _PromotionalBannerSliderComponentState createState() =>
+      _PromotionalBannerSliderComponentState();
 }
 
-class _PromotionalBannerSliderComponentState extends State<PromotionalBannerSliderComponent> {
+class _PromotionalBannerSliderComponentState
+    extends State<PromotionalBannerSliderComponent> {
   PageController sliderPageController = PageController(initialPage: 0);
   int _currentPage = 0;
 
@@ -35,14 +37,17 @@ class _PromotionalBannerSliderComponentState extends State<PromotionalBannerSlid
   }
 
   void init() async {
-    if (getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true) && widget.promotionalBannerList.length >= 2) {
-      _timer = Timer.periodic(Duration(seconds: DASHBOARD_AUTO_SLIDER_SECOND), (Timer timer) {
+    if (getBoolAsync(AUTO_SLIDER_STATUS, defaultValue: true) &&
+        widget.promotionalBannerList.length >= 2) {
+      _timer = Timer.periodic(Duration(seconds: DASHBOARD_AUTO_SLIDER_SECOND),
+          (Timer timer) {
         if (_currentPage < widget.promotionalBannerList.length - 1) {
           _currentPage++;
         } else {
           _currentPage = 0;
         }
-        sliderPageController.animateToPage(_currentPage, duration: Duration(milliseconds: 950), curve: Curves.easeOutQuart);
+        sliderPageController.animateToPage(_currentPage,
+            duration: Duration(milliseconds: 950), curve: Curves.easeOutQuart);
       });
 
       sliderPageController.addListener(() {
@@ -73,7 +78,8 @@ class _PromotionalBannerSliderComponentState extends State<PromotionalBannerSlid
                   children: List.generate(
                     widget.promotionalBannerList.length,
                     (index) {
-                      PromotionalBannerModel data = widget.promotionalBannerList[index];
+                      PromotionalBannerModel data =
+                          widget.promotionalBannerList[index];
                       return CachedImageWidget(
                         url: data.image.validate(),
                         height: 190,
@@ -81,7 +87,9 @@ class _PromotionalBannerSliderComponentState extends State<PromotionalBannerSlid
                         fit: BoxFit.cover,
                       ).onTap(() {
                         if (data.bannerType == SERVICE) {
-                          ServiceDetailScreen(serviceId: data.serviceId.validate().toInt()).launch(
+                          ServiceDetailScreen(
+                                  serviceId: data.serviceId.validate().toInt())
+                              .launch(
                             context,
                             pageRouteAnimation: PageRouteAnimation.Fade,
                           );
@@ -105,7 +113,8 @@ class _PromotionalBannerSliderComponentState extends State<PromotionalBannerSlid
                 pageController: sliderPageController,
                 pages: widget.promotionalBannerList,
                 indicatorColor: primaryColor,
-                unselectedIndicatorColor: appStore.isDarkMode ? context.cardColor : Colors.white,
+                unselectedIndicatorColor:
+                    appStore.isDarkMode ? context.cardColor : Colors.white,
                 currentBoxShape: BoxShape.rectangle,
                 boxShape: BoxShape.rectangle,
                 borderRadius: radius(3),

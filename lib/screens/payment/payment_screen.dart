@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/booking_detail_model.dart';
-import 'package:booking_system_flutter/screens/booking/component/price_common_widget.dart';
-import 'package:booking_system_flutter/screens/wallet/user_wallet_balance_screen.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/extensions/num_extenstions.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/booking_detail_model.dart';
+import 'package:fiksOpp/screens/booking/component/price_common_widget.dart';
+import 'package:fiksOpp/screens/wallet/user_wallet_balance_screen.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -34,7 +34,10 @@ class PaymentScreen extends StatefulWidget {
   final bool isForAdvancePayment;
   final VoidCallback? onPaymentSuccess;
 
-  PaymentScreen({required this.bookings, this.isForAdvancePayment = false, this.onPaymentSuccess});
+  PaymentScreen(
+      {required this.bookings,
+      this.isForAdvancePayment = false,
+      this.onPaymentSuccess});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -60,20 +63,32 @@ class _PaymentScreenState extends State<PaymentScreen> {
       log("Processing advance payment - using 100% of total amount");
       if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
         // Always use 100% for advance payment (full amount)
-        advancePaymentAmount = widget.bookings.bookingDetail!.totalAmount.validate();
+        advancePaymentAmount =
+            widget.bookings.bookingDetail!.totalAmount.validate();
         totalAmount = advancePaymentAmount!;
         log("Advance Payment: Using 100% of total amount = $totalAmount");
       } else {
-        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() - widget.bookings.bookingDetail!.paidAmount.validate();
+        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() -
+            widget.bookings.bookingDetail!.paidAmount.validate();
         log("Advance Payment: Remaining amount = $totalAmount");
       }
-    } else if (widget.bookings.service != null && widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+    } else if (widget.bookings.service != null &&
+        widget.bookings.service!.isAdvancePayment &&
+        widget.bookings.service!.isFixedService &&
+        !widget.bookings.service!.isFreeService &&
+        widget.bookings.bookingDetail!.bookingPackage == null) {
       // Original logic for service-based advance payment
       if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
-        advancePaymentAmount = widget.bookings.bookingDetail!.totalAmount.validate() * widget.bookings.service!.advancePaymentPercentage.validate() / 100;
-        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() * widget.bookings.service!.advancePaymentPercentage.validate() / 100;
+        advancePaymentAmount =
+            widget.bookings.bookingDetail!.totalAmount.validate() *
+                widget.bookings.service!.advancePaymentPercentage.validate() /
+                100;
+        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() *
+            widget.bookings.service!.advancePaymentPercentage.validate() /
+            100;
       } else {
-        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() - widget.bookings.bookingDetail!.paidAmount.validate();
+        totalAmount = widget.bookings.bookingDetail!.totalAmount.validate() -
+            widget.bookings.bookingDetail!.paidAmount.validate();
       }
     } else {
       totalAmount = widget.bookings.bookingDetail!.totalAmount.validate();
@@ -99,9 +114,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (currentPaymentMethod!.type == PAYMENT_METHOD_COD) {
       // For advance payments, use ADVANCE_PAID status; otherwise use PENDING
       savePay(
-        paymentMethod: PAYMENT_METHOD_COD, 
-        paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PENDING
-      );
+          paymentMethod: PAYMENT_METHOD_COD,
+          paymentStatus: widget.isForAdvancePayment
+              ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+              : SERVICE_PAYMENT_STATUS_PENDING);
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_STRIPE) {
       StripeServiceNew stripeServiceNew = StripeServiceNew(
         paymentSetting: currentPaymentMethod!,
@@ -109,7 +125,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onComplete: (p0) {
           savePay(
             paymentMethod: PAYMENT_METHOD_STRIPE,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['transaction_id'],
           );
         },
@@ -126,7 +144,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onComplete: (p0) {
           savePay(
             paymentMethod: PAYMENT_METHOD_RAZOR,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['paymentId'],
           );
         },
@@ -144,7 +164,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onComplete: (p0) {
           savePay(
             paymentMethod: PAYMENT_METHOD_FLUTTER_WAVE,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['transaction_id'],
           );
         },
@@ -156,9 +178,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
         toast(language.cinetPayNotSupportedMessage);
         return;
       } else if (totalAmount < 100) {
-        return toast('${language.totalAmountShouldBeMoreThan} ${100.toPriceFormat()}');
+        return toast(
+            '${language.totalAmountShouldBeMoreThan} ${100.toPriceFormat()}');
       } else if (totalAmount > 1500000) {
-        return toast('${language.totalAmountShouldBeLessThan} ${1500000.toPriceFormat()}');
+        return toast(
+            '${language.totalAmountShouldBeLessThan} ${1500000.toPriceFormat()}');
       }
 
       CinetPayServicesNew cinetPayServices = CinetPayServicesNew(
@@ -167,7 +191,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onComplete: (p0) {
           savePay(
             paymentMethod: PAYMENT_METHOD_CINETPAY,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['transaction_id'],
           );
         },
@@ -185,7 +211,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         onComplete: (p0) {
           savePay(
             paymentMethod: PAYMENT_METHOD_SADAD_PAYMENT,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['transaction_id'],
           );
         },
@@ -204,7 +232,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
           log('PayPalService onComplete: $p0');
           savePay(
             paymentMethod: PAYMENT_METHOD_PAYPAL,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: p0['transaction_id'],
           );
         },
@@ -221,12 +251,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
               amount: totalAmount,
               reference: APP_NAME,
               paymentSetting: currentPaymentMethod!,
-              bookingId: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.id.validate() : 0,
+              bookingId: widget.bookings.bookingDetail != null
+                  ? widget.bookings.bookingDetail!.id.validate()
+                  : 0,
               onComplete: (res) {
                 log('RES: $res');
                 savePay(
                   paymentMethod: PAYMENT_METHOD_AIRTEL,
-                  paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+                  paymentStatus: widget.isForAdvancePayment
+                      ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                      : SERVICE_PAYMENT_STATUS_PAID,
                   txnId: res['transaction_id'],
                 );
               },
@@ -244,11 +278,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
           appStore.setLoading(p0);
         },
         totalAmount: totalAmount.toDouble(),
-        bookingId: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.id.validate() : 0,
+        bookingId: widget.bookings.bookingDetail != null
+            ? widget.bookings.bookingDetail!.id.validate()
+            : 0,
         onComplete: (res) {
           savePay(
             paymentMethod: PAYMENT_METHOD_PAYSTACK,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: res["transaction_id"],
           );
         },
@@ -265,16 +303,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
       await midtransService.initialize(
         currentPaymentMethod: currentPaymentMethod!,
         totalAmount: totalAmount,
-        serviceId: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.serviceId.validate() : 0,
-        serviceName: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.serviceName.validate() : '',
-        servicePrice: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.amount.validate() : 0,
+        serviceId: widget.bookings.bookingDetail != null
+            ? widget.bookings.bookingDetail!.serviceId.validate()
+            : 0,
+        serviceName: widget.bookings.bookingDetail != null
+            ? widget.bookings.bookingDetail!.serviceName.validate()
+            : '',
+        servicePrice: widget.bookings.bookingDetail != null
+            ? widget.bookings.bookingDetail!.amount.validate()
+            : 0,
         loaderOnOFF: (p0) {
           appStore.setLoading(p0);
         },
         onComplete: (res) {
           savePay(
             paymentMethod: PAYMENT_METHOD_MIDTRANS,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: res["transaction_id"],
           );
         },
@@ -289,12 +335,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       PhonePeServices peServices = PhonePeServices(
         paymentSetting: currentPaymentMethod!,
         totalAmount: totalAmount.toDouble(),
-        bookingId: widget.bookings.bookingDetail != null ? widget.bookings.bookingDetail!.id.validate() : 0,
+        bookingId: widget.bookings.bookingDetail != null
+            ? widget.bookings.bookingDetail!.id.validate()
+            : 0,
         onComplete: (res) {
           log('RES: $res');
           savePay(
             paymentMethod: PAYMENT_METHOD_PHONEPE,
-            paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+            paymentStatus: widget.isForAdvancePayment
+                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                : SERVICE_PAYMENT_STATUS_PAID,
             txnId: res["transaction_id"],
           );
         },
@@ -307,44 +357,68 @@ class _PaymentScreenState extends State<PaymentScreen> {
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_FROM_WALLET) {
       savePay(
         paymentMethod: PAYMENT_METHOD_FROM_WALLET,
-        paymentStatus: widget.isForAdvancePayment ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : SERVICE_PAYMENT_STATUS_PAID,
+        paymentStatus: widget.isForAdvancePayment
+            ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+            : SERVICE_PAYMENT_STATUS_PAID,
         txnId: '',
       );
     }
   }
 
-  void savePay({String txnId = '', String paymentMethod = '', String paymentStatus = ''}) async {
+  void savePay(
+      {String txnId = '',
+      String paymentMethod = '',
+      String paymentStatus = ''}) async {
     Map request = {
       CommonKeys.bookingId: widget.bookings.bookingDetail!.id.validate(),
       CommonKeys.customerId: appStore.userId,
       CouponKeys.discount: widget.bookings.service?.discount ?? 0,
       BookingServiceKeys.totalAmount: totalAmount,
-      CommonKeys.dateTime: DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now()),
-      CommonKeys.txnId: txnId != '' ? txnId : "#${widget.bookings.bookingDetail!.id.validate()}",
+      CommonKeys.dateTime:
+          DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now()),
+      CommonKeys.txnId: txnId != ''
+          ? txnId
+          : "#${widget.bookings.bookingDetail!.id.validate()}",
       CommonKeys.paymentStatus: paymentStatus,
       CommonKeys.paymentMethod: paymentMethod,
     };
 
     // If this is for advance payment, always set advance payment amount and status
     if (widget.isForAdvancePayment) {
-      request[AdvancePaymentKey.advancePaymentAmount] = advancePaymentAmount ?? widget.bookings.bookingDetail!.totalAmount.validate();
-      
-      if ((widget.bookings.bookingDetail!.paymentStatus == null || 
-           widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_ADVANCE_PAID || 
-           widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_PAID) &&
-          (widget.bookings.bookingDetail!.paidAmount == null || widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
+      request[AdvancePaymentKey.advancePaymentAmount] = advancePaymentAmount ??
+          widget.bookings.bookingDetail!.totalAmount.validate();
+
+      if ((widget.bookings.bookingDetail!.paymentStatus == null ||
+              widget.bookings.bookingDetail!.paymentStatus !=
+                  SERVICE_PAYMENT_STATUS_ADVANCE_PAID ||
+              widget.bookings.bookingDetail!.paymentStatus !=
+                  SERVICE_PAYMENT_STATUS_PAID) &&
+          (widget.bookings.bookingDetail!.paidAmount == null ||
+              widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_ADVANCE_PAID;
-      } else if (widget.bookings.bookingDetail!.paymentStatus == SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
+      } else if (widget.bookings.bookingDetail!.paymentStatus ==
+          SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_PAID;
       }
-    } else if (widget.bookings.service != null && widget.bookings.service!.isAdvancePayment && widget.bookings.service!.isFixedService && !widget.bookings.service!.isFreeService && widget.bookings.bookingDetail!.bookingPackage == null) {
+    } else if (widget.bookings.service != null &&
+        widget.bookings.service!.isAdvancePayment &&
+        widget.bookings.service!.isFixedService &&
+        !widget.bookings.service!.isFreeService &&
+        widget.bookings.bookingDetail!.bookingPackage == null) {
       // Original logic for service-based advance payment
-      request[AdvancePaymentKey.advancePaymentAmount] = advancePaymentAmount ?? widget.bookings.bookingDetail!.paidAmount;
+      request[AdvancePaymentKey.advancePaymentAmount] =
+          advancePaymentAmount ?? widget.bookings.bookingDetail!.paidAmount;
 
-      if ((widget.bookings.bookingDetail!.paymentStatus == null || widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_ADVANCE_PAID || widget.bookings.bookingDetail!.paymentStatus != SERVICE_PAYMENT_STATUS_PAID) &&
-          (widget.bookings.bookingDetail!.paidAmount == null || widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
+      if ((widget.bookings.bookingDetail!.paymentStatus == null ||
+              widget.bookings.bookingDetail!.paymentStatus !=
+                  SERVICE_PAYMENT_STATUS_ADVANCE_PAID ||
+              widget.bookings.bookingDetail!.paymentStatus !=
+                  SERVICE_PAYMENT_STATUS_PAID) &&
+          (widget.bookings.bookingDetail!.paidAmount == null ||
+              widget.bookings.bookingDetail!.paidAmount.validate() <= 0)) {
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_ADVANCE_PAID;
-      } else if (widget.bookings.bookingDetail!.paymentStatus == SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
+      } else if (widget.bookings.bookingDetail!.paymentStatus ==
+          SERVICE_PAYMENT_STATUS_ADVANCE_PAID) {
         request[CommonKeys.paymentStatus] = SERVICE_PAYMENT_STATUS_PAID;
       }
     }
@@ -356,7 +430,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         finish(context);
         widget.onPaymentSuccess!();
       } else {
-        push(DashboardScreen(redirectToBooking: true), isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        push(DashboardScreen(redirectToBooking: true),
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
       }
     }).catchError((e) {
       toast(e.toString());
@@ -388,10 +463,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     serviceDetail: widget.bookings.service!,
                     taxes: widget.bookings.bookingDetail!.taxes.validate(),
                     couponData: widget.bookings.couponData,
-                    bookingPackage: widget.bookings.bookingDetail!.bookingPackage != null ? widget.bookings.bookingDetail!.bookingPackage : null,
+                    bookingPackage:
+                        widget.bookings.bookingDetail!.bookingPackage != null
+                            ? widget.bookings.bookingDetail!.bookingPackage
+                            : null,
                   ),
                   32.height,
-                  Text(language.lblChoosePaymentMethod, style: boldTextStyle(size: LABEL_TEXT_SIZE)),
+                  Text(language.lblChoosePaymentMethod,
+                      style: boldTextStyle(size: LABEL_TEXT_SIZE)),
                 ],
               ).paddingAll(16),
               SnapHelperWidget<List<PaymentSetting>>(
@@ -402,7 +481,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     listAnimationType: ListAnimationType.FadeIn,
-                    fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
+                    fadeInConfiguration:
+                        FadeInConfiguration(duration: 2.seconds),
                     emptyWidget: NoDataWidget(
                       title: language.noPaymentMethodFound,
                       imageWidget: EmptyStateWidget(),
@@ -423,13 +503,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                           setState(() {});
                         },
-                        title: Text(value.title.validate(), style: primaryTextStyle()),
+                        title: Text(value.title.validate(),
+                            style: primaryTextStyle()),
                       );
                     },
                   );
                 },
               ),
-              if (appConfigurationStore.isEnableUserWallet) WalletBalanceComponent().paddingSymmetric(vertical: 8, horizontal: 16),
+              if (appConfigurationStore.isEnableUserWallet)
+                WalletBalanceComponent()
+                    .paddingSymmetric(vertical: 8, horizontal: 16),
               if (!appStore.isLoading)
                 AppButton(
                   onTap: () async {
@@ -437,8 +520,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       return toast(language.chooseAnyOnePayment);
                     }
 
-                    if (currentPaymentMethod!.type == PAYMENT_METHOD_COD || currentPaymentMethod!.type == PAYMENT_METHOD_FROM_WALLET) {
-                      if (currentPaymentMethod!.type == PAYMENT_METHOD_FROM_WALLET) {
+                    if (currentPaymentMethod!.type == PAYMENT_METHOD_COD ||
+                        currentPaymentMethod!.type ==
+                            PAYMENT_METHOD_FROM_WALLET) {
+                      if (currentPaymentMethod!.type ==
+                          PAYMENT_METHOD_FROM_WALLET) {
                         appStore.setLoading(true);
                         num walletBalance = await getUserWalletBalance();
 
@@ -447,7 +533,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           showConfirmDialogCustom(
                             context,
                             dialogType: DialogType.CONFIRMATION,
-                            title: "${language.lblPayWith} ${currentPaymentMethod!.title.validate()}?",
+                            title:
+                                "${language.lblPayWith} ${currentPaymentMethod!.title.validate()}?",
                             primaryColor: primaryColor,
                             positiveText: language.lblYes,
                             negativeText: language.lblCancel,
@@ -481,7 +568,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         showConfirmDialogCustom(
                           context,
                           dialogType: DialogType.CONFIRMATION,
-                          title: "${language.lblPayWith} ${currentPaymentMethod!.title.validate()}?",
+                          title:
+                              "${language.lblPayWith} ${currentPaymentMethod!.title.validate()}?",
                           primaryColor: primaryColor,
                           positiveText: language.lblYes,
                           negativeText: language.lblCancel,

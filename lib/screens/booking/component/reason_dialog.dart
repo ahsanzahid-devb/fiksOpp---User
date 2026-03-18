@@ -1,11 +1,11 @@
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/booking_detail_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/utils/colors.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/model_keys.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/booking_detail_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/utils/colors.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/model_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
@@ -48,14 +48,20 @@ class _ReasonDialogState extends State<ReasonDialog> {
                     child: AppTextField(
                       controller: _textFieldReason,
                       textFieldType: TextFieldType.MULTILINE,
-                      decoration: inputDecoration(context, labelText: language.enterReason, fillColor: appStore.isDarkMode ? context.scaffoldBackgroundColor : context.cardColor),
+                      decoration: inputDecoration(context,
+                          labelText: language.enterReason,
+                          fillColor: appStore.isDarkMode
+                              ? context.scaffoldBackgroundColor
+                              : context.cardColor),
                       enableChatGPT: appConfigurationStore.chatGPTStatus,
-                      promptFieldInputDecorationChatGPT: inputDecoration(context).copyWith(
+                      promptFieldInputDecorationChatGPT:
+                          inputDecoration(context).copyWith(
                         hintText: language.writeHere,
                         fillColor: context.scaffoldBackgroundColor,
                         filled: true,
                       ),
-                      testWithoutKeyChatGPT: appConfigurationStore.testWithoutKey,
+                      testWithoutKeyChatGPT:
+                          appConfigurationStore.testWithoutKey,
                       loaderWidgetForChatGPT: const ChatGPTLoadingWidget(),
                       minLines: 4,
                       maxLines: 10,
@@ -79,7 +85,9 @@ class _ReasonDialogState extends State<ReasonDialog> {
           ),
         ),
         Observer(
-          builder: (context) => LoaderWidget().withSize(height: 80, width: 80).visible(appStore.isLoading),
+          builder: (context) => LoaderWidget()
+              .withSize(height: 80, width: 80)
+              .visible(appStore.isLoading),
         )
       ],
     );
@@ -89,14 +97,19 @@ class _ReasonDialogState extends State<ReasonDialog> {
     Map request = {
       CommonKeys.id: widget.status.bookingDetail!.id.validate(),
       BookingUpdateKeys.startAt: widget.status.bookingDetail!.date.validate(),
-      BookingUpdateKeys.endAt: formatBookingDate(DateTime.now().toString(), format: BOOKING_SAVE_FORMAT, isLanguageNeeded: false),
-      BookingUpdateKeys.durationDiff: widget.status.bookingDetail!.durationDiff.validate(),
+      BookingUpdateKeys.endAt: formatBookingDate(DateTime.now().toString(),
+          format: BOOKING_SAVE_FORMAT, isLanguageNeeded: false),
+      BookingUpdateKeys.durationDiff:
+          widget.status.bookingDetail!.durationDiff.validate(),
       BookingUpdateKeys.reason: _textFieldReason.text,
       CommonKeys.status: BookingStatusKeys.cancelled,
       CommonKeys.advancePaidAmount: widget.status.bookingDetail!.paidAmount,
       CommonKeys.cancellationCharge: 0,
       CommonKeys.cancellationChargeAmount: 0,
-      BookingUpdateKeys.paymentStatus: widget.status.bookingDetail!.isAdvancePaymentDone ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : widget.status.bookingDetail!.paymentStatus.validate(),
+      BookingUpdateKeys.paymentStatus:
+          widget.status.bookingDetail!.isAdvancePaymentDone
+              ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+              : widget.status.bookingDetail!.paymentStatus.validate(),
     };
 
     appStore.setLoading(true);
@@ -114,12 +127,20 @@ class _ReasonDialogState extends State<ReasonDialog> {
   void saveHoldClick() async {
     Map request = {
       CommonKeys.id: widget.status.bookingDetail!.id.validate(),
-      BookingUpdateKeys.startAt: widget.status.bookingDetail!.startAt.validate(),
+      BookingUpdateKeys.startAt:
+          widget.status.bookingDetail!.startAt.validate(),
       // BookingUpdateKeys.endAt: formatBookingDate(DateTime.now().toString(), format: BOOKING_SAVE_FORMAT, isLanguageNeeded: false),
-      BookingUpdateKeys.durationDiff: DateTime.parse(DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now())).difference(DateTime.parse(widget.status.bookingDetail!.startAt.validate())).inSeconds,
+      BookingUpdateKeys.durationDiff: DateTime.parse(
+              DateFormat(BOOKING_SAVE_FORMAT).format(DateTime.now()))
+          .difference(
+              DateTime.parse(widget.status.bookingDetail!.startAt.validate()))
+          .inSeconds,
       BookingUpdateKeys.reason: _textFieldReason.text,
       CommonKeys.status: BookingStatusKeys.hold,
-      BookingUpdateKeys.paymentStatus: widget.status.bookingDetail!.isAdvancePaymentDone ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID : widget.status.bookingDetail!.paymentStatus.validate(),
+      BookingUpdateKeys.paymentStatus:
+          widget.status.bookingDetail!.isAdvancePaymentDone
+              ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+              : widget.status.bookingDetail!.paymentStatus.validate(),
     };
 
     appStore.setLoading(true);
@@ -127,7 +148,9 @@ class _ReasonDialogState extends State<ReasonDialog> {
     await updateBooking(request).then((res) async {
       toast(res.message!);
       Map<String, dynamic> liveStreamRequest = {
-        "inSeconds": "${(widget.status.bookingDetail!.durationDiff.toInt() + request[BookingUpdateKeys.durationDiff].toString().toInt())}".toInt(),
+        "inSeconds":
+            "${(widget.status.bookingDetail!.durationDiff.toInt() + request[BookingUpdateKeys.durationDiff].toString().toInt())}"
+                .toInt(),
         "status": BookingStatusKeys.hold,
       };
       LiveStream().emit(LIVESTREAM_START_TIMER, liveStreamRequest);
@@ -142,7 +165,9 @@ class _ReasonDialogState extends State<ReasonDialog> {
   void _handleClick() {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      if (widget.status.bookingDetail!.status == BookingStatusKeys.pending || widget.status.bookingDetail!.status == BookingStatusKeys.hold || widget.status.bookingDetail!.status == BookingStatusKeys.accept) {
+      if (widget.status.bookingDetail!.status == BookingStatusKeys.pending ||
+          widget.status.bookingDetail!.status == BookingStatusKeys.hold ||
+          widget.status.bookingDetail!.status == BookingStatusKeys.accept) {
         saveCancelClick();
       } else if (widget.currentStatus == BookingStatusKeys.hold) {
         saveHoldClick();

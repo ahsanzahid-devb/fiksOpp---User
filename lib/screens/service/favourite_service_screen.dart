@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/component/back_widget.dart';
-import 'package:booking_system_flutter/component/loader_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/service_data_model.dart';
-import 'package:booking_system_flutter/network/rest_apis.dart';
-import 'package:booking_system_flutter/screens/service/component/service_component.dart';
-import 'package:booking_system_flutter/screens/service/shimmer/favourite_service_shimmer.dart';
+import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/service_data_model.dart';
+import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/screens/service/component/service_component.dart';
+import 'package:fiksOpp/screens/service/shimmer/favourite_service_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -90,13 +90,18 @@ class _FavouriteServiceScreenState extends State<FavouriteServiceScreen> {
                       spacing: 16,
                       runSpacing: 16,
                       listAnimationType: ListAnimationType.FadeIn,
-                      fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
-                      scaleConfiguration: ScaleConfiguration(duration: 300.milliseconds, delay: 50.milliseconds),
+                      fadeInConfiguration:
+                          FadeInConfiguration(duration: 2.seconds),
+                      scaleConfiguration: ScaleConfiguration(
+                          duration: 300.milliseconds, delay: 50.milliseconds),
                       itemCount: snap.data!.length,
                       itemBuilder: (_, index) {
                         return ServiceComponent(
                           serviceData: snap.data![index],
-                          width: appConfigurationStore.userDashboardType == DEFAULT_USER_DASHBOARD ? context.width() / 2 - 24 : context.width(),
+                          width: appConfigurationStore.userDashboardType ==
+                                  DEFAULT_USER_DASHBOARD
+                              ? context.width() / 2 - 24
+                              : context.width(),
                           isFavouriteService: true,
                           onUpdate: () async {
                             page = 1;
@@ -130,7 +135,8 @@ class _FavouriteServiceScreenState extends State<FavouriteServiceScreen> {
               );
             },
           ),
-          Observer(builder: (context) => LoaderWidget().visible(appStore.isLoading)),
+          Observer(
+              builder: (context) => LoaderWidget().visible(appStore.isLoading)),
         ],
       ),
     );

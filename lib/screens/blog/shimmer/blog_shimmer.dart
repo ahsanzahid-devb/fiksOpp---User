@@ -1,5 +1,5 @@
-import 'package:booking_system_flutter/component/shimmer_widget.dart';
-import 'package:booking_system_flutter/main.dart';
+import 'package:fiksOpp/component/shimmer_widget.dart';
+import 'package:fiksOpp/main.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
@@ -19,7 +19,9 @@ class BlogShimmer extends StatelessWidget {
           decoration: boxDecorationWithRoundedCorners(
             borderRadius: radius(),
             backgroundColor: context.cardColor,
-            border: appStore.isDarkMode ? Border.all(color: context.dividerColor) : null,
+            border: appStore.isDarkMode
+                ? Border.all(color: context.dividerColor)
+                : null,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,7 +30,8 @@ class BlogShimmer extends StatelessWidget {
                 child: Container(
                   height: 80,
                   width: 80,
-                  decoration: boxDecorationDefault(borderRadius: radius(), color: context.cardColor),
+                  decoration: boxDecorationDefault(
+                      borderRadius: radius(), color: context.cardColor),
                 ),
               ),
               16.width,

@@ -1,10 +1,10 @@
-import 'package:booking_system_flutter/component/image_border_component.dart';
-import 'package:booking_system_flutter/component/selected_item_widget.dart';
-import 'package:booking_system_flutter/main.dart';
-import 'package:booking_system_flutter/model/user_data_model.dart';
-import 'package:booking_system_flutter/utils/common.dart';
-import 'package:booking_system_flutter/utils/constant.dart';
-import 'package:booking_system_flutter/utils/images.dart';
+import 'package:fiksOpp/component/image_border_component.dart';
+import 'package:fiksOpp/component/selected_item_widget.dart';
+import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -17,7 +17,8 @@ class FilterProviderComponent extends StatefulWidget {
   FilterProviderComponent({required this.providerList});
 
   @override
-  State<FilterProviderComponent> createState() => _FilterProviderComponentState();
+  State<FilterProviderComponent> createState() =>
+      _FilterProviderComponentState();
 }
 
 class _FilterProviderComponentState extends State<FilterProviderComponent> {
@@ -51,13 +52,23 @@ class _FilterProviderComponentState extends State<FilterProviderComponent> {
                 children: [
                   Row(
                     children: [
-                      Text(data.displayName.validate(), style: boldTextStyle()).flexible(),
+                      Text(data.displayName.validate(), style: boldTextStyle())
+                          .flexible(),
                       4.width,
-                      Image.asset(ic_star_fill, color: getRatingBarColor(data.providersServiceRating.validate().toInt(), showRedForZeroRating: true), height: 10),
+                      Image.asset(ic_star_fill,
+                          color: getRatingBarColor(
+                              data.providersServiceRating.validate().toInt(),
+                              showRedForZeroRating: true),
+                          height: 10),
                     ],
                   ),
-                  if (data.totalBooking.validate() != 0) Text("${language.basedOn} ${data.totalBooking} ${language.services}", style: secondaryTextStyle()),
-                  Text('${language.lblMemberSince} ${DateFormat(YEAR).format(DateTime.parse(data.createdAt.validate()))}', style: secondaryTextStyle()),
+                  if (data.totalBooking.validate() != 0)
+                    Text(
+                        "${language.basedOn} ${data.totalBooking} ${language.services}",
+                        style: secondaryTextStyle()),
+                  Text(
+                      '${language.lblMemberSince} ${DateFormat(YEAR).format(DateTime.parse(data.createdAt.validate()))}',
+                      style: secondaryTextStyle()),
                 ],
               ).expand(),
               SelectedItemWidget(isSelected: data.isSelected),
