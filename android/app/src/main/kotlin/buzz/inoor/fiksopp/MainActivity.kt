@@ -1,4 +1,4 @@
-package com.fiksopp.fiksopp
+package buzz.inoor.fiksopp
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

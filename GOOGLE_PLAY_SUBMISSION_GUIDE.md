@@ -3,10 +3,19 @@
 ## App Information Summary
 
 **App Name:** FiksOpp  
-**Package Name:** com.fiksopp.fiksopp (Android)  
-**Current Version:** 11.14.3 (Build 110)  
+**Package Name (Android / Google Play):** `buzz.inoor.fiksopp` — **must match** the app already in Play Console (you cannot change this for an existing listing).  
+**iOS bundle ID (App Store):** `com.fiksopp.fiksopp` — different from Android; that is normal.  
+**Current Version:** see `pubspec.yaml` (`version: x.y.z+build` → `build` is the Play **version code**).  
 **App Type:** Service Booking/Handyman Platform  
 **Pricing:** Free
+
+### Can I change the package name on Google Play?
+
+**No.** The application ID is fixed for that store listing forever. To use `com.fiksopp.fiksopp` on Play you would need a **new** app (new listing; users would install a separate app).
+
+**Firebase:** Register an Android app with package **`buzz.inoor.fiksopp`** in the same Firebase project (or keep one Android client per package). Download **`google-services.json`** from Firebase after adding that app and replace `android/app/google-services.json`. Add your **release SHA-1/SHA-256** (and Play App Signing certificate) under that Android app.
+
+**Version code:** Each upload must use a **new, higher** `version` build number in `pubspec.yaml` than any version already uploaded to Play.
 
 ---
 

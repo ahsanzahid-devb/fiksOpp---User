@@ -6,7 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.fiksopp.fiksopp"
+    // Must match the applicationId already registered on Google Play (cannot be changed there).
+    namespace = "buzz.inoor.fiksopp"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,13 +22,30 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.fiksopp.fiksopp"
+        applicationId = "buzz.inoor.fiksopp"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        // Same as Groovy build.gradle: read pubspec so versionCode is never stale from local.properties.
+        val pubspecFile = rootProject.projectDir.parentFile.resolve("pubspec.yaml")
+        var resolvedCode = flutter.versionCode
+        var resolvedName = flutter.versionName
+        if (pubspecFile.exists()) {
+            val verLine = pubspecFile.readLines()
+                .firstOrNull { it.trimStart().startsWith("version:") }
+            if (verLine != null) {
+                val raw = verLine.substringAfter("version:").trim().removeSurrounding("\"")
+                val plus = raw.indexOf('+')
+                if (plus > 0) {
+                    resolvedName = raw.substring(0, plus).trim()
+                    val digits = raw.substring(plus + 1).filter { it.isDigit() }
+                    digits.toIntOrNull()?.let { resolvedCode = it }
+                }
+            }
+        }
+        versionCode = resolvedCode
+        versionName = resolvedName
     }
 
     buildTypes {

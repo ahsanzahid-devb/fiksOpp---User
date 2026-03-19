@@ -1,7 +1,7 @@
 import 'package:nb_utils/nb_utils.dart';
 
-/// DO NOT CHANGE THIS PACKAGE NAME
-var appPackageName = isAndroid ? 'com.fiksopp.fiksopp' : 'com.iqonic.user';
+/// Android: must match `applicationId` / Play Console (`buzz.inoor.fiksopp`).
+var appPackageName = isAndroid ? 'buzz.inoor.fiksopp' : 'com.iqonic.user';
 
 //region Custom Headers
 class CustomHeader {

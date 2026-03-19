@@ -2,7 +2,7 @@ name: fiksOpp
 description: A new Flutter project.
 
 publish_to: "none"
-version: 11.14.4+122a
+version: 11.14.5+300
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

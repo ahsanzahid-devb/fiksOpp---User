@@ -20,17 +20,33 @@ if (keystorePropertiesFile.exists()) {
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+
+// Always align with pubspec.yaml (fixes Play "version code already used" when
+// Android Studio / Gradle uses stale flutter.versionCode from local.properties).
+def pubspecFile = new File(rootProject.projectDir.parentFile, 'pubspec.yaml')
+if (pubspecFile.exists()) {
+    pubspecFile.eachLine { line ->
+        if (line.trim().startsWith('version:')) {
+            def raw = line.replaceFirst(/^\s*version:\s*/, '').trim().replaceAll(/^"|"$/, '')
+            def parts = raw.split('\\+', 2)
+            if (parts.length == 2) {
+                flutterVersionName = parts[0].trim()
+                flutterVersionCode = parts[1].trim().replaceAll('[^0-9]', '')
+            }
+        }
+    }
 }
 
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
+if (flutterVersionCode == null || flutterVersionCode.isEmpty()) {
+    flutterVersionCode = '1'
+}
+if (flutterVersionName == null || flutterVersionName.isEmpty()) {
     flutterVersionName = '1.0'
 }
 
 android {
-    namespace "com.fiksopp.fiksopp"
+    namespace "buzz.inoor.fiksopp"
     compileSdkVersion 36
     buildToolsVersion "36.1.0" // Using existing installed build tools
     ndkVersion = "29.0.14206865" // Using existing installed NDK version
@@ -50,7 +66,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.fiksopp.fiksopp'
+        applicationId 'buzz.inoor.fiksopp'
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
