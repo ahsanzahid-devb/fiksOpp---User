@@ -16,8 +16,6 @@ class ServiceListDashboardComponent1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (serviceList.isEmpty) return Offstage();
-
     return Container(
       padding: EdgeInsets.only(bottom: 16),
       margin: EdgeInsets.only(top: 16),

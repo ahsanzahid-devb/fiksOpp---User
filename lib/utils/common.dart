@@ -389,7 +389,9 @@ void locationWiseService(BuildContext context, VoidCallback onTap) async {
 
         await setValue(PERMISSION_STATUS, value);
         await getUserLocation().then((value) async {
-          await appStore.setCurrentLocation(!appStore.isCurrentLocation);
+          // Location was fetched successfully; keep location mode enabled.
+          await appStore.setCurrentLocation(true);
+          appStore.setLoading(false);
         }).catchError((e) {
           appStore.setLoading(false);
           toast(e.toString(), print: true);
@@ -435,7 +437,8 @@ void location(BuildContext context, {VoidCallback? onRefresh}) async {
       appStore.setLoading(true);
 
       await getUserLocation().then((_) async {
-        await appStore.setCurrentLocation(!appStore.isCurrentLocation);
+        // Location was fetched successfully; keep location mode enabled.
+        await appStore.setCurrentLocation(true);
         appStore.setLoading(false);
         if (onRefresh != null) onRefresh.call();
       }).catchError((e) {

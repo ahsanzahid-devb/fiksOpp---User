@@ -19,24 +19,18 @@ class ViewAllLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canViewAll = onTap != null;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: boldTextStyle(size: labelSize ?? LABEL_TEXT_SIZE)),
         TextButton(
-          onPressed: (list == null ? true : isViewAllVisible(list!))
-              ? () {
-                  onTap?.call();
-                }
-              : null,
-          child: (list == null ? true : isViewAllVisible(list!))
-              ? Text(language.lblViewAll,
-                  style: trailingTextStyle ?? secondaryTextStyle())
-              : SizedBox(),
+          onPressed: canViewAll ? onTap : null,
+          child: Text(language.lblViewAll,
+              style: trailingTextStyle ?? secondaryTextStyle()),
         )
       ],
     );
   }
 }
-
-bool isViewAllVisible(List list) => list.length >= 4;

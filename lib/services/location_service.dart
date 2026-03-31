@@ -14,12 +14,12 @@ Future<Position> getUserLocationPosition() async {
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
-      await Geolocator.openAppSettings();
       throw '${language.lblLocationPermissionDenied}';
     }
   }
 
   if (permission == LocationPermission.deniedForever) {
+    await Geolocator.openAppSettings();
     throw '${language.lblLocationPermissionDeniedPermanently}';
   }
 

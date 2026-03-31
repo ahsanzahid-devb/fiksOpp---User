@@ -21,8 +21,6 @@ class ServiceListDashboardComponent4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (serviceList.isEmpty) return Offstage();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

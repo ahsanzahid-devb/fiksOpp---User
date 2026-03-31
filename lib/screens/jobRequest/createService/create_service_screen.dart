@@ -167,8 +167,21 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
 
   Future<void> checkValidation(
       {required bool isSave, LanguageDataModel? code}) async {
+    final bool isPostJobFlow = jobTitleCont.text.trim().isNotEmpty;
+    final bool hasValidLocation =
+        appStore.latitude != 0.0 && appStore.longitude != 0.0;
+
     if (imageFiles.isEmpty) {
       return toast(language.pleaseAddImage);
+    }
+
+    if (isPostJobFlow && !hasValidLocation) {
+      return toast(language.lblEnableLocation);
+    }
+
+    if (isPostJobFlow) {
+      final canPost = await _canCurrentUserPostJob();
+      if (!canPost) return;
     }
 
     if (formKey.currentState!.validate()) {
@@ -261,6 +274,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   /// Runs after screen is closed; posts job with short timeout and shows toast.
   Future<void> _postJobInBackground(Map<String, dynamic> request) async {
     try {
+      final canPost = await _canCurrentUserPostJob();
+      if (!canPost) return;
+
       await savePostJob(request).timeout(
         const Duration(seconds: 15),
         onTimeout: () => throw TimeoutException('Post job request timed out'),
@@ -333,6 +349,22 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     multiPartRequest.headers.addAll(buildHeaderTokens());
 
     return multiPartRequest;
+  }
+
+  Future<bool> _canCurrentUserPostJob() async {
+    try {
+      final user = await getUserDetail(appStore.userId, forceUpdate: true);
+      final bool isVerified = user.emailVerified == 1 ||
+          user.emailVerifiedAt.validate().isNotEmpty ||
+          user.isVerifyProvider == 1;
+      if (!isVerified) {
+        toast(language.verifyEmail);
+      }
+      return isVerified;
+    } catch (e) {
+      toast(e.toString(), print: true);
+      return false;
+    }
   }
 
   void updateTranslation() {

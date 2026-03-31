@@ -182,7 +182,34 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
     setState(() {});
   }
 
-  void createPostJobClick() {
+  bool get hasValidLocation =>
+      appStore.latitude != 0.0 && appStore.longitude != 0.0;
+
+  Future<bool> _canCurrentUserPostJob() async {
+    try {
+      final user = await getUserDetail(appStore.userId, forceUpdate: true);
+      final bool isVerified = user.emailVerified == 1 ||
+          user.emailVerifiedAt.validate().isNotEmpty ||
+          user.isVerifyProvider == 1;
+      if (!isVerified) {
+        toast(language.verifyEmail);
+      }
+      return isVerified;
+    } catch (e) {
+      toast(e.toString(), print: true);
+      return false;
+    }
+  }
+
+  Future<void> createPostJobClick() async {
+    if (!hasValidLocation) {
+      toast(language.lblEnableLocation);
+      return;
+    }
+
+    final canPost = await _canCurrentUserPostJob();
+    if (!canPost) return;
+
     appStore.setLoading(true);
     List<int> serviceList = [];
 
@@ -454,6 +481,48 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                               return null;
                             },
                           ),
+                          12.height,
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: boxDecorationWithRoundedCorners(
+                              backgroundColor: context.cardColor,
+                              border: Border.all(
+                                  color: hasValidLocation
+                                      ? Colors.green.withValues(alpha: 0.35)
+                                      : Colors.red.withValues(alpha: 0.35)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  color: hasValidLocation ? Colors.green : redColor,
+                                  size: 18,
+                                ),
+                                8.width,
+                                Text(
+                                  hasValidLocation
+                                      ? getStringAsync(CURRENT_ADDRESS)
+                                          .validate(value: language.lblLocationOff)
+                                      : language.lblEnableLocation,
+                                  style: secondaryTextStyle(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ).expand(),
+                                8.width,
+                                AppButton(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  text: language.getLocation,
+                                  color: context.primaryColor,
+                                  onTap: () {
+                                    locationWiseService(context, () {
+                                      setState(() {});
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ).paddingAll(16),
                     ),
@@ -578,6 +647,11 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
 
             if (formKey.currentState!.validate()) {
               formKey.currentState!.save();
+
+              if (!hasValidLocation) {
+                toast(language.lblEnableLocation);
+                return;
+              }
 
               if (selectedServiceList.isNotEmpty) {
                 createPostJobClick();

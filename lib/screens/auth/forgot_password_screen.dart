@@ -34,8 +34,9 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       formKey.currentState!.save();
       appStore.setLoading(true);
 
+      final email = emailCont.text.trim().toLowerCase();
       Map req = {
-        UserKeys.email: emailCont.text.validate(),
+        UserKeys.email: email,
       };
 
       forgotPassword(req).then((res) {
