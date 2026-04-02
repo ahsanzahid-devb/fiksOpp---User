@@ -3,6 +3,7 @@ import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
 import 'package:fiksOpp/screens/maintenance_mode_screen.dart';
 import 'package:fiksOpp/utils/configs.dart';
 import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/deep_link_handler.dart';
 import 'package:fiksOpp/utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -99,15 +100,18 @@ class _SplashScreenState extends State<SplashScreen> {
         _slog('navigate -> MaintenanceModeScreen');
         MaintenanceModeScreen().launch(context,
             isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        DeepLinkCoordinator.consumeInitialUriIfAny();
       } else {
         if (getBoolAsync(IS_FIRST_TIME, defaultValue: true)) {
           _slog('navigate -> WalkThroughScreen');
           WalkThroughScreen().launch(context,
               isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+          DeepLinkCoordinator.consumeInitialUriIfAny();
         } else {
           _slog('navigate -> DashboardScreen(initialTabIndex:0)');
           DashboardScreen(initialTabIndex: 0).launch(context,
               isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+          DeepLinkCoordinator.consumeInitialUriIfAny();
         }
       }
     }

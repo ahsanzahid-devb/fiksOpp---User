@@ -14,9 +14,10 @@ import 'package:nb_utils/nb_utils.dart';
 Map<String, String> buildHeaderTokens() {
   Map<String, String> header = {};
 
-  if (appStore.isLoggedIn)
+  if (appStore.isLoggedIn && appStore.token.validate().isNotEmpty) {
     header.putIfAbsent(
         HttpHeaders.authorizationHeader, () => 'Bearer ${appStore.token}');
+  }
   header.putIfAbsent(
       HttpHeaders.contentTypeHeader, () => 'application/json; charset=utf-8');
   header.putIfAbsent(
@@ -43,6 +44,7 @@ Future<Response> buildHttpResponse(
   HttpMethodType method = HttpMethodType.GET,
   Map? request,
   Map<String, String>? header,
+  bool retryOnUnauthorized = true,
 }) async {
   var headers = header ?? buildHeaderTokens();
   Uri url = buildBaseUrl(endPoint);
@@ -73,12 +75,16 @@ Future<Response> buildHttpResponse(
       methodtype: method.name,
     );
 
-    if (appStore.isLoggedIn &&
+    if (retryOnUnauthorized &&
+        appStore.isLoggedIn &&
         response.statusCode == 401 &&
         !endPoint.startsWith('http')) {
       return await reGenerateToken().then((value) async {
         return await buildHttpResponse(endPoint,
-            method: method, request: request, header: header);
+            method: method,
+            request: request,
+            header: header,
+            retryOnUnauthorized: false);
       }).catchError((e) {
         throw e.toString();
       });
@@ -166,9 +172,18 @@ Future<Map<String, dynamic>> handleSadadResponse(Response res) async {
 
 Future<void> reGenerateToken() async {
   log('Regenerating Token');
+  final email = appStore.userEmail.validate().trim();
+  final password = getStringAsync(USER_PASSWORD).trim();
+
+  // If we cannot re-authenticate silently, clear stale session and stop retry loop.
+  if (email.isEmpty || password.isEmpty) {
+    await clearPreferences();
+    throw 'Session expired. Please login again.';
+  }
+
   Map req = {
-    UserKeys.email: appStore.userEmail,
-    UserKeys.password: getStringAsync(USER_PASSWORD),
+    UserKeys.email: email,
+    UserKeys.password: password,
   };
 
   return await loginUser(req, isSocialLogin: !isLoginTypeUser)

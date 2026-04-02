@@ -14,6 +14,7 @@ import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/constant.dart';
 import 'package:fiksOpp/utils/images.dart';
 import 'package:fiksOpp/utils/model_keys.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -158,11 +159,78 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     }
   }
 
-  Future<void> getMultipleFile() async {
-    await picker.pickMultiImage().then((value) {
-      imageFiles.addAll(value);
+  Future<bool> _addImageIfNotDuplicate(XFile file) async {
+    try {
+      final newBytes = await file.readAsBytes();
+      for (final existing in imageFiles) {
+        if (existing.path == file.path) {
+          toast(MSG_DUPLICATE_IMAGE);
+          return false;
+        }
+        if (!existing.path.contains('https')) {
+          final eb = await File(existing.path).readAsBytes();
+          if (eb.length == newBytes.length && listEquals(eb, newBytes)) {
+            toast(MSG_DUPLICATE_IMAGE);
+            return false;
+          }
+        }
+      }
+      imageFiles.add(file);
+      return true;
+    } catch (_) {
+      imageFiles.add(file);
+      return true;
+    }
+  }
+
+  Future<void> pickServiceImages() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text(language.camera),
+              onTap: () => finish(ctx, 'camera'),
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text(language.lblGallery),
+              onTap: () => finish(ctx, 'gallery'),
+            ),
+            ListTile(
+              leading: Icon(Icons.collections_outlined),
+              title: Text(language.chooseImages),
+              onTap: () => finish(ctx, 'multi'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null) return;
+    if (choice == 'camera') {
+      final x = await picker.pickImage(
+          source: ImageSource.camera, imageQuality: 85);
+      if (x != null) {
+        await _addImageIfNotDuplicate(x);
+        setState(() {});
+      }
+    } else if (choice == 'gallery') {
+      final x = await picker.pickImage(
+          source: ImageSource.gallery, imageQuality: 85);
+      if (x != null) {
+        await _addImageIfNotDuplicate(x);
+        setState(() {});
+      }
+    } else if (choice == 'multi') {
+      final list = await picker.pickMultiImage(imageQuality: 85);
+      for (final x in list) {
+        await _addImageIfNotDuplicate(x);
+      }
       setState(() {});
-    });
+    }
   }
 
   Future<void> checkValidation(
@@ -503,7 +571,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                                     style: boldTextStyle()),
                               ],
                             ).center().onTap(borderRadius: radius(), () async {
-                              getMultipleFile();
+                              pickServiceImages();
                             }),
                           ),
                         ),

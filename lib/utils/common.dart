@@ -29,6 +29,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../component/cached_image_widget.dart';
 import 'app_configuration.dart';
+import 'configs.dart';
 import 'constant.dart';
 
 Future<bool> get isIqonicProduct async =>
@@ -76,6 +77,44 @@ void launchCall(String? url) {
     else
       commonLaunchUrl('tel:' + url!,
           launchMode: LaunchMode.externalApplication);
+  }
+}
+
+bool _isValidAppStoreListingUrl(String raw) {
+  final u = Uri.tryParse(raw.trim());
+  if (u == null || u.host.isEmpty) return false;
+  final host = u.host.toLowerCase();
+  if (isIOS) {
+    return host.contains('apps.apple.com') || host.contains('itunes.apple.com');
+  }
+  return host == 'play.google.com' || host.endsWith('.play.google.com');
+}
+
+/// Opens Play Store / App Store listing for the customer app (from app configuration or package fallback).
+Future<void> openCustomerAppStoreListing() async {
+  try {
+    if (isIOS) {
+      final u = getStringAsync(CUSTOMER_APP_STORE_URL).trim();
+      if (u.isNotEmpty && _isValidAppStoreListingUrl(u)) {
+        await commonLaunchUrl(u, launchMode: LaunchMode.externalApplication);
+        return;
+      }
+    } else {
+      final u = getStringAsync(CUSTOMER_PLAY_STORE_URL).trim();
+      if (u.isNotEmpty && _isValidAppStoreListingUrl(u)) {
+        await commonLaunchUrl(u, launchMode: LaunchMode.externalApplication);
+        return;
+      }
+    }
+    final pkg = await getPackageName();
+    final fallback = isIOS
+        ? 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}'
+        : (CUSTOMER_APP_PLAY_STORE_LISTING.isNotEmpty
+            ? CUSTOMER_APP_PLAY_STORE_LISTING
+            : 'https://play.google.com/store/apps/details?id=$pkg');
+    await commonLaunchUrl(fallback, launchMode: LaunchMode.externalApplication);
+  } catch (e) {
+    toast(e.toString());
   }
 }
 

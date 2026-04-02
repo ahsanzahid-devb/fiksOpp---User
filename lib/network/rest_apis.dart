@@ -275,6 +275,13 @@ Future<BaseResponseModel> forgotPassword(Map request) async {
           request: request, method: HttpMethodType.POST)));
 }
 
+/// After user opens reset link: token + new password (Laravel-style body).
+Future<BaseResponseModel> resetPasswordWithToken(Map request) async {
+  return BaseResponseModel.fromJson(await handleResponse(
+      await buildHttpResponse('reset-password',
+          request: request, method: HttpMethodType.POST)));
+}
+
 Future<BaseResponseModel> deleteAccountCompletely() async {
   return BaseResponseModel.fromJson(await handleResponse(
       await buildHttpResponse('delete-user-account',

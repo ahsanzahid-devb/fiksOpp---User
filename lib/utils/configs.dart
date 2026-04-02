@@ -18,6 +18,12 @@ const DEFAULT_LANGUAGE = 'no';
 /// This will be used in Registered As Partner in Sign In Screen where your users can redirect to the Play/App Store for Provider App
 /// You can specify in Admin Panel, These will be used if you don't specify in Admin Panel
 const PROVIDER_PACKAGE_NAME = 'fiksopp.inoor.buzz.provider';
+
+/// Canonical customer app listing (used when admin `playstore_url` is wrong or placeholder).
+/// See https://play.google.com/store/apps/details?id=buzz.inoor.fiksopp
+const CUSTOMER_APP_PLAY_STORE_LISTING =
+    'https://play.google.com/store/apps/details?id=buzz.inoor.fiksopp';
+
 const IOS_LINK_FOR_PARTNER = "";
 
 const IOS_LINK_FOR_USER = '';

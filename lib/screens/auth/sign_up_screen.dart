@@ -3,6 +3,7 @@ import 'package:fiksOpp/component/loader_widget.dart';
 import 'package:fiksOpp/component/responsive_container.dart';
 import 'package:fiksOpp/component/selected_item_widget.dart';
 import 'package:fiksOpp/main.dart';
+import 'package:fiksOpp/model/country_list_model.dart';
 import 'package:fiksOpp/model/user_data_model.dart';
 import 'package:fiksOpp/network/rest_apis.dart';
 import 'package:fiksOpp/utils/colors.dart';
@@ -63,10 +64,259 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isFirstTimeValidation = true;
   ValueNotifier _valueNotifier = ValueNotifier(true);
 
+  /// Email/password signup: Firebase SMS OTP must succeed before [registerUser].
+  bool _phoneOtpVerifiedForSignup = false;
+
+  /// Firebase Auth UID from the successful phone credential (sent to API as `uid` for server-side checks).
+  String? _verifiedPhoneFirebaseUid;
+  bool _signupOtpCodeSent = false;
+  String _signupVerificationId = '';
+  UserData? _pendingSignupData;
+  bool _isCreatingUserAfterOtp = false;
+
   @override
   void initState() {
     super.initState();
+    mobileCont.addListener(_onSignupMobileOrCountryChanged);
     init();
+  }
+
+  void _onSignupMobileOrCountryChanged() {
+    if (widget.isOTPLogin) return;
+    if (!_phoneOtpVerifiedForSignup && !_signupOtpCodeSent) return;
+    _resetSignupPhoneVerification();
+    setState(() {});
+  }
+
+  void _resetSignupPhoneVerification() {
+    _phoneOtpVerifiedForSignup = false;
+    _verifiedPhoneFirebaseUid = null;
+    _signupOtpCodeSent = false;
+    _signupVerificationId = '';
+    _pendingSignupData = null;
+    _isCreatingUserAfterOtp = false;
+  }
+
+  int get _maxLocalPhoneDigits {
+    final exampleDigits =
+        selectedCountry.example.replaceAll(RegExp(r'[^0-9]'), '');
+    if (exampleDigits.isNotEmpty) {
+      var localDigits = exampleDigits;
+
+      // Some country examples may include the country code; keep only local part.
+      if (localDigits.startsWith(selectedCountry.phoneCode) &&
+          localDigits.length > selectedCountry.phoneCode.length + 5) {
+        localDigits = localDigits.substring(selectedCountry.phoneCode.length);
+      }
+
+      final baseLen = localDigits.length;
+      if (baseLen >= 6) {
+        // Allow optional leading trunk zero for countries where users type it.
+        final adjustedLen = localDigits.startsWith('0') ? baseLen : baseLen + 1;
+        return adjustedLen.clamp(6, 15);
+      }
+    }
+
+    return (15 - selectedCountry.phoneCode.length).clamp(6, 15);
+  }
+
+  String? _inferIsoFromAddress(String addr) {
+    final a = addr.toLowerCase();
+    const hints = <String, String>{
+      'karachi': 'PK',
+      'lahore': 'PK',
+      'islamabad': 'PK',
+      'pakistan': 'PK',
+      'norway': 'NO',
+      'norge': 'NO',
+      'united states': 'US',
+      'usa': 'US',
+      'united kingdom': 'GB',
+      'uk': 'GB',
+    };
+    for (final e in hints.entries) {
+      if (a.contains(e.key)) return e.value;
+    }
+    return null;
+  }
+
+  Future<bool> _validatePhoneRegionWithLocation() async {
+    final phoneIso = selectedCountry.countryCode.toUpperCase();
+    final cid = appStore.countryId;
+
+    if (cid > 0) {
+      try {
+        final countries = await getCountryList();
+        CountryListResponse? match;
+        for (final c in countries) {
+          if (c.id == cid) {
+            match = c;
+            break;
+          }
+        }
+        final locCode = match?.code?.trim();
+        if (locCode != null && locCode.isNotEmpty) {
+          if (locCode.toUpperCase() != phoneIso) {
+            toast(MSG_PHONE_REGION_MISMATCH_LOCATION);
+            return false;
+          }
+        }
+      } catch (e) {
+        log(e);
+      }
+      return true;
+    }
+
+    final addr = getStringAsync(CURRENT_ADDRESS).toLowerCase().trim();
+    if (addr.isEmpty) return true;
+    final inferred = _inferIsoFromAddress(addr);
+    if (inferred == null) return true;
+    if (inferred != phoneIso) {
+      toast(MSG_PHONE_REGION_MISMATCH_LOCATION);
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _sendSignupOtp() async {
+    if (widget.isOTPLogin) return;
+    hideKeyboard(context);
+    final mobile = mobileCont.text.trim();
+    if (mobile.isEmpty) {
+      toast(language.requiredText);
+      return;
+    }
+    if (mobile.length > _maxLocalPhoneDigits) {
+      toast('Enter a valid phone number');
+      return;
+    }
+    if (appStore.isLoading) return;
+    appStore.setLoading(true);
+    toast(language.sendingOTP);
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+${selectedCountry.phoneCode}${mobileCont.text.trim()}',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          if (!mounted || widget.isOTPLogin) return;
+          if (isAndroid) {
+            try {
+              final uc =
+                  await FirebaseAuth.instance.signInWithCredential(credential);
+              final uid = uc.user?.uid;
+              await FirebaseAuth.instance.signOut();
+              if (!mounted || uid == null || uid.isEmpty) {
+                if (mounted) appStore.setLoading(false);
+                return;
+              }
+              setState(() {
+                _phoneOtpVerifiedForSignup = true;
+                _verifiedPhoneFirebaseUid = uid;
+                _signupOtpCodeSent = false;
+                _signupVerificationId = '';
+              });
+              appStore.setLoading(false);
+              toast(language.verified);
+              await _completePendingSignupIfReady();
+            } catch (_) {
+              if (mounted) appStore.setLoading(false);
+            }
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          appStore.setLoading(false);
+          if (e.code == 'invalid-phone-number') {
+            toast('Invalid phone number format. Check country and number.',
+                print: true);
+          } else {
+            toast(e.message ?? e.toString(), print: true);
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          appStore.setLoading(false);
+          _signupVerificationId = verificationId;
+          if (_signupVerificationId.isNotEmpty) {
+            setState(() {
+              _signupOtpCodeSent = true;
+            });
+            toast(language.otpCodeIsSentToYourMobileNumber);
+            final verified = await _openSignupOtpScreen();
+            if (!mounted) return;
+            if (!verified) {
+              setState(() {
+                _signupOtpCodeSent = false;
+              });
+            }
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          FirebaseAuth.instance.signOut();
+          if (mounted) {
+            setState(() {
+              _signupOtpCodeSent = false;
+            });
+          }
+        },
+      );
+    } on Exception catch (e) {
+      log(e);
+      appStore.setLoading(false);
+      toast(e.toString(), print: true);
+    }
+  }
+
+  Future<bool> _openSignupOtpScreen() async {
+    final result = await SignUpOtpVerificationScreen(
+      onVerify: _confirmSignupOtp,
+    ).launch<bool>(context);
+    return result == true;
+  }
+
+  Future<bool> _confirmSignupOtp(String code) async {
+    if (widget.isOTPLogin) return false;
+    if (code.length < OTP_TEXT_FIELD_LENGTH) {
+      toast(language.pleaseEnterValidOTP);
+      return false;
+    }
+    hideKeyboard(context);
+    if (appStore.isLoading) return false;
+    appStore.setLoading(true);
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _signupVerificationId,
+        smsCode: code,
+      );
+      final uc = await FirebaseAuth.instance.signInWithCredential(credential);
+      final uid = uc.user?.uid;
+      await FirebaseAuth.instance.signOut();
+      if (!mounted) return false;
+      if (uid == null || uid.isEmpty) {
+        appStore.setLoading(false);
+        toast(errorSomethingWentWrong);
+        return false;
+      }
+      setState(() {
+        _phoneOtpVerifiedForSignup = true;
+        _verifiedPhoneFirebaseUid = uid;
+        _signupOtpCodeSent = false;
+        _signupVerificationId = '';
+      });
+      appStore.setLoading(false);
+      toast(language.verified);
+      await _completePendingSignupIfReady();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      appStore.setLoading(false);
+      if (e.code == 'invalid-verification-code') {
+        toast(language.theEnteredCodeIsInvalidPleaseTryAgain, print: true);
+      } else {
+        toast(e.message ?? e.toString(), print: true);
+      }
+      return false;
+    } on Exception catch (e) {
+      appStore.setLoading(false);
+      toast(e.toString(), print: true);
+      return false;
+    }
   }
 
   void init() async {
@@ -105,6 +355,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (formKey.currentState!.validate()) {
       if (isAcceptedTc) {
         formKey.currentState!.save();
+        if (!await _validatePhoneRegionWithLocation()) {
+          return;
+        }
         appStore.setLoading(true);
 
         UserData userResponse = UserData()
@@ -161,12 +414,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
           true, // optional. Shows phone code before the country name.
       onSelect: (Country country) {
         selectedCountry = country;
+        if (!widget.isOTPLogin) {
+          _resetSignupPhoneVerification();
+        }
         setState(() {});
       },
     );
   }
 
-  void registerUser() async {
+  Future<void> registerUser() async {
     hideKeyboard(context);
 
     if (appStore.isLoading) return;
@@ -176,10 +432,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       /// If Terms and condition is Accepted then only the user will be registered
       if (isAcceptedTc) {
-        appStore.setLoading(true);
+        if (!await _validatePhoneRegionWithLocation()) {
+          return;
+        }
 
-        /// Create a temporary request to send
-        UserData tempRegisterData = UserData()
+        /// Build pending request; account is created only after OTP verification success.
+        _pendingSignupData = UserData()
           ..contactNumber = buildMobileNumber()
           ..firstName = fNameCont.text.trim()
           ..lastName = lNameCont.text.trim()
@@ -188,7 +446,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ..email = emailCont.text.trim()
           ..password = passwordCont.text.trim();
 
-        createUsers(tempRegisterData: tempRegisterData);
+        await _sendSignupOtp();
       } else {
         toast(language.termsConditionsAccept);
       }
@@ -198,12 +456,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
+  Future<void> _completePendingSignupIfReady() async {
+    if (_isCreatingUserAfterOtp) return;
+    final pending = _pendingSignupData;
+    final uid = _verifiedPhoneFirebaseUid.validate();
+    if (pending == null || uid.isEmpty) return;
+
+    _isCreatingUserAfterOtp = true;
+    _pendingSignupData = null;
+    pending.uid = uid;
+
+    appStore.setLoading(true);
+    await createUsers(tempRegisterData: pending);
+    _isCreatingUserAfterOtp = false;
+  }
+
+  /// API often returns "check / verify your email" even when the client logs the user in; avoid that confusing snackbar on opening home.
+  bool _registerMessageIsEmailVerificationOnly(String message) {
+    final m = message.toLowerCase().trim();
+    if (m.isEmpty) return false;
+
+    final emailTopic = m.contains('email') ||
+        m.contains('e-post') ||
+        m.contains('e-mail') ||
+        (m.contains('verify your') && m.contains('mail'));
+
+    final verificationCue = m.contains('verif') ||
+        m.contains('bekreft') ||
+        m.contains('check your') ||
+        m.contains('confirmation') ||
+        (m.contains('sent') && m.contains('link'));
+
+    if (m.contains('verification mail')) return true;
+    return emailTopic && verificationCue;
+  }
+
   Future<void> createUsers({required UserData tempRegisterData}) async {
     await createUser(tempRegisterData.toJson()).then((registerResponse) async {
       registerResponse.userData!.password = passwordCont.text.trim();
 
       appStore.setLoading(false);
-      toast(registerResponse.message.validate());
+      final serverMsg = registerResponse.message.validate();
+      if (serverMsg.isNotEmpty &&
+          _registerMessageIsEmailVerificationOnly(serverMsg)) {
+        toast(MSG_SIGNUP_WELCOME);
+      } else if (serverMsg.isNotEmpty) {
+        toast(serverMsg);
+      } else {
+        toast(MSG_SIGNUP_WELCOME);
+      }
       await saveUserData(registerResponse.userData!);
 
       DashboardScreen(initialTabIndex: 0).launch(context,
@@ -336,7 +637,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       '${language.lblExample}: ${selectedCountry.example}',
                   hintStyle: secondaryTextStyle(),
                 ),
-                maxLength: 15,
+                maxLength: _maxLocalPhoneDigits,
                 suffix: ic_calling.iconImage(size: 10).paddingAll(14),
               ).expand(),
             ],
@@ -470,6 +771,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    mobileCont.removeListener(_onSignupMobileOrCountryChanged);
+    super.dispose();
+  }
+
   //endregion
 
   @override
@@ -517,6 +824,67 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Observer(
                 builder: (_) =>
                     LoaderWidget().center().visible(appStore.isLoading)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpOtpVerificationScreen extends StatefulWidget {
+  final Future<bool> Function(String code) onVerify;
+
+  const SignUpOtpVerificationScreen({Key? key, required this.onVerify})
+      : super(key: key);
+
+  @override
+  State<SignUpOtpVerificationScreen> createState() =>
+      _SignUpOtpVerificationScreenState();
+}
+
+class _SignUpOtpVerificationScreenState
+    extends State<SignUpOtpVerificationScreen> {
+  String _otpCode = '';
+  bool _isSubmitting = false;
+
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    if (_otpCode.length < OTP_TEXT_FIELD_LENGTH) {
+      toast(language.pleaseEnterValidOTP);
+      return;
+    }
+    setState(() => _isSubmitting = true);
+    final ok = await widget.onVerify(_otpCode);
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+    if (ok) finish(context, true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(CONFIRM_OTP_BUTTON)),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            OTPTextField(
+              pinLength: OTP_TEXT_FIELD_LENGTH,
+              textStyle: primaryTextStyle(),
+              decoration: inputDecoration(context).copyWith(
+                counter: const Offstage(),
+              ),
+              onChanged: (s) => _otpCode = s,
+              onCompleted: (pin) => _otpCode = pin,
+            ).fit(),
+            20.height,
+            AppButton(
+              text: CONFIRM_OTP_BUTTON,
+              color: primaryColor,
+              textColor: Colors.white,
+              width: context.width(),
+              onTap: _submit,
+            ),
           ],
         ),
       ),

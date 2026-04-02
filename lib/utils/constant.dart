@@ -51,6 +51,18 @@ const CATEGORY_LIST_ALL = "all";
 const BOOKING_TYPE_USER_POST_JOB = 'user_post_job';
 const BOOKING_TYPE_SERVICE = 'service';
 
+/// User-facing validation (avoid adding keys to every locale file).
+const MSG_VERIFY_PHONE_BEFORE_SIGNUP =
+    'Verify your mobile number with OTP before signing up.';
+const MSG_PHONE_REGION_MISMATCH_LOCATION =
+    'Your phone country does not match your selected location. Update your number or location.';
+const MSG_DUPLICATE_IMAGE =
+    'This image was already added. Please choose a different photo.';
+const SEND_OTP_BUTTON = 'Send OTP';
+const CONFIRM_OTP_BUTTON = 'Confirm OTP';
+/// Shown after sign-up when the API message is only about email verification (user is already taken to the app home).
+const MSG_SIGNUP_WELCOME = "You're signed in. Welcome!";
+
 const DONE = 'Done';
 const SERVICE = 'service';
 const PROMOTIONAL_TYPE_LINK = 'link';

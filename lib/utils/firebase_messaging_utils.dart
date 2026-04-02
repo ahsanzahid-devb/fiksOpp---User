@@ -16,6 +16,7 @@ import '../screens/jobRequest/my_post_detail_screen.dart';
 import '../screens/service/service_detail_screen.dart';
 import '../screens/wallet/user_wallet_balance_screen.dart';
 import 'constant.dart';
+import 'firebase_background_handler.dart' as fcm_bg;
 
 Future<void> initFirebaseMessaging() async {
   await FirebaseMessaging.instance
@@ -27,7 +28,8 @@ Future<void> initFirebaseMessaging() async {
         log('Notification Listener REGISTRATION ERROR : ${e}');
       });
 
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+          fcm_bg.firebaseMessagingBackgroundHandler);
 
       await FirebaseMessaging.instance
           .setForegroundNotificationPresentationOptions(
@@ -92,14 +94,36 @@ Future<bool> unsubscribeFirebaseTopic(int userId) async {
 Future<void> registerNotificationListeners() async {
   FirebaseMessaging.instance.setAutoInitEnabled(true).then((value) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null &&
-          message.notification!.title.validate().isNotEmpty &&
-          message.notification!.body.validate().isNotEmpty) {
+      Map<String, dynamic> additional = const {};
+      final additionalRaw = message.data['additional_data'];
+      if (additionalRaw is String && additionalRaw.trim().isNotEmpty) {
+        try {
+          final decoded = jsonDecode(additionalRaw);
+          if (decoded is Map<String, dynamic>) additional = decoded;
+        } catch (_) {}
+      }
+
+      final n = message.notification;
+      final title = n?.title.validate().isNotEmpty == true
+          ? n!.title.validate()
+          : (message.data['title']?.toString() ??
+              message.data['gcm.notification.title']?.toString() ??
+              additional['type']?.toString() ??
+              '');
+      final bodyRaw = n?.body.validate().isNotEmpty == true
+          ? n!.body.validate()
+          : (message.data['body']?.toString() ??
+              message.data['message']?.toString() ??
+              message.data['gcm.notification.body']?.toString() ??
+              additional['message']?.toString() ??
+              '');
+      if (title.isNotEmpty || bodyRaw.isNotEmpty) {
         showNotification(
-            currentTimeStamp(),
-            message.notification!.title.validate(),
-            parseHtmlString(message.notification!.body.validate()),
-            message);
+          currentTimeStamp(),
+          title.isNotEmpty ? title : 'FiksOpp',
+          bodyRaw.isNotEmpty ? parseHtmlString(bodyRaw) : ' ',
+          message,
+        );
       }
     }, onError: (e) {
       log("setAutoInitEnabled error $e");
@@ -171,7 +195,7 @@ void handleNotificationClick(RemoteMessage message) {
 
 void showNotification(
     int id, String title, String message, RemoteMessage remoteMessage) async {
-  log('Notification : ${remoteMessage.notification!.toMap()}');
+  log('Notification : ${remoteMessage.notification?.toMap()} | data: ${remoteMessage.data}');
   log('Message Data : ${remoteMessage.data}');
   log("User Message Image Url : ${remoteMessage.data["image_url"]} ");
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

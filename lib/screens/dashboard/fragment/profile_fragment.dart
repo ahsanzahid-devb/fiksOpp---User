@@ -309,11 +309,8 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             trailing: trailing,
                             padding:
                                 EdgeInsets.only(top: 20, left: 16, right: 16),
-                            onTap: () {
-                              // Removed link-opening logic
-                              // You can add any local action here if you want
-                              toast(language
-                                  .rateUs); // Example: show a toast message
+                            onTap: () async {
+                              await openCustomerAppStoreListing();
                             },
                           ),
                           SettingItemWidget(
@@ -340,8 +337,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                               });
                             },
                           ),
-                          if (appStore.isLoggedIn &&
-                              rolesAndPermissionStore.helpDeskList)
+                          if (appStore.isLoggedIn)
                             SettingItemWidget(
                               decoration: boxDecorationDefault(
                                   color: context.cardColor,
@@ -513,10 +509,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             onTap: () {
-                              // Removed launchCall()
-                              // Optional: show info or toast instead
-                              toast(language.lblHelplineNumber);
-                              // or leave empty: onTap: () {},
+                              launchCall(appConfigurationStore.helplineNumber);
                             },
                           ),
                         SettingItemWidget(

@@ -27,10 +27,11 @@ import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/configs.dart';
 import 'package:fiksOpp/utils/constant.dart';
+import 'package:fiksOpp/utils/deep_link_handler.dart';
 import 'package:fiksOpp/utils/firebase_messaging_utils.dart';
+import 'package:app_links/app_links.dart' as app_links;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -43,14 +44,7 @@ import 'model/category_model.dart';
 import 'model/coupon_list_model.dart';
 import 'model/dashboard_model.dart';
 
-//region Handle Background Firebase Message
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  log('Message Data : ${message.data}');
-  await Firebase.initializeApp().then((value) {}).catchError((e) {});
-}
-
-//endregion
+// Background FCM: implementation in utils/firebase_background_handler.dart (registered from initFirebaseMessaging).
 //region Mobx Stores
 AppStore appStore = AppStore();
 FilterStore filterStore = FilterStore();
@@ -93,6 +87,15 @@ List<(int bookingId, BookingDetailResponse list)?> cachedBookingDetailList = [];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    PendingDeepLink.initialUri = await app_links.AppLinks().getInitialLink();
+  } catch (e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('AppLinks.getInitialLink: $e');
+    }
+  }
 
   try {
     await Firebase.initializeApp();
@@ -174,52 +177,52 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    DeepLinkCoordinator.startForegroundSubscription(
+        app_links.AppLinks().uriLinkStream);
   }
 
   @override
   void dispose() {
+    DeepLinkCoordinator.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return RestartAppWidget(
-      child: Observer(
-        builder: (_) => FutureBuilder<Color>(
-          future: _materialYouFuture,
-          builder: (_, snap) {
-            // Always use a valid color so first frame is never blank (App Review fix).
-            final color = snap.data ?? defaultPrimaryColor;
-            return Observer(
-              builder: (_) => MaterialApp(
-                debugShowCheckedModeBanner: false,
-                navigatorKey: navigatorKey,
-                home: SplashScreen(),
-                theme: AppTheme.lightTheme(color: color),
-                darkTheme: AppTheme.darkTheme(color: color),
-                themeMode:
-                    appStore.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-                title: APP_NAME,
-                supportedLocales: LanguageDataModel.languageLocales(),
-                localizationsDelegates: [
-                  AppLocalizations(),
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                builder: (context, child) {
-                  return MediaQuery(
-                    child: child ?? const SizedBox.shrink(),
-                    data: MediaQuery.of(context)
-                        .copyWith(textScaler: TextScaler.linear(1.0)),
-                  );
-                },
-                localeResolutionCallback: (locale, supportedLocales) => locale,
-                locale: Locale(appStore.selectedLanguageCode),
-              ),
-            );
-          },
-        ),
+      child: FutureBuilder<Color>(
+        future: _materialYouFuture,
+        builder: (_, snap) {
+          // Always use a valid color so first frame is never blank (App Review fix).
+          final color = snap.data ?? defaultPrimaryColor;
+          return Observer(
+            builder: (_) => MaterialApp(
+              debugShowCheckedModeBanner: false,
+              navigatorKey: navigatorKey,
+              home: SplashScreen(),
+              theme: AppTheme.lightTheme(color: color),
+              darkTheme: AppTheme.darkTheme(color: color),
+              themeMode: appStore.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              title: APP_NAME,
+              supportedLocales: LanguageDataModel.languageLocales(),
+              localizationsDelegates: [
+                AppLocalizations(),
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              builder: (context, child) {
+                return MediaQuery(
+                  child: child ?? const SizedBox.shrink(),
+                  data: MediaQuery.of(context)
+                      .copyWith(textScaler: TextScaler.linear(1.0)),
+                );
+              },
+              localeResolutionCallback: (locale, supportedLocales) => locale,
+              locale: Locale(appStore.selectedLanguageCode),
+            ),
+          );
+        },
       ),
     );
   }
