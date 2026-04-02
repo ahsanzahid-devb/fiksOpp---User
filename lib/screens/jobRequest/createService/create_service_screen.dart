@@ -9,6 +9,7 @@ import 'package:fiksOpp/model/package_data_model.dart';
 import 'package:fiksOpp/model/service_data_model.dart';
 import 'package:fiksOpp/network/network_utils.dart';
 import 'package:fiksOpp/network/rest_apis.dart';
+import 'package:fiksOpp/services/location_service.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/constant.dart';
@@ -47,6 +48,19 @@ class CreateServiceScreen extends StatefulWidget {
 class _CreateServiceScreenState extends State<CreateServiceScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UniqueKey formWidgetKey = UniqueKey();
+
+  /// Debug trail for post-job / location checks (filter logcat: `CreateService/Publish`).
+  void _logPublishLoc(String step, [Map<String, Object?> fields = const {}]) {
+    final buf = StringBuffer('[CreateService/Publish] $step');
+    fields.forEach((k, v) => buf.write(' | $k=$v'));
+    debugPrint(buf.toString());
+  }
+
+  String _debugPrefsCoordsSummary() {
+    final sp = sharedPreferences;
+    return 'LAT present=${sp.containsKey(LATITUDE)} double=${getDoubleAsync(LATITUDE)} | '
+        'LON present=${sp.containsKey(LONGITUDE)} double=${getDoubleAsync(LONGITUDE)}';
+  }
 
   ImagePicker picker = ImagePicker();
 
@@ -211,15 +225,15 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     );
     if (choice == null) return;
     if (choice == 'camera') {
-      final x = await picker.pickImage(
-          source: ImageSource.camera, imageQuality: 85);
+      final x =
+          await picker.pickImage(source: ImageSource.camera, imageQuality: 85);
       if (x != null) {
         await _addImageIfNotDuplicate(x);
         setState(() {});
       }
     } else if (choice == 'gallery') {
-      final x = await picker.pickImage(
-          source: ImageSource.gallery, imageQuality: 85);
+      final x =
+          await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
       if (x != null) {
         await _addImageIfNotDuplicate(x);
         setState(() {});
@@ -233,22 +247,99 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     }
   }
 
+  /// Prefer in-memory store; fall back to prefs (dashboard/API use LATITUDE/LONGITUDE—
+  /// [appStore] is not hydrated from prefs on cold start, so it often stays 0).
+  double _coordsLat() {
+    if (appStore.latitude != 0.0) return appStore.latitude;
+    return getDoubleAsync(LATITUDE);
+  }
+
+  double _coordsLng() {
+    if (appStore.longitude != 0.0) return appStore.longitude;
+    return getDoubleAsync(LONGITUDE);
+  }
+
+  bool _hasStoredCoords() {
+    final lat = _coordsLat();
+    final lng = _coordsLng();
+    return lat != 0.0 && lng != 0.0;
+  }
+
+  /// Prefs are the source of truth after dashboard / geocode; keep [appStore] in sync for post-job.
+  Future<void> _syncStoreCoordsFromPrefsIfNeeded() async {
+    final pLat = getDoubleAsync(LATITUDE);
+    final pLng = getDoubleAsync(LONGITUDE);
+    if (pLat == 0.0 || pLng == 0.0) return;
+    if (appStore.latitude == 0.0) await appStore.setLatitude(pLat);
+    if (appStore.longitude == 0.0) await appStore.setLongitude(pLng);
+  }
+
+  Future<bool> _ensurePostJobLocation() async {
+    _logPublishLoc('_ensurePostJobLocation enter', {
+      'prefs': _debugPrefsCoordsSummary(),
+      'storeLat': appStore.latitude,
+      'storeLng': appStore.longitude,
+      'resolvedLat': _coordsLat(),
+      'resolvedLng': _coordsLng(),
+      'hasStored': _hasStoredCoords(),
+      'isCurrentLocation': appStore.isCurrentLocation,
+    });
+    await _syncStoreCoordsFromPrefsIfNeeded();
+    if (_hasStoredCoords()) {
+      _logPublishLoc('_ensurePostJobLocation OK (prefs/store)', {
+        'lat': _coordsLat(),
+        'lng': _coordsLng(),
+      });
+      return true;
+    }
+    _logPublishLoc('_ensurePostJobLocation fetching GPS (no stored pair)');
+    try {
+      final pos = await getUserLocationPosition();
+      await appStore.setLatitude(pos.latitude);
+      await appStore.setLongitude(pos.longitude);
+      _logPublishLoc('_ensurePostJobLocation OK (GPS)', {
+        'lat': pos.latitude,
+        'lng': pos.longitude,
+      });
+      return true;
+    } catch (e, st) {
+      _logPublishLoc('_ensurePostJobLocation FAILED', {
+        'error': e.toString().trim(),
+        'prefsAfter': _debugPrefsCoordsSummary(),
+      });
+      debugPrintStack(label: '[CreateService/Publish] stack', stackTrace: st);
+      final msg = e.toString().trim();
+      toast(msg.isNotEmpty ? msg : language.lblEnableLocation, print: true);
+      return false;
+    }
+  }
+
   Future<void> checkValidation(
       {required bool isSave, LanguageDataModel? code}) async {
     final bool isPostJobFlow = jobTitleCont.text.trim().isNotEmpty;
-    final bool hasValidLocation =
-        appStore.latitude != 0.0 && appStore.longitude != 0.0;
 
     if (imageFiles.isEmpty) {
       return toast(language.pleaseAddImage);
     }
 
-    if (isPostJobFlow && !hasValidLocation) {
-      return toast(language.lblEnableLocation);
+    if (isPostJobFlow) {
+      _logPublishLoc('checkValidation post-job branch', {
+        'prefs': _debugPrefsCoordsSummary(),
+        'storeLat': appStore.latitude,
+        'storeLng': appStore.longitude,
+        'resolvedLat': _coordsLat(),
+        'resolvedLng': _coordsLng(),
+        'hasStored': _hasStoredCoords(),
+      });
+      final locOk = await _ensurePostJobLocation();
+      _logPublishLoc('checkValidation after location', {'locOk': locOk});
+      if (!locOk) return;
     }
 
     if (isPostJobFlow) {
       final canPost = await _canCurrentUserPostJob();
+      _logPublishLoc(
+          'checkValidation after email/verify gate', {'canPost': canPost});
       if (!canPost) return;
     }
 
@@ -312,8 +403,8 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                 PostJob.serviceId: [serviceId],
                 PostJob.price: jobDateCont.text.validate(),
                 PostJob.status: JOB_REQUEST_STATUS_REQUESTED,
-                PostJob.latitude: appStore.latitude,
-                PostJob.longitude: appStore.longitude,
+                PostJob.latitude: _coordsLat(),
+                PostJob.longitude: _coordsLng(),
               };
             }
           }
@@ -731,6 +822,15 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                           color: context.primaryColor,
                           width: context.width() >= 600 ? 400 : context.width(),
                           onTap: () {
+                            final title = jobTitleCont.text.trim();
+                            _logPublishLoc('Publish tapped', {
+                              'isUpdate': isUpdate,
+                              'jobTitleLen': title.length,
+                              'isPostJobFlow': title.isNotEmpty,
+                              'prefs': _debugPrefsCoordsSummary(),
+                              'storeLat': appStore.latitude,
+                              'storeLng': appStore.longitude,
+                            });
                             checkValidation(isSave: true);
                           },
                         )
