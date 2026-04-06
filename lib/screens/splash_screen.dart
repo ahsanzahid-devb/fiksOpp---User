@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
 import 'package:fiksOpp/screens/maintenance_mode_screen.dart';
@@ -20,6 +22,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool appNotSynced = false;
+  Timer? _lateConfigTimer;
+
+  static const int _configFetchMaxAttempts = 3;
+  static const Duration _configFetchTimeoutPerAttempt =
+      Duration(seconds: 45);
 
   void _slog(String message) {
     log('SPLASH | ${DateTime.now().toIso8601String()} | $message');
@@ -39,6 +46,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> init() async {
+    _lateConfigTimer?.cancel();
+    _lateConfigTimer = null;
+
     _slog('init() start');
     // Load saved language or use default
     String savedLanguage = getStringAsync('selected_language_code',
@@ -51,14 +61,10 @@ class _SplashScreenState extends State<SplashScreen> {
     await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
     _slog('LAST_APP_CONFIGURATION_SYNCED_TIME reset to 0');
 
-    /// Set app configurations with a safety timeout so splash can't hang forever
     try {
-      _slog(
-          'getAppConfigurations start (isLoggedIn=${appStore.isLoggedIn}, userId=${appStore.userId})');
-      await getAppConfigurations().timeout(const Duration(seconds: 20));
-      _slog('getAppConfigurations success');
+      await _fetchAppConfigurationsWithRetries();
     } catch (e) {
-      _slog('getAppConfigurations failed: $e');
+      _slog('getAppConfigurations failed after retries: $e');
       if (!await isNetworkAvailable()) {
         _slog('network not available');
         toast(errorInternetNotAvailable);
@@ -73,52 +79,112 @@ class _SplashScreenState extends State<SplashScreen> {
         'IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE=${getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)}');
     if (!getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
       appNotSynced = true;
-      _slog('appNotSynced=true (show reload)');
+      _slog('appNotSynced=true (show reload or wait for late response)');
       setState(() {});
+      _startLateConfigurationWatcher();
     } else {
-      int themeModeIndex =
-          getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
-      _slog('themeModeIndex=$themeModeIndex');
-      if (themeModeIndex == THEME_MODE_SYSTEM) {
-        appStore.setDarkMode(
-            MediaQuery.of(context).platformBrightness == Brightness.dark);
-        _slog('darkMode set from system');
-      }
-      // Check if the user is unauthorized and logged in, then clear preferences and cached data.
-      // This condition occurs when the user is marked as inactive from the admin panel,
-      if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
-        _slog('user unauthorized -> clearPreferences');
-        await clearPreferences();
+      await _navigateFromSplashAfterConfig();
+    }
+  }
 
-        // Clear cached wallet history if it exists and is not empty
-        if (cachedWalletHistoryList != null &&
-            cachedWalletHistoryList!.isNotEmpty)
-          cachedWalletHistoryList!.clear();
+  /// Retries slow / cold-start API; a single [Future.timeout] does not cancel HTTP,
+  /// so the server can still respond after the timeout and write prefs without the UI noticing.
+  Future<void> _fetchAppConfigurationsWithRetries() async {
+    Object? lastError;
+    for (var attempt = 1; attempt <= _configFetchMaxAttempts; attempt++) {
+      try {
+        _slog(
+            'getAppConfigurations attempt $attempt/$_configFetchMaxAttempts (isLoggedIn=${appStore.isLoggedIn}, userId=${appStore.userId})');
+        await getAppConfigurations().timeout(_configFetchTimeoutPerAttempt);
+        _slog('getAppConfigurations success on attempt $attempt');
+        return;
+      } catch (e) {
+        lastError = e;
+        _slog('getAppConfigurations attempt $attempt failed: $e');
+        if (attempt < _configFetchMaxAttempts) {
+          await Future<void>.delayed(Duration(seconds: 2 * attempt));
+        }
       }
+    }
+    if (lastError != null) {
+      throw lastError!;
+    }
+  }
 
-      if (appConfigurationStore.maintenanceModeStatus) {
-        _slog('navigate -> MaintenanceModeScreen');
-        MaintenanceModeScreen().launch(context,
+  void _startLateConfigurationWatcher() {
+    _lateConfigTimer?.cancel();
+    var ticks = 0;
+    const maxTicks = 60; // ~30s at 500ms — covers straggler HTTP after timeout
+    _lateConfigTimer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      ticks++;
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (getBoolAsync(IS_APP_CONFIGURATION_SYNCED_AT_LEAST_ONCE)) {
+        timer.cancel();
+        _lateConfigTimer = null;
+        _slog('late configuration sync detected -> continue from splash');
+        appNotSynced = false;
+        setState(() {});
+        _navigateFromSplashAfterConfig();
+      } else if (ticks >= maxTicks) {
+        timer.cancel();
+        _lateConfigTimer = null;
+      }
+    });
+  }
+
+  Future<void> _navigateFromSplashAfterConfig() async {
+    if (!mounted) return;
+
+    int themeModeIndex =
+        getIntAsync(THEME_MODE_INDEX, defaultValue: THEME_MODE_SYSTEM);
+    _slog('themeModeIndex=$themeModeIndex');
+    if (themeModeIndex == THEME_MODE_SYSTEM) {
+      appStore.setDarkMode(
+          MediaQuery.of(context).platformBrightness == Brightness.dark);
+      _slog('darkMode set from system');
+    }
+    // Check if the user is unauthorized and logged in, then clear preferences and cached data.
+    // This condition occurs when the user is marked as inactive from the admin panel,
+    if (!appConfigurationStore.isUserAuthorized && appStore.isLoggedIn) {
+      _slog('user unauthorized -> clearPreferences');
+      await clearPreferences();
+
+      // Clear cached wallet history if it exists and is not empty
+      if (cachedWalletHistoryList != null &&
+          cachedWalletHistoryList!.isNotEmpty) {
+        cachedWalletHistoryList!.clear();
+      }
+    }
+
+    if (!mounted) return;
+
+    if (appConfigurationStore.maintenanceModeStatus) {
+      _slog('navigate -> MaintenanceModeScreen');
+      MaintenanceModeScreen().launch(context,
+          isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      DeepLinkCoordinator.consumeInitialUriIfAny();
+    } else {
+      if (getBoolAsync(IS_FIRST_TIME, defaultValue: true)) {
+        _slog('navigate -> WalkThroughScreen');
+        WalkThroughScreen().launch(context,
             isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
         DeepLinkCoordinator.consumeInitialUriIfAny();
       } else {
-        if (getBoolAsync(IS_FIRST_TIME, defaultValue: true)) {
-          _slog('navigate -> WalkThroughScreen');
-          WalkThroughScreen().launch(context,
-              isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-          DeepLinkCoordinator.consumeInitialUriIfAny();
-        } else {
-          _slog('navigate -> DashboardScreen(initialTabIndex:0)');
-          DashboardScreen(initialTabIndex: 0).launch(context,
-              isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-          DeepLinkCoordinator.consumeInitialUriIfAny();
-        }
+        _slog('navigate -> DashboardScreen(initialTabIndex:0)');
+        DashboardScreen(initialTabIndex: 0).launch(context,
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        DeepLinkCoordinator.consumeInitialUriIfAny();
       }
     }
   }
 
   @override
   void dispose() {
+    _lateConfigTimer?.cancel();
     super.dispose();
   }
 

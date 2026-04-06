@@ -6,6 +6,7 @@ import 'package:fiksOpp/screens/dashboard/fragment/booking_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/dashboard_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/profile_fragment.dart';
 import 'package:fiksOpp/screens/jobRequest/my_post_request_list_screen.dart';
+import 'package:fiksOpp/screens/service/search_service_screen.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/constant.dart';
@@ -192,11 +193,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     onTap: () async {
-                      locationWiseService(context, () {
-                        appStore.setLoading(true);
-
-                        init();
-                        setState(() {});
+                      SearchServiceScreen().launch(context).then((value) {
+                        setStatusBarColor(Colors.transparent,
+                            statusBarIconBrightness: Brightness.dark);
                       });
                     },
                   ).cornerRadiusWithClipRRect(28);

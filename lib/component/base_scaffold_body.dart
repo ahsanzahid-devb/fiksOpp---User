@@ -13,19 +13,29 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: context.width(),
-      height: context.height(),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          child,
-          if (showLoader)
-            Observer(
-                builder: (_) =>
-                    LoaderWidget().center().visible(appStore.isLoading)),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final w = constraints.maxWidth.isFinite && constraints.maxWidth > 0
+            ? constraints.maxWidth
+            : context.width();
+        final h = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+            ? constraints.maxHeight
+            : context.height();
+        return SizedBox(
+          width: w,
+          height: h,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              child,
+              if (showLoader)
+                Observer(
+                    builder: (_) =>
+                        LoaderWidget().center().visible(appStore.isLoading)),
+            ],
+          ),
+        );
+      },
     );
   }
 }

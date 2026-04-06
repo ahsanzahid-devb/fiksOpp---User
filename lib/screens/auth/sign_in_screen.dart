@@ -518,12 +518,19 @@ class _SignInScreenState extends State<SignInScreen> {
             key: formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: SingleChildScrollView(
+              padding: widget.isFromDashboard.validate()
+                  ? const EdgeInsets.only(bottom: 24)
+                  : EdgeInsets.zero,
               child: Observer(builder: (context) {
                 return ResponsiveContainer(
+                  safeAreaTop: widget.isFromDashboard.validate() ? false : true,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      (context.height() * 0.12).toInt().height,
+                      (widget.isFromDashboard.validate()
+                              ? 24
+                              : (context.height() * 0.12).toInt())
+                          .height,
                       _buildTopWidget(),
                       AutofillGroup(
                         child: Column(
@@ -532,13 +539,15 @@ class _SignInScreenState extends State<SignInScreen> {
                               textFieldType: TextFieldType.EMAIL_ENHANCED,
                               controller: emailCont,
                               focus: emailFocus,
-                              nextFocus: passwordFocus,
                               errorThisFieldRequired: language.requiredText,
                               decoration: inputDecoration(context,
                                   labelText: language.hintEmailTxt),
                               suffix:
                                   ic_message.iconImage(size: 10).paddingAll(14),
                               autoFillHints: [AutofillHints.email],
+                              onFieldSubmitted: (_) {
+                                passwordFocus.requestFocus();
+                              },
                             ),
                             16.height,
                             AppTextField(

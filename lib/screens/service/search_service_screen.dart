@@ -44,9 +44,12 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
     filterStore = FilterStore();
     if (widget.search.isNotEmpty) {
       searchCont.text = widget.search;
-      page = 1;
+    }
+    page = 1;
+    final hasFeatured = widget.featuredList.validate().isNotEmpty;
+    // Empty dashboard services: load full list immediately. With featured data, show that until user searches.
+    if (!hasFeatured || widget.search.isNotEmpty) {
       appStore.setLoading(true);
-
       fetchAllServiceData();
     }
   }
@@ -83,8 +86,11 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
         filterStore.isPriceMin.isNotEmpty;
   }
 
+  /// Featured strip only when we actually have featured data; otherwise show API list (empty search = all).
   bool get showRecommended {
-    return searchCont.text.isEmpty && !isFilterApplied;
+    return searchCont.text.isEmpty &&
+        !isFilterApplied &&
+        widget.featuredList.validate().isNotEmpty;
   }
 
   @override
@@ -124,8 +130,9 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
                           page = 1;
                           searchCont.clear();
                           filterStore.setSearch('');
-
                           serviceList = [];
+                          appStore.setLoading(true);
+                          fetchAllServiceData();
                           setState(() {});
                         },
                       ).visible(searchCont.text.isNotEmpty),

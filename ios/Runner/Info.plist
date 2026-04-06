@@ -80,6 +80,14 @@
 	<string>We need access to your location to find nearby service providers and show your location on the map.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need access to your location to find nearby service providers and show your location on the map.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>itms-apps</string>
+		<string>itms</string>
+		<string>itunes</string>
+		<string>https</string>
+		<string>http</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

@@ -80,6 +80,15 @@ void launchCall(String? url) {
   }
 }
 
+/// Apple public store URLs must include a numeric app id. Values like
+/// `https://apps.apple.com` from the admin API open the App Store home, not this app.
+String? _appleAppStoreListingId(String raw) {
+  final m1 = RegExp(r'id(\d+)').firstMatch(raw);
+  if (m1 != null) return m1.group(1);
+  final m2 = RegExp(r'[?&]id=(\d+)').firstMatch(raw);
+  return m2?.group(1);
+}
+
 bool _isValidAppStoreListingUrl(String raw) {
   final u = Uri.tryParse(raw.trim());
   if (u == null || u.host.isEmpty) return false;
@@ -87,36 +96,84 @@ bool _isValidAppStoreListingUrl(String raw) {
   // Admin console links are not valid for "open in App Store" from the device.
   if (host.contains('appstoreconnect.apple.com')) return false;
   if (isIOS) {
-    return host.contains('apps.apple.com') || host.contains('itunes.apple.com');
+    if (!host.contains('apps.apple.com') &&
+        !host.contains('itunes.apple.com')) {
+      return false;
+    }
+    return _appleAppStoreListingId(raw) != null;
   }
-  return host == 'play.google.com' || host.endsWith('.play.google.com');
+  if (host != 'play.google.com' && !host.endsWith('.play.google.com')) {
+    return false;
+  }
+  return u.path.contains('/details') &&
+      (u.queryParameters['id']?.isNotEmpty ?? false);
+}
+
+/// iOS: `itms-apps://itunes.apple.com/app/id…` is the most reliable deep link into the App Store app.
+/// `itms-apps://apps.apple.com/app/…` can be handed to Safari on some OS versions and shows "invalid address".
+String iosAppStoreNativeOpenUrl(String webUrl) {
+  final id = _appleAppStoreListingId(webUrl);
+  if (id != null) {
+    return 'itms-apps://itunes.apple.com/app/id$id';
+  }
+  return webUrl;
+}
+
+/// Short https form; on device iOS usually resolves this to the App Store app (not a Safari page).
+String _iosAppStoreHttpsAppLink(String id) =>
+    'https://apps.apple.com/app/id$id';
+
+Future<bool> _launchExternalUri(Uri uri) async {
+  try {
+    return await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e, st) {
+    log('launchUrl failed: $e\n$st');
+    return false;
+  }
 }
 
 /// Opens Play Store / App Store listing for the customer app (from app configuration or package fallback).
 Future<void> openCustomerAppStoreListing() async {
   try {
     if (isIOS) {
-      final u = getStringAsync(CUSTOMER_APP_STORE_URL).trim();
-      if (u.isNotEmpty && _isValidAppStoreListingUrl(u)) {
-        await commonLaunchUrl(u, launchMode: LaunchMode.externalApplication);
-        return;
+      final fromApi = getStringAsync(CUSTOMER_APP_STORE_URL).trim();
+      final String listingForId = (fromApi.isNotEmpty &&
+              _isValidAppStoreListingUrl(fromApi))
+          ? fromApi
+          : (CUSTOMER_APP_APP_STORE_LISTING.isNotEmpty
+              ? CUSTOMER_APP_APP_STORE_LISTING
+              : 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}');
+
+      final id = _appleAppStoreListingId(listingForId) ??
+          CUSTOMER_APP_APP_STORE_NUMERIC_ID;
+
+      // Prefer native App Store (never pass itms-apps into Safari — it shows "invalid address").
+      final storeUris = <Uri>[
+        Uri.parse('itms-apps://itunes.apple.com/app/id$id'),
+        Uri.parse('itms-apps://apps.apple.com/app/id$id'),
+        Uri.parse('itms://itunes.apple.com/app/id$id'),
+      ];
+      for (final u in storeUris) {
+        if (await _launchExternalUri(u)) return;
       }
-    } else {
-      final u = getStringAsync(CUSTOMER_PLAY_STORE_URL).trim();
-      if (u.isNotEmpty && _isValidAppStoreListingUrl(u)) {
-        await commonLaunchUrl(u, launchMode: LaunchMode.externalApplication);
-        return;
-      }
+      final httpsFallback = CUSTOMER_APP_APP_STORE_LISTING.isNotEmpty
+          ? CUSTOMER_APP_APP_STORE_LISTING
+          : _iosAppStoreHttpsAppLink(id);
+      if (await _launchExternalUri(Uri.parse(httpsFallback))) return;
+      toast(language.invalidURL);
+      return;
+    }
+
+    final u = getStringAsync(CUSTOMER_PLAY_STORE_URL).trim();
+    if (u.isNotEmpty && _isValidAppStoreListingUrl(u)) {
+      if (await _launchExternalUri(Uri.parse(u))) return;
     }
     final pkg = await getPackageName();
-    final fallback = isIOS
-        ? (CUSTOMER_APP_APP_STORE_LISTING.isNotEmpty
-            ? CUSTOMER_APP_APP_STORE_LISTING
-            : 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}')
-        : (CUSTOMER_APP_PLAY_STORE_LISTING.isNotEmpty
-            ? CUSTOMER_APP_PLAY_STORE_LISTING
-            : 'https://play.google.com/store/apps/details?id=$pkg');
-    await commonLaunchUrl(fallback, launchMode: LaunchMode.externalApplication);
+    final playListing = CUSTOMER_APP_PLAY_STORE_LISTING.isNotEmpty
+        ? CUSTOMER_APP_PLAY_STORE_LISTING
+        : 'https://play.google.com/store/apps/details?id=$pkg';
+    if (await _launchExternalUri(Uri.parse(playListing))) return;
+    toast(language.invalidURL);
   } catch (e) {
     toast(e.toString());
   }

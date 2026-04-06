@@ -24,6 +24,10 @@ const PROVIDER_PACKAGE_NAME = 'fiksopp.inoor.buzz.provider';
 const CUSTOMER_APP_PLAY_STORE_LISTING =
     'https://play.google.com/store/apps/details?id=buzz.inoor.fiksopp';
 
+/// Numeric App Store id (digits only). Used to build `itms-apps://` links so Rate Us
+/// opens the native App Store app instead of Safari.
+const CUSTOMER_APP_APP_STORE_NUMERIC_ID = '6758296889';
+
 /// Public App Store product page (not App Store Connect). Used when Rate Us runs
 /// and the API `appstore_url` is missing or invalid.
 /// Live listing: https://apps.apple.com/us/app/fiksopp/id6758296889

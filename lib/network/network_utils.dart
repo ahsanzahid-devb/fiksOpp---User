@@ -98,9 +98,9 @@ Future<Response> buildHttpResponse(
 
 Future handleResponse(Response response,
     {HttpResponseType httpResponseType = HttpResponseType.JSON}) async {
-  if (!await isNetworkAvailable()) {
-    throw errorInternetNotAvailable;
-  }
+  // Do not gate on isNetworkAvailable() here: we already received [response].
+  // connectivity-based checks often falsely report "offline" on iOS Simulator
+  // while HTTP works, which broke login/API handling with a misleading message.
   if (response.statusCode == 400) {
     if (response.body.isJson()) {
       var body = jsonDecode(response.body);

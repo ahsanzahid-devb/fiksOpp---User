@@ -94,6 +94,8 @@ class ProfileFragmentState extends State<ProfileFragment> {
           return Stack(
             children: [
               ResponsiveContainer(
+                // Body is already below the app bar; extra SafeArea top looked like a white gap.
+                safeAreaTop: false,
                 padding: EdgeInsets.only(bottom: 32),
                 maxWidth: 700,
                 child: AnimatedScrollView(
@@ -198,7 +200,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             ).visible(appConfigurationStore.isEnableUserWallet),
                           ],
                         ),
-                      ).paddingOnly(left: 16, right: 16, top: 24),
+                      ).paddingOnly(left: 16, right: 16, top: 16),
                     Observer(builder: (context) {
                       return SettingSection(
                         title: Text(language.lblGENERAL,
@@ -224,7 +226,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                               title: language.walletHistory,
                               titleTextStyle: boldTextStyle(size: 12),
                               padding:
-                                  EdgeInsets.only(top: 20, left: 16, right: 16),
+                                  EdgeInsets.only(top: 16, left: 16, right: 16),
                               trailing: trailing,
                               onTap: () {
                                 UserWalletHistoryScreen().launch(context);
@@ -244,7 +246,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                               titleTextStyle: boldTextStyle(size: 12),
                               trailing: trailing,
                               padding:
-                                  EdgeInsets.only(top: 20, left: 16, right: 16),
+                                  EdgeInsets.only(top: 16, left: 16, right: 16),
                               onTap: () {
                                 BankDetails().launch(context);
                               },
@@ -256,7 +258,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           //   title: language.lblFavorite,
                           //   titleTextStyle: boldTextStyle(size: 12),
                           //   trailing: trailing,
-                          //   padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                          //   padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                           //   onTap: () {
                           //     doIfLoggedIn(context, () {
                           //       FavouriteServiceScreen().launch(context);
@@ -269,7 +271,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           //   title: language.favouriteProvider,
                           //   titleTextStyle: boldTextStyle(size: 12),
                           //   trailing: trailing,
-                          //   padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                          //   padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                           //   onTap: () {
                           //     doIfLoggedIn(context, () {
                           //       FavouriteProviderScreen().launch(context);
@@ -290,7 +292,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                               titleTextStyle: boldTextStyle(size: 12),
                               trailing: trailing,
                               padding:
-                                  EdgeInsets.only(top: 20, left: 16, right: 16),
+                                  EdgeInsets.only(top: 16, left: 16, right: 16),
                               onTap: () {
                                 BlogListScreen().launch(context);
                               },
@@ -308,10 +310,8 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             titleTextStyle: boldTextStyle(size: 12),
                             trailing: trailing,
                             padding:
-                                EdgeInsets.only(top: 20, left: 16, right: 16),
-                            onTap: () async {
-                              await openCustomerAppStoreListing();
-                            },
+                                EdgeInsets.only(top: 16, left: 16, right: 16),
+                            onTap: () => openCustomerAppStoreListing(),
                           ),
                           SettingItemWidget(
                             decoration: boxDecorationDefault(
@@ -326,7 +326,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             padding: appStore.isLoggedIn
                                 ? EdgeInsets.only(
                                     bottom: appStore.isLoggedIn ? 0 : 16,
-                                    top: 20,
+                                    top: 16,
                                     left: 16,
                                     right: 16)
                                 : EdgeInsets.only(
@@ -395,11 +395,11 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           title: language.lblAboutApp,
                           titleTextStyle: boldTextStyle(size: 12),
                           padding:
-                              EdgeInsets.only(top: 20, left: 16, right: 16),
+                              EdgeInsets.only(top: 16, left: 16, right: 16),
                           onTap: () {
                             AboutScreen().launch(context);
                           },
-                        ).visible(rolesAndPermissionStore.aboutUs),
+                        ),
                         SettingItemWidget(
                           decoration: boxDecorationDefault(
                               color: context.cardColor,
@@ -410,7 +410,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           title: language.privacyPolicy,
                           titleTextStyle: boldTextStyle(size: 12),
                           padding:
-                              EdgeInsets.only(top: 20, left: 16, right: 16),
+                              EdgeInsets.only(top: 16, left: 16, right: 16),
                           onTap: () {
                             checkIfLink(
                                 context, appConfigurationStore.privacyPolicy,
@@ -427,7 +427,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           title: language.termsCondition,
                           titleTextStyle: boldTextStyle(size: 12),
                           padding:
-                              EdgeInsets.only(top: 20, left: 16, right: 16),
+                              EdgeInsets.only(top: 16, left: 16, right: 16),
                           onTap: () {
                             checkIfLink(
                                 context, appConfigurationStore.termConditions,
@@ -443,7 +443,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           title: language.refundPolicy,
                           titleTextStyle: boldTextStyle(size: 12),
                           padding:
-                              EdgeInsets.only(top: 20, left: 16, right: 16),
+                              EdgeInsets.only(top: 16, left: 16, right: 16),
                           onTap: () {
                             checkIfLink(
                                 context, appConfigurationStore.refundPolicy,
@@ -463,7 +463,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             title: language.helpSupport,
                             titleTextStyle: boldTextStyle(size: 12),
                             padding:
-                                EdgeInsets.only(top: 20, left: 16, right: 16),
+                                EdgeInsets.only(top: 16, left: 16, right: 16),
                             onTap: () {
                               if (appConfigurationStore
                                   .helpAndSupport.isNotEmpty) {
@@ -479,58 +479,60 @@ class ProfileFragmentState extends State<ProfileFragment> {
                               }
                             },
                           ),
-                        if (appConfigurationStore.helplineNumber.isNotEmpty)
-                          SettingItemWidget(
-                            decoration: !appStore.isLoggedIn
-                                ? boxDecorationDefault(
-                                    color: context.cardColor,
-                                    borderRadius:
-                                        BorderRadiusDirectional.vertical(
-                                      bottom: Radius.circular(0),
-                                    ),
-                                  )
-                                : boxDecorationDefault(
-                                    color: context.cardColor,
-                                    borderRadius:
-                                        BorderRadiusDirectional.vertical(
-                                      bottom: Radius.circular(16),
-                                    ),
-                                  ),
-                            leading:
-                                ic_calling.iconImage(size: SETTING_ICON_SIZE),
-                            title: language.lblHelplineNumber,
-                            titleTextStyle: boldTextStyle(size: 12),
-                            padding: EdgeInsets.only(
-                              bottom: appStore.isLoggedIn ? 16 : 0,
-                              right: 16,
-                              left: 16,
-                              top: 20,
-                            ),
-                            highlightColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            onTap: () {
-                              launchCall(appConfigurationStore.helplineNumber);
-                            },
-                          ),
+
+                        // if (appConfigurationStore.helplineNumber.isNotEmpty)
                         SettingItemWidget(
                           decoration: !appStore.isLoggedIn
                               ? boxDecorationDefault(
                                   color: context.cardColor,
                                   borderRadius:
                                       BorderRadiusDirectional.vertical(
-                                          bottom: Radius.circular(16)))
-                              : boxDecorationDefault(color: context.cardColor),
-                          leading: Icon(MaterialCommunityIcons.logout,
-                              color: context.iconColor,
-                              size: SETTING_ICON_SIZE),
-                          title: language.signIn,
+                                    bottom: Radius.circular(0),
+                                  ),
+                                )
+                              : boxDecorationDefault(
+                                  color: context.cardColor,
+                                  borderRadius:
+                                      BorderRadiusDirectional.vertical(
+                                    bottom: Radius.circular(16),
+                                  ),
+                                ),
+                          leading:
+                              ic_calling.iconImage(size: SETTING_ICON_SIZE),
+                          title: language.lblHelplineNumber,
                           titleTextStyle: boldTextStyle(size: 12),
+                          padding: EdgeInsets.only(
+                            bottom: appStore.isLoggedIn ? 16 : 0,
+                            right: 16,
+                            left: 16,
+                            top: 16,
+                          ),
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           onTap: () {
-                            SignInScreen().launch(context);
+                            launchCall(appConfigurationStore.helplineNumber);
                           },
                         ),
+                        // SettingItemWidget(
+                        //   decoration: !appStore.isLoggedIn
+                        //       ? boxDecorationDefault(
+                        //           color: context.cardColor,
+                        //           borderRadius:
+                        //               BorderRadiusDirectional.vertical(
+                        //                   bottom: Radius.circular(16)))
+                        //       : boxDecorationDefault(color: context.cardColor),
+                        //   leading: Icon(MaterialCommunityIcons.logout,
+                        //       color: context.iconColor,
+                        //       size: SETTING_ICON_SIZE),
+                        //   title: language.signIn,
+                        //   titleTextStyle: boldTextStyle(size: 12),
+                        //   onTap: () {
+                        //     SignInScreen().launch(context);
+                        //   },
+                        // ),
                       ],
                     ).paddingSymmetric(horizontal: 16),
+                    SizedBox(height: 16),
                     SettingSection(
                       title: Text(language.lblDangerZone.toUpperCase(),
                           style: boldTextStyle(color: redColor, size: 14)),
@@ -593,7 +595,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                             );
                           },
                         ),
-                        64.height,
+                        16.height,
                         TextButton(
                           child: Text(language.logout,
                               style:
@@ -603,10 +605,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           },
                         ).center(),
                       ],
-                    )
-                        .visible(appStore.isLoggedIn)
-                        .paddingOnly(left: 16, right: 16, top: 16),
-                    30.height.visible(!appStore.isLoggedIn),
+                    ).paddingOnly(left: 16, right: 16, top: 8),
                     SnapHelperWidget<PackageInfoData>(
                       future: getPackageInfo(),
                       onSuccess: (data) {

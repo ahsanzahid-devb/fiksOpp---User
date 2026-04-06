@@ -134,21 +134,21 @@ class _DashboardFragment3State extends State<DashboardFragment3> {
                       //         snap.promotionalBanner.validate(),
                       //   ).paddingTop(16),
                       // 16.height,
-                      ServiceListDashboardComponent3(
-                          serviceList: snap.service.validate(),
-                          serviceListTitle: language.popularServices),
-                      14.height,
-                      ServiceListDashboardComponent3(
-                        serviceList: snap.featuredServices.validate(),
-                        serviceListTitle: language.featuredServices,
-                        isFeatured: true,
-                      ),
+                      // ServiceListDashboardComponent3(
+                      //     serviceList: snap.service.validate(),
+                      //     serviceListTitle: language.popularServices),
+                      // 14.height,
+                      // ServiceListDashboardComponent3(
+                      //   serviceList: snap.featuredServices.validate(),
+                      //   serviceListTitle: language.featuredServices,
+                      //   isFeatured: true,
+                      // ),
                       // 16.height,
                       if (appConfigurationStore.jobRequestStatus)
                         JobRequestDashboardComponent3(),
                       UpcomingBookingDashboardComponent3(
                               upcomingBookingData: snap.upcomingData)
-                          .paddingTop(16),
+                          .paddingTop(0),
                     ],
                   ),
                 );

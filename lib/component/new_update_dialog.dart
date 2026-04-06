@@ -78,7 +78,10 @@ class NewUpdateDialog extends StatelessWidget {
                             exit(0);
                           }
                         } else if (isIOS) {
-                          await launchUrl(Uri.parse(IOS_LINK_FOR_USER));
+                          await commonLaunchUrl(
+                            iosAppStoreNativeOpenUrl(IOS_LINK_FOR_USER),
+                            launchMode: LaunchMode.externalApplication,
+                          );
                           if (canClose) {
                             finish(context);
                           } else {

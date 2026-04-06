@@ -8,6 +8,7 @@ import 'package:nb_utils/nb_utils.dart';
 
 import '../../../../model/service_data_model.dart';
 import '../../../notification/notification_screen.dart';
+import '../../../service/search_service_screen.dart';
 
 class AppbarDashboardComponent3 extends StatefulWidget {
   final List<ServiceData> featuredList;
@@ -71,14 +72,17 @@ class _AppbarDashboardComponent3State extends State<AppbarDashboardComponent3> {
               borderRadius: radius(28),
             ),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // 🔇 Search icon commented out (no space left behind)
                 // ic_search.iconImage(size: 18).onTap(() {
-                //   SearchServiceScreen(featuredList: widget.featuredList).launch(context).then((value) {
-                //     setStatusBarColor(Colors.transparent, statusBarIconBrightness: Brightness.dark);
+                //   SearchServiceScreen(featuredList: widget.featuredList)
+                //       .launch(context)
+                //       .then((value) {
+                //     setStatusBarColor(Colors.transparent,
+                //         statusBarIconBrightness: Brightness.dark);
                 //   });
                 // }),
-
+                // if (appStore.isLoggedIn) 12.width,
                 if (appStore.isLoggedIn)
                   Stack(
                     clipBehavior: Clip.none,

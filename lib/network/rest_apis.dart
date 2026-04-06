@@ -519,6 +519,18 @@ Future<List<ServiceData>> searchServiceAPI({
     finalLongitude = getDoubleAsync(LONGITUDE).toString();
   }
 
+  // Use last saved coordinates when "location off" but prefs still hold a pin (empty lat breaks many APIs).
+  if (finalLatitude.isEmpty || finalLongitude.isEmpty) {
+    final lat = getDoubleAsync(LATITUDE);
+    final lng = getDoubleAsync(LONGITUDE);
+    if (lat != 0 && lng != 0) {
+      finalLatitude = lat.toString();
+      finalLongitude = lng.toString();
+    }
+  }
+  if (finalLatitude.isEmpty) finalLatitude = '0';
+  if (finalLongitude.isEmpty) finalLongitude = '0';
+
   // Construct query parameters
   String categoryIds = categoryId.isNotEmpty ? 'category_id=$categoryId&' : '';
   String searchPara = search.isNotEmpty ? 'search=$search&' : '';

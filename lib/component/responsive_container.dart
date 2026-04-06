@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-/// A simple responsive wrapper that centers content and constrains
-/// its maximum width on larger screens (like iPads), so that forms
-/// and lists don't stretch edge-to-edge.
 class ResponsiveContainer extends StatelessWidget {
   final Widget child;
   final double? maxWidth;
   final EdgeInsetsGeometry? padding;
+
   /// When false, content can extend under the status bar (caller handles top inset).
   final bool safeAreaTop;
 
@@ -32,13 +30,28 @@ class ResponsiveContainer extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: effectiveMaxWidth),
           child: Padding(
-            padding:
-                padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: safeAreaTop ? child : SizedBox.expand(child: child),
+            padding: padding ??
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: safeAreaTop
+                ? child
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      // SizedBox.expand breaks inside SingleChildScrollView (unbounded height).
+                      if (!constraints.maxHeight.isFinite) {
+                        return child;
+                      }
+                      return SizedBox(
+                        width: constraints.maxWidth.isFinite
+                            ? constraints.maxWidth
+                            : double.infinity,
+                        height: constraints.maxHeight,
+                        child: child,
+                      );
+                    },
+                  ),
           ),
         ),
       ),
     );
   }
 }
-
