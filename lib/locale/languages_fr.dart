@@ -2077,7 +2077,7 @@ class LanguageFr extends BaseLanguage {
   String get asHandyman => 'En tant que bricoleur';
 
   @override
-  String get passwordLengthShouldBe => 'La longueur du mot de passe doit être comprise entre 8 et 12 caractères.';
+  String get passwordLengthShouldBe => 'La longueur du mot de passe doit être comprise entre 8 et 14 caractères.';
 
   @override
   String get cash => 'Espèces';

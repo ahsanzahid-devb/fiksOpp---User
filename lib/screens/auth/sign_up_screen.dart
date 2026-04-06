@@ -666,7 +666,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return language.requiredText;
-                    } else if (val.length < 8 || val.length > 12) {
+                    } else if (val.length < PASSWORD_MIN_LENGTH ||
+                        val.length > PASSWORD_MAX_LENGTH) {
                       return language.passwordLengthShouldBe;
                     }
                     return null;

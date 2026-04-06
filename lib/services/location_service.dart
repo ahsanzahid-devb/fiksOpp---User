@@ -19,7 +19,6 @@ Future<Position> getUserLocationPosition() async {
   }
 
   if (permission == LocationPermission.deniedForever) {
-    await Geolocator.openAppSettings();
     throw '${language.lblLocationPermissionDeniedPermanently}';
   }
 

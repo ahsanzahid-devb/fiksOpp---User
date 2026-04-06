@@ -226,7 +226,7 @@ class LanguageNo extends LanguageEn {
   String get invalidEmail => 'Ugyldig e-postadresse';
 
   @override
-  String get passwordLength => 'Passordet må være minst 6 tegn';
+  String get passwordLength => 'Passordet må være mellom 8 og 14 tegn';
 
   @override
   String get retry => 'Prøv igjen';
@@ -1650,7 +1650,8 @@ class LanguageNo extends LanguageEn {
   @override
   String get asHandyman => 'som håndverker';
   @override
-  String get passwordLengthShouldBe => 'Passordet må være minst 6 tegn';
+  String get passwordLengthShouldBe =>
+      'Passordet må være mellom 8 og 14 tegn.';
   @override
   String get cash => 'Kontant';
   @override

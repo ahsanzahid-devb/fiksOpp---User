@@ -84,6 +84,8 @@ bool _isValidAppStoreListingUrl(String raw) {
   final u = Uri.tryParse(raw.trim());
   if (u == null || u.host.isEmpty) return false;
   final host = u.host.toLowerCase();
+  // Admin console links are not valid for "open in App Store" from the device.
+  if (host.contains('appstoreconnect.apple.com')) return false;
   if (isIOS) {
     return host.contains('apps.apple.com') || host.contains('itunes.apple.com');
   }
@@ -108,7 +110,9 @@ Future<void> openCustomerAppStoreListing() async {
     }
     final pkg = await getPackageName();
     final fallback = isIOS
-        ? 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}'
+        ? (CUSTOMER_APP_APP_STORE_LISTING.isNotEmpty
+            ? CUSTOMER_APP_APP_STORE_LISTING
+            : 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}')
         : (CUSTOMER_APP_PLAY_STORE_LISTING.isNotEmpty
             ? CUSTOMER_APP_PLAY_STORE_LISTING
             : 'https://play.google.com/store/apps/details?id=$pkg');
@@ -408,36 +412,38 @@ Future<bool> removeToWishList({required int serviceId}) async {
 }
 
 void locationWiseService(BuildContext context, VoidCallback onTap) async {
-  Permissions.cameraFilesAndLocationPermissionsGranted().then((value) async {
-    await setValue(PERMISSION_STATUS, value);
-
-    if (value) {
-      bool? res = await showInDialog(
-        context,
-        contentPadding: EdgeInsets.zero,
-        builder: (p0) {
-          return AppCommonDialog(
-            title: language.lblAlert,
-            child: LocationServiceDialog(),
-          );
-        },
-      );
-
-      if (res ?? false) {
-        appStore.setLoading(true);
-
-        await setValue(PERMISSION_STATUS, value);
-        await getUserLocation().then((value) async {
-          // Location was fetched successfully; keep location mode enabled.
-          await appStore.setCurrentLocation(true);
-          appStore.setLoading(false);
-        }).catchError((e) {
-          appStore.setLoading(false);
-          toast(e.toString(), print: true);
-        });
-
-        onTap.call();
+  Permissions.requestLocationWhenInUseForServices().then((value) async {
+    if (!value) {
+      if (await Permissions.isLocationPermanentlyDenied()) {
+        toast(language.lblLocationPermissionDeniedPermanently);
       }
+      return;
+    }
+
+    bool? res = await showInDialog(
+      context,
+      contentPadding: EdgeInsets.zero,
+      builder: (p0) {
+        return AppCommonDialog(
+          title: language.lblAlert,
+          child: LocationServiceDialog(),
+        );
+      },
+    );
+
+    if (res ?? false) {
+      appStore.setLoading(true);
+
+      await getUserLocation().then((value) async {
+        // Location was fetched successfully; keep location mode enabled.
+        await appStore.setCurrentLocation(true);
+        appStore.setLoading(false);
+      }).catchError((e) {
+        appStore.setLoading(false);
+        toast(e.toString(), print: true);
+      });
+
+      onTap.call();
     }
   }).catchError((e) {
     toast(e.toString(), print: true);
@@ -445,10 +451,24 @@ void locationWiseService(BuildContext context, VoidCallback onTap) async {
 }
 
 void location(BuildContext context, {VoidCallback? onRefresh}) async {
-  Permissions.cameraFilesAndLocationPermissionsGranted()
-      .then((permissionGranted) async {
-    await setValue(PERMISSION_STATUS, permissionGranted);
+  // Home is rebuilt each time the user returns from e.g. "All Services". Re-running
+  // Geolocator + permission checks every time can re-trigger iOS system UI. If we
+  // already have coords and When-In-Use access, only refresh dashboard data.
+  try {
+    if (appStore.isCurrentLocation &&
+        getDoubleAsync(LATITUDE) != 0 &&
+        getDoubleAsync(LONGITUDE) != 0 &&
+        await Geolocator.isLocationServiceEnabled() &&
+        await Permissions.hasLocationWhenInUseGranted()) {
+      onRefresh?.call();
+      return;
+    }
+  } catch (_) {
+    // Continue with full location flow below.
+  }
 
+  Permissions.requestLocationWhenInUseForServices()
+      .then((permissionGranted) async {
     if (permissionGranted) {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 

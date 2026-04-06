@@ -528,7 +528,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           onTap: () {
                             SignInScreen().launch(context);
                           },
-                        ).visible(!appStore.isLoggedIn),
+                        ),
                       ],
                     ).paddingSymmetric(horizontal: 16),
                     SettingSection(

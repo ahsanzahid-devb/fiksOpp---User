@@ -23,8 +23,7 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   await setValue(WEBSITE, data.website);
   appConfigurationStore.setInquiryEmail(
       data.inquiryEmail.validate(value: INQUIRY_SUPPORT_EMAIL));
-  appConfigurationStore
-      .setHelplineNumber(data.helplineNumber.validate(value: HELP_LINE_NUMBER));
+  appConfigurationStore.setHelplineNumber(data.helplineNumber.validate().trim());
   await setValue(DATE_FORMAT, getDateFormat(data.dateFormat.validate()));
   await setValue(TIME_FORMAT, getDisplayTimeFormat(data.timeFormat.validate()));
   await setValue(TIMEZONE, data.timeZone);

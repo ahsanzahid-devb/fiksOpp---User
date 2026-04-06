@@ -11,6 +11,11 @@ class CustomHeader {
 
 //region Common Configs
 const DEFAULT_FIREBASE_PASSWORD = '12345678';
+
+/// Sign-in, sign-up, reset password, change password — keep aligned with backend rules.
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 14;
+
 const DECIMAL_POINT = 2;
 const PER_PAGE_ITEM = 20;
 const PER_PAGE_CATEGORY_ITEM = 50;

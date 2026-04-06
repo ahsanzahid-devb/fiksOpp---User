@@ -100,7 +100,8 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return language.requiredText;
-                  } else if (val.length < 8 || val.length > 12) {
+                  } else if (val.length < PASSWORD_MIN_LENGTH ||
+                      val.length > PASSWORD_MAX_LENGTH) {
                     return language.passwordLengthShouldBe;
                   }
                   return null;
@@ -123,7 +124,8 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return language.requiredText;
-                  } else if (val.length < 8 || val.length > 12) {
+                  } else if (val.length < PASSWORD_MIN_LENGTH ||
+                      val.length > PASSWORD_MAX_LENGTH) {
                     return language.passwordLengthShouldBe;
                   }
                   return null;
@@ -142,7 +144,8 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 validator: (v) {
                   if (v == null || v.isEmpty) {
                     return errorThisFieldRequired;
-                  } else if (v.length < 8 || v.length > 12) {
+                  } else if (v.length < PASSWORD_MIN_LENGTH ||
+                      v.length > PASSWORD_MAX_LENGTH) {
                     return language.passwordLengthShouldBe;
                   } else if (newPasswordCont.text != v) {
                     return language.passwordNotMatch;

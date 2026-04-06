@@ -2141,7 +2141,7 @@ class LanguageAr extends BaseLanguage {
 
   @override
   String get passwordLengthShouldBe =>
-      'يجب أن يكون طول كلمة المرور من 8 إلى 12 حرفًا.';
+      'يجب أن يكون طول كلمة المرور من 8 إلى 14 حرفًا.';
 
   @override
   String get cash => 'نقدي';

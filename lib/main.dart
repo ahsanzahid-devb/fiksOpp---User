@@ -111,7 +111,7 @@ void main() async {
     }
   }
 
-  passwordLengthGlobal = 6;
+  passwordLengthGlobal = PASSWORD_MIN_LENGTH;
   appButtonBackgroundColorGlobal = primaryColor;
   defaultAppButtonTextColorGlobal = Colors.white;
   defaultRadius = 12;

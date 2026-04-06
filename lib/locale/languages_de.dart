@@ -2075,7 +2075,7 @@ String get lblNoServicesFound => "Keine Dienste in Ihrer Zone gefunden";
   String get asHandyman => 'Als Handwerker';
 
   @override
-  String get passwordLengthShouldBe => 'Die Länge des Passworts sollte 8 bis 12 Zeichen betragen.';
+  String get passwordLengthShouldBe => 'Die Länge des Passworts sollte 8 bis 14 Zeichen betragen.';
 
   @override
   String get cash => 'Kasse';

@@ -113,8 +113,8 @@ class _SetPasswordFromResetScreenState extends State<SetPasswordFromResetScreen>
                 isValidationRequired: true,
                 validator: (val) {
                   if (val == null || val.isEmpty) return language.requiredText;
-                  if (val.length < passwordLengthGlobal ||
-                      val.length > 12) {
+                  if (val.length < PASSWORD_MIN_LENGTH ||
+                      val.length > PASSWORD_MAX_LENGTH) {
                     return language.passwordLengthShouldBe;
                   }
                   return null;

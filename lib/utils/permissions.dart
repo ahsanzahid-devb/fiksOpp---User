@@ -5,65 +5,65 @@ import 'package:permission_handler_platform_interface/permission_handler_platfor
 import 'constant.dart';
 
 class Permissions {
-  static PermissionHandlerPlatform get _handler => PermissionHandlerPlatform.instance;
+  static PermissionHandlerPlatform get _handler =>
+      PermissionHandlerPlatform.instance;
+
+  /// iOS: [Permission.location] can tie into Always vs When-In-Use and confuse the
+  /// system dialog. Dashboard flows only need When-In-Use.
+  static Permission get _dashboardLocationPermission =>
+      isIOS ? Permission.locationWhenInUse : Permission.location;
+
+  static Future<bool> isLocationPermanentlyDenied() async {
+    return _dashboardLocationPermission.isPermanentlyDenied;
+  }
+
+  static Future<bool> hasLocationWhenInUseGranted() async {
+    return _dashboardLocationPermission.isGranted;
+  }
+
+  /// Location only — for dashboard / nearby services. Does **not** open system
+  /// Settings (avoids repeated redirects when Home tab is recreated).
+  static Future<bool> requestLocationWhenInUseForServices() async {
+    final perm = _dashboardLocationPermission;
+    final status = await perm.status;
+    if (status.isGranted) return true;
+    if (status.isPermanentlyDenied) return false;
+    final next = await perm.request();
+    return next.isGranted;
+  }
 
   static Future<bool> cameraFilesAndLocationPermissionsGranted() async {
     if (!getBoolAsync(PERMISSION_STATUS)) {
-      Map<Permission, PermissionStatus> cameraPermissionStatus = await _handler.requestPermissions(
-        [
-          Permission.camera,
-          Permission.location,
-          if (isIOS) Permission.locationAlways,
-          if (isIOS) Permission.locationWhenInUse,
-        ],
-      );
+      final Map<Permission, PermissionStatus> statuses =
+          await _handler.requestPermissions([
+        Permission.camera,
+        _dashboardLocationPermission,
+      ]);
 
-      bool checkedTrue = true;
-      cameraPermissionStatus.values.forEach((element) {
-        if (element == PermissionStatus.granted) {
-          checkedTrue = true;
-        } else if (element == PermissionStatus.permanentlyDenied) {
-          openAppSettings();
-          checkedTrue = false;
-        } else {
-          checkedTrue = false;
-        }
-      });
-
-      return checkedTrue;
+      final allGranted =
+          statuses.values.every((s) => s == PermissionStatus.granted);
+      return allGranted;
     }
 
     return true;
   }
 }
 
-/// Only for Location
+/// Only for Location (legacy); prefer [Permissions.requestLocationWhenInUseForServices].
 class LocationPermissions {
-  static PermissionHandlerPlatform get _handler => PermissionHandlerPlatform.instance;
+  static PermissionHandlerPlatform get _handler =>
+      PermissionHandlerPlatform.instance;
 
   static Future<bool> locationPermissionsGranted() async {
     if (!getBoolAsync(PERMISSION_STATUS)) {
-      Map<Permission, PermissionStatus> cameraPermissionStatus = await _handler.requestPermissions(
-        [
-          Permission.location,
-          if (isIOS) Permission.locationAlways,
-          if (isIOS) Permission.locationWhenInUse,
-        ],
-      );
+      final Map<Permission, PermissionStatus> statuses =
+          await _handler.requestPermissions([
+        Permissions._dashboardLocationPermission,
+      ]);
 
-      bool checkedTrue = true;
-      cameraPermissionStatus.values.forEach((element) {
-        if (element == PermissionStatus.granted) {
-          checkedTrue = true;
-        } else if (element == PermissionStatus.permanentlyDenied) {
-          openAppSettings();
-          checkedTrue = false;
-        } else {
-          checkedTrue = false;
-        }
-      });
-
-      return checkedTrue;
+      final allGranted =
+          statuses.values.every((s) => s == PermissionStatus.granted);
+      return allGranted;
     }
 
     return true;

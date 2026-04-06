@@ -24,9 +24,16 @@ const PROVIDER_PACKAGE_NAME = 'fiksopp.inoor.buzz.provider';
 const CUSTOMER_APP_PLAY_STORE_LISTING =
     'https://play.google.com/store/apps/details?id=buzz.inoor.fiksopp';
 
+/// Public App Store product page (not App Store Connect). Used when Rate Us runs
+/// and the API `appstore_url` is missing or invalid.
+/// Live listing: https://apps.apple.com/us/app/fiksopp/id6758296889
+const CUSTOMER_APP_APP_STORE_LISTING =
+    'https://apps.apple.com/us/app/fiksopp/id6758296889';
+
 const IOS_LINK_FOR_PARTNER = "";
 
-const IOS_LINK_FOR_USER = '';
+/// Force-update dialog on iOS (must be a public apps.apple.com URL, not App Store Connect).
+const IOS_LINK_FOR_USER = 'https://apps.apple.com/us/app/fiksopp/id6758296889';
 
 const DASHBOARD_AUTO_SLIDER_SECOND = 5;
 const OTP_TEXT_FIELD_LENGTH = 6;
@@ -36,9 +43,6 @@ const PRIVACY_POLICY_URL = '';
 const HELP_AND_SUPPORT_URL = '';
 const REFUND_POLICY_URL = '';
 const INQUIRY_SUPPORT_EMAIL = '';
-
-/// You can add help line number here for contact. It's demo number
-const HELP_LINE_NUMBER = '+15265897485';
 
 //Airtel Money Payments
 ///It Supports ["UGX", "NGN", "TZS", "KES", "RWF", "ZMW", "CFA", "XOF", "XAF", "CDF", "USD", "XAF", "SCR", "MGA", "MWK"]

@@ -2177,7 +2177,7 @@ class LanguageHi extends BaseLanguage {
 
   @override
   String get passwordLengthShouldBe =>
-      'पासवर्ड की लंबाई 8 से 12 अक्षर होनी चाहिए।';
+      'पासवर्ड की लंबाई 8 से 14 अक्षर होनी चाहिए।';
 
   @override
   String get cash => 'नकद';

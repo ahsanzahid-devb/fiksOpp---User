@@ -2171,7 +2171,7 @@ class LanguageEn extends BaseLanguage {
 
   @override
   String get passwordLengthShouldBe =>
-      'Password length should be 8 to 12 characters.';
+      'Password length should be 8 to 14 characters.';
 
   @override
   String get cash => "Cash";
