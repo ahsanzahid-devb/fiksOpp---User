@@ -28,9 +28,11 @@ import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/configs.dart';
 import 'package:fiksOpp/utils/constant.dart';
 import 'package:fiksOpp/utils/deep_link_handler.dart';
+import 'package:fiksOpp/utils/firebase_background_handler.dart' as fcm_bg;
 import 'package:fiksOpp/utils/firebase_messaging_utils.dart';
 import 'package:app_links/app_links.dart' as app_links;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +46,7 @@ import 'model/category_model.dart';
 import 'model/coupon_list_model.dart';
 import 'model/dashboard_model.dart';
 
-// Background FCM: implementation in utils/firebase_background_handler.dart (registered from initFirebaseMessaging).
+// Background FCM: handler in firebase_background_handler.dart; registered in main after Firebase.initializeApp.
 //region Mobx Stores
 AppStore appStore = AppStore();
 FilterStore filterStore = FilterStore();
@@ -99,7 +101,10 @@ void main() async {
 
   try {
     await Firebase.initializeApp();
-    initFirebaseMessaging();
+    // Must be registered before runApp (same isolate as main); do not gate on iOS permission.
+    FirebaseMessaging.onBackgroundMessage(
+        fcm_bg.firebaseMessagingBackgroundHandler);
+    await initFirebaseMessaging();
     if (kReleaseMode) {
       FlutterError.onError =
           FirebaseCrashlytics.instance.recordFlutterFatalError;

@@ -189,11 +189,19 @@ Future<void> logout(BuildContext context) async {
   return showInDialog(
     context,
     contentPadding: EdgeInsets.zero,
-    builder: (p0) {
+    builder: (dialogContext) {
+      // Do not use the outer [context] for layout here: during dialog transitions
+      // it may not be under MediaQuery, and context.width() throws.
+      final mq = MediaQuery.maybeOf(dialogContext);
+      final dialogWidth = mq?.size.width;
+      final imageWidth = (dialogWidth != null && dialogWidth.isFinite)
+          ? (dialogWidth - 32).clamp(200.0, 600.0)
+          : 280.0;
+
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(logout_image, width: context.width(), fit: BoxFit.cover),
+          Image.asset(logout_image, width: imageWidth, fit: BoxFit.cover),
           32.height,
           Text(language.lblLogoutTitle, style: boldTextStyle(size: 18)),
           16.height,
@@ -209,7 +217,7 @@ Future<void> logout(BuildContext context) async {
                 ),
                 child: Text(language.lblNo, style: boldTextStyle()),
                 onTap: () {
-                  finish(context);
+                  finish(dialogContext);
                 },
               ).expand(),
               16.width,
@@ -219,7 +227,7 @@ Future<void> logout(BuildContext context) async {
                 color: primaryColor,
                 elevation: 0,
                 onTap: () async {
-                  finish(context);
+                  finish(dialogContext);
 
                   if (await isNetworkAvailable()) {
                     appStore.setLoading(true);

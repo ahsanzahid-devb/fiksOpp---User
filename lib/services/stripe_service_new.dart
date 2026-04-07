@@ -48,11 +48,12 @@ class StripeServiceNew {
     Stripe.merchantIdentifier = 'merchant.flutter.stripe.test';
     Stripe.publishableKey = stripePaymentPublishKey;
 
-    Stripe.instance.applySettings().catchError((e) {
+    try {
+      await Stripe.instance.applySettings();
+    } catch (e) {
       toast(e.toString(), print: true);
-
-      throw e.toString();
-    });
+      rethrow;
+    }
 
     // Ensure the Stripe URL has the correct endpoint
     // If it's just the base URL, append the payment_intents endpoint
@@ -67,7 +68,7 @@ class StripeServiceNew {
 
     request.bodyFields = {
       'amount': '${(totalAmount * 100).toInt()}',
-      'currency': await isIqonicProduct ? STRIPE_CURRENCY_CODE : '${appConfigurationStore.currencyCode}',
+      'currency': paymentGatewayCurrencyCode(),
       'description': 'Name: ${appStore.userFullName} - Email: ${appStore.userEmail}',
     };
 
@@ -101,8 +102,6 @@ class StripeServiceNew {
           googlePay: PaymentSheetGooglePay(merchantCountryCode: STRIPE_MERCHANT_COUNTRY_CODE, testEnv: paymentSetting.isTest == 1),
           merchantDisplayName: APP_NAME,
           customerId: appStore.userId.toString(),
-          // customerEphemeralKeySecret: isAndroid ? res.id.validate() : null,
-          setupIntentClientSecret: res.clientSecret.validate(),
           billingDetails: BillingDetails(name: appStore.userFullName, email: appStore.userEmail),
         );
 
@@ -117,7 +116,16 @@ class StripeServiceNew {
         appStore.setLoading(false);
         final errorBody = response.body;
         log('Stripe API Error: $errorBody');
-        throw errorBody.isNotEmpty ? errorBody : errorSomethingWentWrong;
+        String message = errorBody.isNotEmpty ? errorBody : errorSomethingWentWrong;
+        try {
+          final decoded = jsonDecode(errorBody);
+          if (decoded is Map &&
+              decoded['error'] is Map &&
+              decoded['error']['message'] is String) {
+            message = decoded['error']['message'] as String;
+          }
+        } catch (_) {}
+        throw message;
       }
     } catch (e) {
       appStore.setLoading(false);

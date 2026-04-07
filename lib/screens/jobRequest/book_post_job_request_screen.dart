@@ -114,44 +114,50 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
     });
   }
 
-  void _handleSetLocationClick() {
-    Permissions.cameraFilesAndLocationPermissionsGranted().then((value) async {
-      await setValue(PERMISSION_STATUS, value);
-
-      if (value) {
-        String? res = await MapScreen(
-                latitude: getDoubleAsync(LATITUDE),
-                latLong: getDoubleAsync(LONGITUDE))
-            .launch(context);
-
-        if (res != null) {
-          addressCont.text = res;
-          setState(() {});
-        }
+  Future<void> _handleSetLocationClick() async {
+    final ok = await Permissions.requestLocationWhenInUseForServices();
+    if (!ok) {
+      if (await Permissions.isLocationPermanentlyDenied()) {
+        toast(language.lblLocationPermissionDeniedPermanently);
+      } else {
+        toast(language.lblLocationPermissionDenied);
       }
-    });
+      return;
+    }
+    if (!mounted) return;
+    final res = await MapScreen(
+      latitude: getDoubleAsync(LATITUDE),
+      latLong: getDoubleAsync(LONGITUDE),
+    ).launch<String?>(context);
+
+    if (res != null) {
+      addressCont.text = res;
+      setState(() {});
+    }
   }
 
-  void _handleCurrentLocationClick() {
-    Permissions.cameraFilesAndLocationPermissionsGranted().then((value) async {
-      await setValue(PERMISSION_STATUS, value);
-
-      if (value) {
-        appStore.setLoading(true);
-
-        await getUserLocation().then((value) {
-          addressCont.text = value;
-          setState(() {});
-        }).catchError((e) {
-          log(e);
-          toast(e.toString());
-        });
-
-        appStore.setLoading(false);
+  Future<void> _handleCurrentLocationClick() async {
+    final ok = await Permissions.requestLocationWhenInUseForServices();
+    if (!ok) {
+      if (await Permissions.isLocationPermanentlyDenied()) {
+        toast(language.lblLocationPermissionDeniedPermanently);
+      } else {
+        toast(language.lblLocationPermissionDenied);
       }
-    }).catchError((e) {
-      //
-    });
+      return;
+    }
+    appStore.setLoading(true);
+    try {
+      final value = await getUserLocation();
+      if (!mounted) return;
+      addressCont.text = value;
+      setState(() {});
+    } catch (e) {
+      log(e);
+      toast(e.toString());
+    } finally {
+      if (mounted) appStore.setLoading(false);
+    }
   }
 
   void bookTheServiceClick() {

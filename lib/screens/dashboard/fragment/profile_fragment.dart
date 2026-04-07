@@ -4,7 +4,6 @@ import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/network/rest_apis.dart';
 import 'package:fiksOpp/screens/about_screen.dart';
 import 'package:fiksOpp/screens/auth/edit_profile_screen.dart';
-import 'package:fiksOpp/screens/auth/sign_in_screen.dart';
 import 'package:fiksOpp/screens/blog/view/blog_list_screen.dart';
 import 'package:fiksOpp/screens/dashboard/customer_rating_screen.dart';
 import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
@@ -19,7 +18,6 @@ import 'package:fiksOpp/utils/images.dart';
 import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../bankDetails/view/bank_details.dart';
@@ -451,68 +449,66 @@ class ProfileFragmentState extends State<ProfileFragment> {
                           },
                         ).visible(rolesAndPermissionStore
                             .refundAndCancellationPolicy),
-                        if (appConfigurationStore.helpAndSupport.isNotEmpty &&
-                            rolesAndPermissionStore.helpAndSupport)
-                          SettingItemWidget(
-                            decoration: boxDecorationDefault(
-                                color: context.cardColor,
-                                borderRadius: BorderRadiusDirectional.vertical(
-                                    bottom: Radius.circular(0))),
-                            leading: ic_helpAndSupport.iconImage(
-                                size: SETTING_ICON_SIZE),
-                            title: language.helpSupport,
-                            titleTextStyle: boldTextStyle(size: 12),
-                            padding:
-                                EdgeInsets.only(top: 16, left: 16, right: 16),
-                            onTap: () {
-                              if (appConfigurationStore
-                                  .helpAndSupport.isNotEmpty) {
-                                checkIfLink(context,
-                                    appConfigurationStore.helpAndSupport,
-                                    title: language.helpSupport);
-                              } else {
-                                checkIfLink(
-                                    context,
-                                    appConfigurationStore.inquiryEmail
-                                        .validate(),
-                                    title: language.helpSupport);
-                              }
-                            },
-                          ),
-
-                        // if (appConfigurationStore.helplineNumber.isNotEmpty)
-                        SettingItemWidget(
-                          decoration: !appStore.isLoggedIn
-                              ? boxDecorationDefault(
-                                  color: context.cardColor,
-                                  borderRadius:
-                                      BorderRadiusDirectional.vertical(
-                                    bottom: Radius.circular(0),
+                        Observer(builder: (context) {
+                          final helpline = effectiveSupportHelpline();
+                          final helpVisible =
+                              appConfigurationStore.helpAndSupport.isNotEmpty &&
+                                  rolesAndPermissionStore.helpAndSupport;
+                          return SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (helpVisible)
+                                  SettingItemWidget(
+                                    decoration: boxDecorationDefault(
+                                      color: context.cardColor,
+                                      borderRadius:
+                                          BorderRadiusDirectional.vertical(
+                                        bottom: Radius.circular(0),
+                                      ),
+                                    ),
+                                    leading: ic_helpAndSupport.iconImage(
+                                        size: SETTING_ICON_SIZE),
+                                    title: language.helpSupport,
+                                    titleTextStyle: boldTextStyle(size: 12),
+                                    padding: EdgeInsets.only(
+                                        top: 16, left: 16, right: 16),
+                                    onTap: () {
+                                      checkIfLink(context,
+                                          appConfigurationStore.helpAndSupport,
+                                          title: language.helpSupport);
+                                    },
                                   ),
-                                )
-                              : boxDecorationDefault(
-                                  color: context.cardColor,
-                                  borderRadius:
-                                      BorderRadiusDirectional.vertical(
-                                    bottom: Radius.circular(16),
+                                SettingItemWidget(
+                                  decoration: boxDecorationDefault(
+                                    color: context.cardColor,
+                                    borderRadius:
+                                        BorderRadiusDirectional.vertical(
+                                      bottom: Radius.circular(16),
+                                    ),
                                   ),
+                                  leading: ic_calling.iconImage(
+                                      size: SETTING_ICON_SIZE),
+                                  title: language.lblHelplineNumber,
+                                  subTitle: helpline,
+                                  titleTextStyle: boldTextStyle(size: 12),
+                                  subTitleTextStyle:
+                                      secondaryTextStyle(size: 12),
+                                  padding: EdgeInsets.only(
+                                    bottom: 16,
+                                    right: 16,
+                                    left: 16,
+                                    top: 16,
+                                  ),
+                                  highlightColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  onTap: () => launchCall(helpline),
                                 ),
-                          leading:
-                              ic_calling.iconImage(size: SETTING_ICON_SIZE),
-                          title: language.lblHelplineNumber,
-                          titleTextStyle: boldTextStyle(size: 12),
-                          padding: EdgeInsets.only(
-                            bottom: appStore.isLoggedIn ? 16 : 0,
-                            right: 16,
-                            left: 16,
-                            top: 16,
-                          ),
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            launchCall(appConfigurationStore.helplineNumber);
-                          },
-                        ),
+                              ],
+                            ),
+                          );
+                        }),
                         // SettingItemWidget(
                         //   decoration: !appStore.isLoggedIn
                         //       ? boxDecorationDefault(

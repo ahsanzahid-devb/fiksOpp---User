@@ -48,6 +48,10 @@ const HELP_AND_SUPPORT_URL = '';
 const REFUND_POLICY_URL = '';
 const INQUIRY_SUPPORT_EMAIL = '';
 
+/// Shown in Profile / About and opened with the system dialer when the API
+/// `helpline_number` is empty. Override anytime by setting helpline in admin.
+const DEFAULT_HELPLINE_NUMBER = '+4792929212';
+
 //Airtel Money Payments
 ///It Supports ["UGX", "NGN", "TZS", "KES", "RWF", "ZMW", "CFA", "XOF", "XAF", "CDF", "USD", "XAF", "SCR", "MGA", "MWK"]
 const AIRTEL_CURRENCY_CODE = "MWK";
@@ -61,8 +65,14 @@ const PAYSTACK_CURRENCY_CODE = 'NGN';
 /// Nigeria Currency
 
 /// STRIPE PAYMENT DETAIL
-const STRIPE_MERCHANT_COUNTRY_CODE = 'IN';
+/// Apple Pay / Google Pay region — use the business country (Norway for FiksOpp).
+const STRIPE_MERCHANT_COUNTRY_CODE = 'NO';
+
+/// Legacy template default only. Real charges use [paymentGatewayCurrencyCode] from admin/API.
 const STRIPE_CURRENCY_CODE = 'INR';
+
+/// Fallback when `currency_code` from the API is missing (ISO 4217 lowercase for Stripe).
+const DEFAULT_PAYMENT_CURRENCY_CODE = 'nok';
 
 /// RAZORPAY PAYMENT DETAIL
 const RAZORPAY_CURRENCY_CODE = 'INR';

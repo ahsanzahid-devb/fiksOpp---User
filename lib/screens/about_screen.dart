@@ -52,7 +52,7 @@ class _AboutScreenState extends State<AboutScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              if (appConfigurationStore.helplineNumber.isNotEmpty)
+              if (effectiveSupportHelpline().isNotEmpty)
                 Container(
                   height: 80,
                   width: 80,
@@ -71,8 +71,9 @@ class _AboutScreenState extends State<AboutScreen> {
                   ),
                 ).onTap(
                   () {
-                    toast(appConfigurationStore.helplineNumber);
-                    launchCall(appConfigurationStore.helplineNumber);
+                    final n = effectiveSupportHelpline();
+                    toast(n);
+                    launchCall(n);
                   },
                   hoverColor: Colors.transparent,
                   highlightColor: Colors.transparent,

@@ -68,24 +68,23 @@ class _UserWalletBalanceScreenState extends State<UserWalletBalanceScreen> {
     }
 
     if (currentPaymentMethod!.type == PAYMENT_METHOD_STRIPE) {
-      StripeServiceNew stripeServiceNew = StripeServiceNew(
-        paymentSetting: currentPaymentMethod!,
-        totalAmount: walletAmountCont.text.toDouble(),
-        onComplete: (p0) {
-          Map req = {
-            "amount": walletAmountCont.text.toDouble(),
-            "transaction_type": PAYMENT_METHOD_STRIPE,
-            "transaction_id": p0['transaction_id']
-          };
+      try {
+        await StripeServiceNew(
+          paymentSetting: currentPaymentMethod!,
+          totalAmount: walletAmountCont.text.toDouble(),
+          onComplete: (p0) {
+            Map req = {
+              "amount": walletAmountCont.text.toDouble(),
+              "transaction_type": PAYMENT_METHOD_STRIPE,
+              "transaction_id": p0['transaction_id']
+            };
 
-          walletTopUpApi(request: req);
-        },
-      );
-
-      stripeServiceNew.stripePay().catchError((e) {
+            walletTopUpApi(request: req);
+          },
+        ).stripePay();
+      } catch (_) {
         appStore.setLoading(false);
-        toast(e);
-      });
+      }
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_RAZOR) {
       RazorPayServiceNew razorPayServiceNew = RazorPayServiceNew(
         paymentSetting: currentPaymentMethod!,

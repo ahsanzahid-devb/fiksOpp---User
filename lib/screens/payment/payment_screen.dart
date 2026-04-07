@@ -119,24 +119,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
               : SERVICE_PAYMENT_STATUS_PENDING);
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_STRIPE) {
-      StripeServiceNew stripeServiceNew = StripeServiceNew(
-        paymentSetting: currentPaymentMethod!,
-        totalAmount: totalAmount,
-        onComplete: (p0) {
-          savePay(
-            paymentMethod: PAYMENT_METHOD_STRIPE,
-            paymentStatus: widget.isForAdvancePayment
-                ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
-                : SERVICE_PAYMENT_STATUS_PAID,
-            txnId: p0['transaction_id'],
-          );
-        },
-      );
-
-      stripeServiceNew.stripePay().catchError((e) {
+      try {
+        await StripeServiceNew(
+          paymentSetting: currentPaymentMethod!,
+          totalAmount: totalAmount,
+          onComplete: (p0) {
+            savePay(
+              paymentMethod: PAYMENT_METHOD_STRIPE,
+              paymentStatus: widget.isForAdvancePayment
+                  ? SERVICE_PAYMENT_STATUS_ADVANCE_PAID
+                  : SERVICE_PAYMENT_STATUS_PAID,
+              txnId: p0['transaction_id'],
+            );
+          },
+        ).stripePay();
+      } catch (_) {
         appStore.setLoading(false);
-        toast(e);
-      });
+      }
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_RAZOR) {
       RazorPayServiceNew razorPayServiceNew = RazorPayServiceNew(
         paymentSetting: currentPaymentMethod!,

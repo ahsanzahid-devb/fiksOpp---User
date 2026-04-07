@@ -521,7 +521,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildTopWidget() {
     return Column(
       children: [
-        (context.height() * 0.12).toInt().height,
+        (context.height() * 0.06).toInt().height,
         Container(
           height: 80,
           width: 80,
@@ -538,16 +538,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 textAlign: TextAlign.center)
             .center()
             .paddingSymmetric(horizontal: 32),
+        SizedBox(height: 16),
       ],
     );
   }
 
   Widget _buildFormWidget() {
-    setState(() {});
+    // safeAreaTop: false — default SafeArea would apply full status-bar inset here,
+    // adding a large empty gap between the subtitle and the first field.
     return ResponsiveContainer(
+      safeAreaTop: false,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          32.height,
+          // 32.height,
           AppTextField(
             textFieldType: TextFieldType.NAME,
             controller: fNameCont,
@@ -751,7 +755,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildFooterWidget() {
     return Column(
       children: [
-        16.height,
+        // 16.height,
         RichTextWidget(
           list: [
             TextSpan(
@@ -767,7 +771,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ],
         ),
-        30.height,
+        20.height,
       ],
     );
   }
@@ -816,7 +820,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     _buildTopWidget(),
                     _buildFormWidget(),
-                    8.height,
                     _buildFooterWidget(),
                   ],
                 ),

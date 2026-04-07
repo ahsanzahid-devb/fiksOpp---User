@@ -1,6 +1,8 @@
 import FirebaseAuth
 import FirebaseCore
+import FirebaseMessaging
 import Flutter
+import GoogleMaps
 import UIKit
 
 @main
@@ -9,9 +11,17 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+       if FirebaseApp.app() == nil {
+      FirebaseApp.configure()
+    }
+     if let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
+       let plist = NSDictionary(contentsOfFile: path),
+       let apiKey = plist["API_KEY"] as? String,
+       !apiKey.isEmpty {
+      GMSServices.provideAPIKey(apiKey)
+    }
     let ok = super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    // Phone Auth (SMS) on iOS uses silent APNs; registration is required even if user declines alert banners.
-    application.registerForRemoteNotifications()
+     application.registerForRemoteNotifications()
     return ok
   }
 
@@ -19,19 +29,20 @@ import UIKit
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 
-  /// Forward APNs device token to Firebase Auth (required when app delegate proxy / swizzling does not run).
-  override func application(
+   override func application(
     _ application: UIApplication,
     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
   ) {
     if FirebaseApp.app() != nil {
       Auth.auth().setAPNSToken(deviceToken, type: .unknown)
+      // FCM needs the APNs token explicitly when AppDelegate methods are overridden
+      // or when plugin registration order delays Messaging swizzling.
+      Messaging.messaging().apnsToken = deviceToken
     }
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
   }
 
-  /// Forward remote notifications so Phone Auth can complete verification.
-  override func application(
+   override func application(
     _ application: UIApplication,
     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
@@ -44,8 +55,7 @@ import UIKit
       application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
   }
 
-  /// reCAPTCHA / phone auth redirect flow.
-  override func application(
+   override func application(
     _ app: UIApplication,
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey: Any] = [:]

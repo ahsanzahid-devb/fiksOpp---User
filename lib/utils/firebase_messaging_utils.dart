@@ -16,29 +16,25 @@ import '../screens/jobRequest/my_post_detail_screen.dart';
 import '../screens/service/service_detail_screen.dart';
 import '../screens/wallet/user_wallet_balance_screen.dart';
 import 'constant.dart';
-import 'firebase_background_handler.dart' as fcm_bg;
+
+bool _foregroundNotificationListenersRegistered = false;
 
 Future<void> initFirebaseMessaging() async {
-  await FirebaseMessaging.instance
-      .requestPermission(
-          alert: true, badge: true, provisional: false, sound: true)
-      .then((value) async {
-    if (value.authorizationStatus == AuthorizationStatus.authorized) {
-      await registerNotificationListeners().catchError((e) {
-        log('Notification Listener REGISTRATION ERROR : ${e}');
-      });
+  final settings = await FirebaseMessaging.instance.requestPermission(
+      alert: true, badge: true, provisional: false, sound: true);
 
-      FirebaseMessaging.onBackgroundMessage(
-          fcm_bg.firebaseMessagingBackgroundHandler);
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    await registerNotificationListeners().catchError((e) {
+      log('Notification Listener REGISTRATION ERROR : ${e}');
+    });
 
-      await FirebaseMessaging.instance
-          .setForegroundNotificationPresentationOptions(
-              alert: true, badge: true, sound: true)
-          .catchError((e) {
-        log('setForegroundNotificationPresentationOptions ERROR: ${e}');
-      });
-    }
-  });
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+            alert: true, badge: true, sound: true)
+        .catchError((e) {
+      log('setForegroundNotificationPresentationOptions ERROR: ${e}');
+    });
+  }
 }
 
 Future<bool> subscribeToFirebaseTopic() async {
@@ -92,6 +88,9 @@ Future<bool> unsubscribeFirebaseTopic(int userId) async {
 }
 
 Future<void> registerNotificationListeners() async {
+  if (_foregroundNotificationListenersRegistered) return;
+  _foregroundNotificationListenersRegistered = true;
+
   FirebaseMessaging.instance.setAutoInitEnabled(true).then((value) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       Map<String, dynamic> additional = const {};

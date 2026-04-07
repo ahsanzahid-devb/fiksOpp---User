@@ -23,7 +23,10 @@ Future<Position> getUserLocationPosition() async {
   }
 
   return await Geolocator.getCurrentPosition(
-          locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 25),
+          ))
       .then((value) {
     return value;
   }).catchError((e) async {
@@ -55,6 +58,12 @@ Future<String> buildFullAddressFromLatLong(
 
   setValue(LATITUDE, latitude);
   setValue(LONGITUDE, longitude);
+
+  if (placeMark.isEmpty) {
+    final fallback = '$latitude, $longitude';
+    setValue(CURRENT_ADDRESS, fallback);
+    return fallback;
+  }
 
   Placemark place = placeMark[0];
 

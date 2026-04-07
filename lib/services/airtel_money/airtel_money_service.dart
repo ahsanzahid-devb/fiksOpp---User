@@ -239,17 +239,13 @@ Future<AirtelPaymentResponse> paymentAirtelClient({
     "reference": reference,
     "subscriber": {
       "country": AIRTEL_COUNTRY_CODE,
-      "currency": await isIqonicProduct
-          ? AIRTEL_CURRENCY_CODE
-          : '${appConfigurationStore.currencyCode}',
+      "currency": paymentGatewayCurrencyCode(),
       "msisdn": msisdn
     },
     "transaction": {
       "amount": amount,
       "country": AIRTEL_COUNTRY_CODE,
-      "currency": await isIqonicProduct
-          ? AIRTEL_CURRENCY_CODE
-          : '${appConfigurationStore.currencyCode}',
+      "currency": paymentGatewayCurrencyCode(),
       "id": txnId
     }
   };
@@ -263,9 +259,7 @@ Future<AirtelPaymentResponse> paymentAirtelClient({
         method: HttpMethodType.POST,
         extraKeys: {
           'X-Country': AIRTEL_COUNTRY_CODE,
-          'X-Currency': await isIqonicProduct
-              ? AIRTEL_CURRENCY_CODE
-              : '${appConfigurationStore.currencyCode}',
+          'X-Currency': paymentGatewayCurrencyCode(),
           'access_token': accessToken
         },
       ),
@@ -296,9 +290,7 @@ Future<bool> checkAirtelPaymentStatus({
           currentPaymentMethod: currentPaymentMethod,
           extraKeys: {
             'X-Country': AIRTEL_COUNTRY_CODE,
-            'X-Currency': await isIqonicProduct
-                ? AIRTEL_CURRENCY_CODE
-                : '${appConfigurationStore.currencyCode}',
+            'X-Currency': paymentGatewayCurrencyCode(),
             'access_token': '${value.accessToken}',
           },
           method: HttpMethodType.GET,

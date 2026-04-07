@@ -5,7 +5,6 @@ import 'package:nb_utils/nb_utils.dart';
 import '../../main.dart';
 import '../model/payment_gateway_response.dart';
 import '../utils/common.dart';
-import '../utils/configs.dart';
 
 class PayPalService {
   static Future paypalCheckOut({
@@ -36,7 +35,7 @@ class PayPalService {
         {
           "amount": {
             "total": totalAmount,
-            "currency": await isIqonicProduct ? PAYPAL_CURRENCY_CODE : '${appConfigurationStore.currencyCode}',
+            "currency": paymentGatewayCurrencyCode(),
             "details": {"subtotal": totalAmount, "shipping": '0', "shipping_discount": 0}
           },
           "description": 'Name: ${appStore.userFullName} - Email: ${appStore.userEmail}',

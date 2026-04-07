@@ -33,19 +33,25 @@ class Permissions {
   }
 
   static Future<bool> cameraFilesAndLocationPermissionsGranted() async {
-    if (!getBoolAsync(PERMISSION_STATUS)) {
+    Future<bool> requestCameraAndLocation() async {
       final Map<Permission, PermissionStatus> statuses =
           await _handler.requestPermissions([
         Permission.camera,
         _dashboardLocationPermission,
       ]);
-
-      final allGranted =
-          statuses.values.every((s) => s == PermissionStatus.granted);
-      return allGranted;
+      return statuses.values.every((s) => s == PermissionStatus.granted);
     }
 
-    return true;
+    if (!getBoolAsync(PERMISSION_STATUS)) {
+      return requestCameraAndLocation();
+    }
+
+    // [PERMISSION_STATUS] can be true while the user later revoked access in Settings.
+    final cam = await Permission.camera.status;
+    final loc = await _dashboardLocationPermission.status;
+    if (cam.isGranted && loc.isGranted) return true;
+    if (cam.isPermanentlyDenied || loc.isPermanentlyDenied) return false;
+    return requestCameraAndLocation();
   }
 }
 
@@ -55,17 +61,21 @@ class LocationPermissions {
       PermissionHandlerPlatform.instance;
 
   static Future<bool> locationPermissionsGranted() async {
-    if (!getBoolAsync(PERMISSION_STATUS)) {
+    Future<bool> requestLocation() async {
       final Map<Permission, PermissionStatus> statuses =
           await _handler.requestPermissions([
         Permissions._dashboardLocationPermission,
       ]);
-
-      final allGranted =
-          statuses.values.every((s) => s == PermissionStatus.granted);
-      return allGranted;
+      return statuses.values.every((s) => s == PermissionStatus.granted);
     }
 
-    return true;
+    if (!getBoolAsync(PERMISSION_STATUS)) {
+      return requestLocation();
+    }
+
+    final loc = await Permissions._dashboardLocationPermission.status;
+    if (loc.isGranted) return true;
+    if (loc.isPermanentlyDenied) return false;
+    return requestLocation();
   }
 }

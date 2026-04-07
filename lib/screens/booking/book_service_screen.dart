@@ -91,43 +91,49 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     } catch (e) {}
   }
 
-  void _handleSetLocationClick() {
-    Permissions.cameraFilesAndLocationPermissionsGranted().then((value) async {
-      await setValue(PERMISSION_STATUS, value);
-
-      if (value) {
-        String? res = await MapScreen(
-                latitude: getDoubleAsync(LATITUDE),
-                latLong: getDoubleAsync(LONGITUDE))
-            .launch(context);
-
-        addressCont.text = res.validate();
-        setState(() {});
+  Future<void> _handleSetLocationClick() async {
+    final ok = await Permissions.requestLocationWhenInUseForServices();
+    if (!ok) {
+      if (await Permissions.isLocationPermanentlyDenied()) {
+        toast(language.lblLocationPermissionDeniedPermanently);
+      } else {
+        toast(language.lblLocationPermissionDenied);
       }
-    });
+      return;
+    }
+    if (!mounted) return;
+    final res = await MapScreen(
+      latitude: getDoubleAsync(LATITUDE),
+      latLong: getDoubleAsync(LONGITUDE),
+    ).launch<String?>(context);
+
+    addressCont.text = res.validate();
+    setState(() {});
   }
 
-  void _handleCurrentLocationClick() {
-    Permissions.cameraFilesAndLocationPermissionsGranted().then((value) async {
-      await setValue(PERMISSION_STATUS, value);
-
-      if (value) {
-        appStore.setLoading(true);
-
-        await getUserLocation().then((value) {
-          addressCont.text = value;
-          widget.data.serviceDetail!.address = value.toString();
-          setState(() {});
-        }).catchError((e) {
-          log(e);
-          // toast(e.toString());
-        });
-
-        appStore.setLoading(false);
+  Future<void> _handleCurrentLocationClick() async {
+    final ok = await Permissions.requestLocationWhenInUseForServices();
+    if (!ok) {
+      if (await Permissions.isLocationPermanentlyDenied()) {
+        toast(language.lblLocationPermissionDeniedPermanently);
+      } else {
+        toast(language.lblLocationPermissionDenied);
       }
-    }).catchError((e) {
-      //
-    }).whenComplete(() => appStore.setLoading(false));
+      return;
+    }
+    appStore.setLoading(true);
+    try {
+      final value = await getUserLocation();
+      if (!mounted) return;
+      addressCont.text = value;
+      widget.data.serviceDetail!.address = value.toString();
+      setState(() {});
+    } catch (e) {
+      log(e);
+      toast(e.toString());
+    } finally {
+      if (mounted) appStore.setLoading(false);
+    }
   }
 
   @override

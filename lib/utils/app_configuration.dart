@@ -23,7 +23,12 @@ Future<void> setAppConfigurations(AppConfigurationModel data) async {
   await setValue(WEBSITE, data.website);
   appConfigurationStore.setInquiryEmail(
       data.inquiryEmail.validate(value: INQUIRY_SUPPORT_EMAIL));
-  appConfigurationStore.setHelplineNumber(data.helplineNumber.validate().trim());
+  // Null/empty from API must stay empty — no placeholder "default" number in the app.
+  final helplineRaw = data.helplineNumber;
+  final helplineClean = helplineRaw == null
+      ? ''
+      : helplineRaw.toString().trim();
+  appConfigurationStore.setHelplineNumber(helplineClean);
   await setValue(DATE_FORMAT, getDateFormat(data.dateFormat.validate()));
   await setValue(TIME_FORMAT, getDisplayTimeFormat(data.timeFormat.validate()));
   await setValue(TIMEZONE, data.timeZone);

@@ -35,6 +35,15 @@ import 'constant.dart';
 Future<bool> get isIqonicProduct async =>
     await getPackageName() == appPackageName;
 
+/// Stripe/Razorpay/PayPal (and similar) must use the same ISO currency as [currencySymbol] from admin.
+/// Do **not** use [isIqonicProduct] here: on Android, `buzz.inoor.fiksopp` matches [appPackageName] and
+/// the old branch forced INR while the UI still showed e.g. `kr` → Stripe `amount_too_small` / wrong FX.
+String paymentGatewayCurrencyCode() {
+  final c = appConfigurationStore.currencyCode.trim().toLowerCase();
+  if (c.isEmpty) return DEFAULT_PAYMENT_CURRENCY_CODE;
+  return c;
+}
+
 bool get isUserTypeHandyman => appStore.userType == USER_TYPE_HANDYMAN;
 
 bool get isUserTypeProvider => appStore.userType == USER_TYPE_PROVIDER;
@@ -69,15 +78,41 @@ void viewFiles(String url) {
   }
 }
 
-void launchCall(String? url) {
-  if (url.validate().isNotEmpty) {
-    if (isIOS)
-      commonLaunchUrl('tel://' + url!,
-          launchMode: LaunchMode.externalApplication);
-    else
-      commonLaunchUrl('tel:' + url!,
-          launchMode: LaunchMode.externalApplication);
+/// Opens the system dialer. Uses `tel:+47…` (not `tel://…`, which breaks `+` on iOS).
+/// On Simulator, [launchUrl] usually returns false — number is copied and a hint is shown.
+Future<void> launchCall(String? raw) async {
+  if (raw == null || raw.trim().isEmpty) return;
+
+  var s = raw.trim();
+  if (s.toLowerCase().startsWith('tel:')) {
+    s = s.substring(4).trim();
   }
+  s = s.replaceAll(RegExp(r'[\s\-]'), '');
+  if (s.isEmpty) return;
+
+  final uri = Uri.parse('tel:$s');
+
+  try {
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok) {
+      await Clipboard.setData(ClipboardData(text: s));
+      toast(
+        'Copied $s — Simulator/emulator cannot open Phone. Test on a real device or paste the number.',
+      );
+    }
+  } catch (e) {
+    try {
+      await Clipboard.setData(ClipboardData(text: s));
+    } catch (_) {}
+    toast('Could not open dialer. Copied: $s');
+  }
+}
+
+/// Support line for the dialer: admin [helpline_number] when set, else [DEFAULT_HELPLINE_NUMBER].
+String effectiveSupportHelpline() {
+  final t = appConfigurationStore.helplineNumber.trim();
+  if (t.isNotEmpty) return t;
+  return DEFAULT_HELPLINE_NUMBER;
 }
 
 /// Apple public store URLs must include a numeric app id. Values like
@@ -136,18 +171,14 @@ Future<bool> _launchExternalUri(Uri uri) async {
 Future<void> openCustomerAppStoreListing() async {
   try {
     if (isIOS) {
-      final fromApi = getStringAsync(CUSTOMER_APP_STORE_URL).trim();
-      final String listingForId = (fromApi.isNotEmpty &&
-              _isValidAppStoreListingUrl(fromApi))
-          ? fromApi
-          : (CUSTOMER_APP_APP_STORE_LISTING.isNotEmpty
-              ? CUSTOMER_APP_APP_STORE_LISTING
-              : 'https://apps.apple.com/search?term=${Uri.encodeComponent(APP_NAME)}');
+      // Always open this app's listing using bundled id + URL. Persisted `APPSTORE_URL` from
+      // the API is often `https://apps.apple.com` and opens the Store home instead of FiksOpp.
+      final id = CUSTOMER_APP_APP_STORE_NUMERIC_ID.trim();
+      if (id.isEmpty) {
+        toast(language.invalidURL);
+        return;
+      }
 
-      final id = _appleAppStoreListingId(listingForId) ??
-          CUSTOMER_APP_APP_STORE_NUMERIC_ID;
-
-      // Prefer native App Store (never pass itms-apps into Safari — it shows "invalid address").
       final storeUris = <Uri>[
         Uri.parse('itms-apps://itunes.apple.com/app/id$id'),
         Uri.parse('itms-apps://apps.apple.com/app/id$id'),
