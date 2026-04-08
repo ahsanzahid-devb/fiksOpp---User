@@ -15,7 +15,7 @@ import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import '../../../component/wallet_balance_component.dart';
 import '../../../model/booking_amount_model.dart';
 import '../../../utils/booking_calculations_logic.dart';
@@ -96,6 +96,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     if (!ok) {
       if (await Permissions.isLocationPermanentlyDenied()) {
         toast(language.lblLocationPermissionDeniedPermanently);
+        await openAppSettings();
       } else {
         toast(language.lblLocationPermissionDenied);
       }
@@ -107,8 +108,10 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
       latLong: getDoubleAsync(LONGITUDE),
     ).launch<String?>(context);
 
-    addressCont.text = res.validate();
-    setState(() {});
+    if (res != null && res.isNotEmpty) {
+      addressCont.text = res;
+      setState(() {});
+    }
   }
 
   Future<void> _handleCurrentLocationClick() async {
@@ -116,6 +119,7 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
     if (!ok) {
       if (await Permissions.isLocationPermanentlyDenied()) {
         toast(language.lblLocationPermissionDeniedPermanently);
+        await openAppSettings();
       } else {
         toast(language.lblLocationPermissionDenied);
       }
@@ -126,7 +130,10 @@ class _BookServiceScreenState extends State<BookServiceScreen> {
       final value = await getUserLocation();
       if (!mounted) return;
       addressCont.text = value;
-      widget.data.serviceDetail!.address = value.toString();
+      final detail = widget.data.serviceDetail;
+      if (detail != null) {
+        detail.address = value.toString();
+      }
       setState(() {});
     } catch (e) {
       log(e);

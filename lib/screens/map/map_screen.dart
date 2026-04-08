@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../utils/constant.dart';
 
 class MapScreen extends StatefulWidget {
@@ -49,8 +48,7 @@ class MapScreenState extends State<MapScreen> {
       lat = wLat;
       lng = wLng;
     }
-    _initialLocation =
-        CameraPosition(target: LatLng(lat, lng), zoom: 14);
+    _initialLocation = CameraPosition(target: LatLng(lat, lng), zoom: 14);
 
     if (appStore.isDarkMode) {
       DefaultAssetBundle.of(context)
@@ -77,7 +75,6 @@ class MapScreenState extends State<MapScreen> {
     }
   }
 
-  /// Centers map and marker on GPS; safe before [onMapCreated] (camera is deferred).
   Future<void> _loadInitialLocation() async {
     final ok = await Permissions.requestLocationWhenInUseForServices();
     if (!ok) {
@@ -131,7 +128,8 @@ class MapScreenState extends State<MapScreen> {
         ),
       };
 
-      final text = await buildFullAddressFromLatLong(point.latitude, point.longitude);
+      final text =
+          await buildFullAddressFromLatLong(point.latitude, point.longitude);
       if (!mounted) return;
       destinationAddressController.text = text;
       setState(() {});
@@ -223,8 +221,8 @@ class MapScreenState extends State<MapScreen> {
                 ClipOval(
                   child: Material(
                     color: context.primaryColor.withValues(alpha: 0.2),
-                    child: const Icon(Icons.my_location, size: 25)
-                        .paddingAll(10),
+                    child:
+                        const Icon(Icons.my_location, size: 25).paddingAll(10),
                   ),
                 ).paddingRight(8).onTap(() async {
                   appStore.setLoading(true);
@@ -281,8 +279,7 @@ class MapScreenState extends State<MapScreen> {
             ).paddingAll(16),
           ),
           Observer(
-              builder: (context) =>
-                  LoaderWidget().visible(appStore.isLoading))
+              builder: (context) => LoaderWidget().visible(appStore.isLoading))
         ],
       ),
     );

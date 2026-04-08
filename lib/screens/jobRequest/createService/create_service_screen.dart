@@ -29,7 +29,6 @@ import '../../../component/responsive_container.dart';
 class CreateServiceScreen extends StatefulWidget {
   final ServiceData? data;
 
-  /// Optional pre-filled job request fields when opened from "New Request".
   final String? jobTitle;
   final String? jobDescription;
   final String? jobDate;
@@ -49,7 +48,6 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UniqueKey formWidgetKey = UniqueKey();
 
-  /// Debug trail for post-job / location checks (filter logcat: `CreateService/Publish`).
   void _logPublishLoc(String step, [Map<String, Object?> fields = const {}]) {
     final buf = StringBuffer('[CreateService/Publish] $step');
     fields.forEach((k, v) => buf.write(' | $k=$v'));
@@ -80,10 +78,10 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   List<Attachments> attachmentsArray = [];
   List<String> typeList = [SERVICE_TYPE_FIXED, SERVICE_TYPE_HOURLY];
   List<CategoryData> categoryList = [];
-  List<CategoryData> subCategoryList = []; // ✅ New list for subcategories
+  List<CategoryData> subCategoryList = [];
 
   CategoryData? selectedCategory;
-  CategoryData? selectedSubCategory; // ✅ New variable for selected subcategory
+  CategoryData? selectedSubCategory;
   String serviceType = '';
 
   bool isUpdate = false;

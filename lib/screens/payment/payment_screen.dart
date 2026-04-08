@@ -8,7 +8,6 @@ import 'package:fiksOpp/utils/extensions/num_extenstions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../component/app_common_dialog.dart';
 import '../../component/base_scaffold_widget.dart';
 import '../../component/empty_error_state_widget.dart';
@@ -62,7 +61,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (widget.isForAdvancePayment) {
       log("Processing advance payment - using 100% of total amount");
       if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
-        // Always use 100% for advance payment (full amount)
         advancePaymentAmount =
             widget.bookings.bookingDetail!.totalAmount.validate();
         totalAmount = advancePaymentAmount!;
@@ -77,7 +75,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
         widget.bookings.service!.isFixedService &&
         !widget.bookings.service!.isFreeService &&
         widget.bookings.bookingDetail!.bookingPackage == null) {
-      // Original logic for service-based advance payment
       if (widget.bookings.bookingDetail!.paidAmount.validate() == 0) {
         advancePaymentAmount =
             widget.bookings.bookingDetail!.totalAmount.validate() *
@@ -110,9 +107,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _handleClick() async {
-    appStore.setLoading(true);
+    if (currentPaymentMethod!.type != PAYMENT_METHOD_STRIPE) {
+      appStore.setLoading(true);
+    }
     if (currentPaymentMethod!.type == PAYMENT_METHOD_COD) {
-      // For advance payments, use ADVANCE_PAID status; otherwise use PENDING
       savePay(
           paymentMethod: PAYMENT_METHOD_COD,
           paymentStatus: widget.isForAdvancePayment
@@ -132,9 +130,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
               txnId: p0['transaction_id'],
             );
           },
-        ).stripePay();
-      } catch (_) {
+        ).stripePay(isMounted: () => mounted);
+      } catch (e, st) {
         appStore.setLoading(false);
+        log('Stripe checkout failed: $e');
+        log(st);
+        // Error toast is shown inside [StripeServiceNew.stripePay]; avoid duplicate.
       }
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_RAZOR) {
       RazorPayServiceNew razorPayServiceNew = RazorPayServiceNew(
@@ -425,9 +426,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
     appStore.setLoading(true);
     savePayment(request).then((value) {
       appStore.setLoading(false);
-      if (widget.onPaymentSuccess != null) {
+      if (!mounted) return;
+      final onSuccess = widget.onPaymentSuccess;
+      if (onSuccess != null) {
+        // Pop payment first; the parent callback often uses a context that was
+        // invalidated if it belonged to a closed dialog — callers should use
+        // navigatorKey.currentContext inside the callback, and we defer one frame.
         finish(context);
-        widget.onPaymentSuccess!();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          onSuccess();
+        });
       } else {
         push(DashboardScreen(redirectToBooking: true),
             isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);

@@ -18,19 +18,99 @@ import '../screens/wallet/user_wallet_balance_screen.dart';
 import 'constant.dart';
 
 bool _foregroundNotificationListenersRegistered = false;
+bool _fcmLocalNotificationsReady = false;
+
+final FlutterLocalNotificationsPlugin _fcmLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+/// Initializes local notifications once, before FCM, so iOS assigns
+/// [UNUserNotificationCenter] delegate correctly and foreground banners work.
+Future<void> ensureFcmLocalNotificationsPluginReady() async {
+  if (_fcmLocalNotificationsReady) return;
+
+  const androidChannel = AndroidNotificationChannel(
+    'notification',
+    'Notification',
+    importance: Importance.high,
+    enableLights: true,
+    playSound: true,
+    showBadge: true,
+  );
+  await _fcmLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(androidChannel);
+
+  const androidInit =
+      AndroidInitializationSettings('@drawable/ic_stat_ic_notification');
+  const darwinInit = DarwinInitializationSettings(
+    requestSoundPermission: false,
+    requestBadgePermission: false,
+    requestAlertPermission: false,
+    defaultPresentAlert: true,
+    defaultPresentSound: true,
+    defaultPresentBadge: true,
+    defaultPresentBanner: true,
+    defaultPresentList: true,
+  );
+
+  await _fcmLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: androidInit,
+      iOS: darwinInit,
+      macOS: darwinInit,
+    ),
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      final p = response.payload;
+      if (p == null || p.isEmpty) return;
+      try {
+        final decoded = jsonDecode(p);
+        if (decoded is Map<String, dynamic>) {
+          handleNotificationClick(RemoteMessage(data: decoded));
+        } else if (decoded is Map) {
+          handleNotificationClick(
+              RemoteMessage(data: Map<String, dynamic>.from(decoded)));
+        }
+      } catch (e) {
+        log('notification tap payload: $e');
+      }
+    },
+  );
+
+  if (Platform.isIOS) {
+    await _fcmLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
+  }
+
+  _fcmLocalNotificationsReady = true;
+}
 
 Future<void> initFirebaseMessaging() async {
+  await ensureFcmLocalNotificationsPluginReady();
+
   final settings = await FirebaseMessaging.instance.requestPermission(
       alert: true, badge: true, provisional: false, sound: true);
 
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    await registerNotificationListeners().catchError((e) {
-      log('Notification Listener REGISTRATION ERROR : ${e}');
-    });
+  // Register streams even when alerts are denied or only provisional; otherwise
+  // FirebaseMessaging.onMessage never runs and foreground/data handling breaks.
+  await registerNotificationListeners().catchError((e) {
+    log('Notification Listener REGISTRATION ERROR : ${e}');
+  });
 
+  final ok = settings.authorizationStatus == AuthorizationStatus.authorized ||
+      settings.authorizationStatus == AuthorizationStatus.provisional;
+  if (ok) {
+    // iOS: show foreground UI via flutter_local_notifications (banner/list).
+    // FCM's own foreground presentation fights for the same delegate and often
+    // produces no visible banner; disable FCM's duplicate on iOS.
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-            alert: true, badge: true, sound: true)
+      alert: !Platform.isIOS,
+      badge: true,
+      sound: !Platform.isIOS,
+    )
         .catchError((e) {
       log('setForegroundNotificationPresentationOptions ERROR: ${e}');
     });
@@ -197,40 +277,7 @@ void showNotification(
   log('Notification : ${remoteMessage.notification?.toMap()} | data: ${remoteMessage.data}');
   log('Message Data : ${remoteMessage.data}');
   log("User Message Image Url : ${remoteMessage.data["image_url"]} ");
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  //code for background notification channel
-  AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'notification',
-    'Notification',
-    importance: Importance.high,
-    enableLights: true,
-    playSound: true,
-    showBadge: true,
-  );
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@drawable/ic_stat_ic_notification');
-  var iOS = const DarwinInitializationSettings(
-    requestSoundPermission: false,
-    requestBadgePermission: false,
-    requestAlertPermission: false,
-  );
-  var macOS = iOS;
-  final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid, iOS: iOS, macOS: macOS);
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (details) {
-      handleNotificationClick(remoteMessage);
-    },
-  );
+  await ensureFcmLocalNotificationsPluginReady();
 
   // region image logic
   Future<String> _downloadAndSaveFile(String url, String fileName) async {
@@ -271,7 +318,13 @@ void showNotification(
         : null,
   );
 
-  var darwinPlatformChannelSpecifics = const DarwinNotificationDetails();
+  const darwinPlatformChannelSpecifics = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+    presentBanner: true,
+    presentList: true,
+  );
 
   var platformChannelSpecifics = NotificationDetails(
     android: androidPlatformChannelSpecifics,
@@ -279,6 +332,11 @@ void showNotification(
     macOS: darwinPlatformChannelSpecifics,
   );
 
-  flutterLocalNotificationsPlugin.show(
-      id, title, parseHtmlString(message), platformChannelSpecifics);
+  await _fcmLocalNotificationsPlugin.show(
+    id,
+    title,
+    parseHtmlString(message),
+    platformChannelSpecifics,
+    payload: jsonEncode(remoteMessage.data),
+  );
 }

@@ -495,14 +495,17 @@ class _CreatePostRequestScreenState extends State<CreatePostRequestScreen> {
                               children: [
                                 Icon(
                                   Icons.location_on_outlined,
-                                  color: hasValidLocation ? Colors.green : redColor,
+                                  color: hasValidLocation
+                                      ? Colors.green
+                                      : redColor,
                                   size: 18,
                                 ),
                                 8.width,
                                 Text(
                                   hasValidLocation
                                       ? getStringAsync(CURRENT_ADDRESS)
-                                          .validate(value: language.lblLocationOff)
+                                          .validate(
+                                              value: language.lblLocationOff)
                                       : language.lblEnableLocation,
                                   style: secondaryTextStyle(),
                                   maxLines: 2,

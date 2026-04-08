@@ -121,6 +121,14 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
             detailTextStyle: primaryTextStyle(),
             isReadMore: description.length > 80,
           ),
+          if (data.resolvedLocationLabel.validate().isNotEmpty) ...[
+            16.height,
+            titleWidget(
+              title: language.hintAddress,
+              detail: data.resolvedLocationLabel!,
+              detailTextStyle: primaryTextStyle(),
+            ),
+          ],
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
@@ -8,28 +9,31 @@ class Permissions {
   static PermissionHandlerPlatform get _handler =>
       PermissionHandlerPlatform.instance;
 
-  /// iOS: [Permission.location] can tie into Always vs When-In-Use and confuse the
-  /// system dialog. Dashboard flows only need When-In-Use.
-  static Permission get _dashboardLocationPermission =>
-      isIOS ? Permission.locationWhenInUse : Permission.location;
-
+  /// Use Geolocator as the single source of truth for location so it stays in sync
+  /// with [getUserLocation] / [getUserLocationPosition]. permission_handler alone
+  /// can report "granted" while Geolocator still sees "denied" on some iOS builds.
   static Future<bool> isLocationPermanentlyDenied() async {
-    return _dashboardLocationPermission.isPermanentlyDenied;
+    return await Geolocator.checkPermission() ==
+        LocationPermission.deniedForever;
   }
 
   static Future<bool> hasLocationWhenInUseGranted() async {
-    return _dashboardLocationPermission.isGranted;
+    final p = await Geolocator.checkPermission();
+    return p == LocationPermission.whileInUse || p == LocationPermission.always;
   }
 
   /// Location only — for dashboard / nearby services. Does **not** open system
   /// Settings (avoids repeated redirects when Home tab is recreated).
   static Future<bool> requestLocationWhenInUseForServices() async {
-    final perm = _dashboardLocationPermission;
-    final status = await perm.status;
-    if (status.isGranted) return true;
-    if (status.isPermanentlyDenied) return false;
-    final next = await perm.request();
-    return next.isGranted;
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return false;
+    }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    return permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always;
   }
 
   static Future<bool> cameraFilesAndLocationPermissionsGranted() async {
@@ -37,45 +41,36 @@ class Permissions {
       final Map<Permission, PermissionStatus> statuses =
           await _handler.requestPermissions([
         Permission.camera,
-        _dashboardLocationPermission,
       ]);
-      return statuses.values.every((s) => s == PermissionStatus.granted);
+      final camOk = statuses[Permission.camera] == PermissionStatus.granted;
+      if (!camOk) return false;
+      return requestLocationWhenInUseForServices();
     }
 
     if (!getBoolAsync(PERMISSION_STATUS)) {
       return requestCameraAndLocation();
     }
 
-    // [PERMISSION_STATUS] can be true while the user later revoked access in Settings.
     final cam = await Permission.camera.status;
-    final loc = await _dashboardLocationPermission.status;
-    if (cam.isGranted && loc.isGranted) return true;
-    if (cam.isPermanentlyDenied || loc.isPermanentlyDenied) return false;
-    return requestCameraAndLocation();
+    if (!cam.isGranted) {
+      if (cam.isPermanentlyDenied) return false;
+      return requestCameraAndLocation();
+    }
+    if (await hasLocationWhenInUseGranted()) return true;
+    if (await isLocationPermanentlyDenied()) return false;
+    return requestLocationWhenInUseForServices();
   }
 }
 
 /// Only for Location (legacy); prefer [Permissions.requestLocationWhenInUseForServices].
 class LocationPermissions {
-  static PermissionHandlerPlatform get _handler =>
-      PermissionHandlerPlatform.instance;
-
   static Future<bool> locationPermissionsGranted() async {
-    Future<bool> requestLocation() async {
-      final Map<Permission, PermissionStatus> statuses =
-          await _handler.requestPermissions([
-        Permissions._dashboardLocationPermission,
-      ]);
-      return statuses.values.every((s) => s == PermissionStatus.granted);
-    }
-
     if (!getBoolAsync(PERMISSION_STATUS)) {
-      return requestLocation();
+      return Permissions.requestLocationWhenInUseForServices();
     }
 
-    final loc = await Permissions._dashboardLocationPermission.status;
-    if (loc.isGranted) return true;
-    if (loc.isPermanentlyDenied) return false;
-    return requestLocation();
+    if (await Permissions.hasLocationWhenInUseGranted()) return true;
+    if (await Permissions.isLocationPermanentlyDenied()) return false;
+    return Permissions.requestLocationWhenInUseForServices();
   }
 }

@@ -260,14 +260,20 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
     saveBooking(request).then((bookingDetailResponse) async {
       appStore.setLoading(false);
 
+      final navContext = navigatorKey.currentContext;
+      if (navContext == null) {
+        toast(errorSomethingWentWrong);
+        return;
+      }
       // Always show payment screen for advance payment
       await PaymentScreen(
         bookings: bookingDetailResponse,
         isForAdvancePayment: true,
         onPaymentSuccess: () {
-          // After payment success, show booking confirmation dialog
+          final ctx = navigatorKey.currentContext;
+          if (ctx == null || !ctx.mounted) return;
           showInDialog(
-            context,
+            ctx,
             barrierDismissible: false,
             backgroundColor: transparentColor,
             contentPadding: EdgeInsets.zero,
@@ -280,7 +286,7 @@ class _BookPostJobRequestScreenState extends State<BookPostJobRequestScreen> {
             ),
           );
         },
-      ).launch(context);
+      ).launch(navContext);
     }).catchError((e) {
       appStore.setLoading(false);
       toast(e.toString(), print: true);

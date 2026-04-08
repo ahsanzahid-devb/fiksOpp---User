@@ -11,6 +11,8 @@ import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/configs.dart';
 import 'package:fiksOpp/utils/constant.dart';
 import 'package:fiksOpp/utils/images.dart';
+import 'package:fiksOpp/utils/firebase_auth_phone_utils.dart';
+import 'package:fiksOpp/utils/network_reachability.dart';
 import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
 import 'package:country_picker/country_picker.dart';
@@ -73,6 +75,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _signupVerificationId = '';
   UserData? _pendingSignupData;
   bool _isCreatingUserAfterOtp = false;
+
+  bool _signupPhoneVerifyInFlight = false;
+  DateTime? _lastSignupVerificationFailureTime;
+  String? _lastSignupVerificationFailureCode;
 
   @override
   void initState() {
@@ -191,10 +197,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
     if (appStore.isLoading) return;
+    if (_signupPhoneVerifyInFlight) return;
+    if (!await canReachIdentityToolkitHost()) {
+      debugPrint('[SignUp/PhoneAuth] identitytoolkit host unreachable (offline?)');
+      toast(kPhoneAuthNeedsInternetMessage, print: true);
+      return;
+    }
+    _signupPhoneVerifyInFlight = true;
+    _lastSignupVerificationFailureTime = null;
+    _lastSignupVerificationFailureCode = null;
     appStore.setLoading(true);
     toast(language.sendingOTP);
     try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
+       await FirebaseAuth.instance.verifyPhoneNumber(
+        timeout: const Duration(seconds: 120),
         phoneNumber: '+${selectedCountry.phoneCode}${mobileCont.text.trim()}',
         verificationCompleted: (PhoneAuthCredential credential) async {
           if (!mounted || widget.isOTPLogin) return;
@@ -205,7 +221,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               final uid = uc.user?.uid;
               await FirebaseAuth.instance.signOut();
               if (!mounted || uid == null || uid.isEmpty) {
-                if (mounted) appStore.setLoading(false);
+                if (mounted) {
+                  _signupPhoneVerifyInFlight = false;
+                  appStore.setLoading(false);
+                }
                 return;
               }
               setState(() {
@@ -214,24 +233,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 _signupOtpCodeSent = false;
                 _signupVerificationId = '';
               });
+              _signupPhoneVerifyInFlight = false;
               appStore.setLoading(false);
               toast(language.verified);
               await _completePendingSignupIfReady();
-            } catch (_) {
-              if (mounted) appStore.setLoading(false);
+            } catch (e, st) {
+              if (e is FirebaseAuthException) {
+                logFirebaseAuthException('signup verificationCompleted', e);
+                if (mounted) {
+                  toast(userFacingFirebaseAuthMessage(e), print: true);
+                }
+              } else {
+                debugPrint('[SignUp/PhoneAuth] verificationCompleted err=$e');
+                debugPrintStack(stackTrace: st);
+                if (mounted) toast(e.toString(), print: true);
+              }
+              if (mounted) {
+                _signupPhoneVerifyInFlight = false;
+                appStore.setLoading(false);
+              }
             }
+          } else {
+            _signupPhoneVerifyInFlight = false;
           }
         },
         verificationFailed: (FirebaseAuthException e) {
+          logFirebaseAuthException('signup verificationFailed', e);
           appStore.setLoading(false);
+          _signupPhoneVerifyInFlight = false;
+          if (shouldSuppressRedundantPhoneAuthFailure(
+            current: e,
+            previousCode: _lastSignupVerificationFailureCode,
+            previousFailureTime: _lastSignupVerificationFailureTime,
+          )) {
+            debugPrint(
+                '[SignUp/PhoneAuth] suppressed redundant failure after rate limit');
+            return;
+          }
+          _lastSignupVerificationFailureTime = DateTime.now();
+          _lastSignupVerificationFailureCode = e.code;
           if (e.code == 'invalid-phone-number') {
             toast('Invalid phone number format. Check country and number.',
                 print: true);
           } else {
-            toast(e.message ?? e.toString(), print: true);
+            toast(userFacingFirebaseAuthMessage(e), print: true);
           }
         },
         codeSent: (String verificationId, int? resendToken) async {
+          _signupPhoneVerifyInFlight = false;
           appStore.setLoading(false);
           _signupVerificationId = verificationId;
           if (_signupVerificationId.isNotEmpty) {
@@ -249,16 +298,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           }
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          FirebaseAuth.instance.signOut();
-          if (mounted) {
-            setState(() {
-              _signupOtpCodeSent = false;
-            });
+          // Do not signOut here — it breaks iOS/Android manual SMS entry and can
+          // surface Firebase "internal-error" on the next credential step.
+          debugPrint(
+              '[SignUp/PhoneAuth] codeAutoRetrievalTimeout idLen=${verificationId.length}');
+          if (_signupVerificationId.isEmpty && verificationId.isNotEmpty) {
+            _signupVerificationId = verificationId;
           }
         },
       );
     } on Exception catch (e) {
       log(e);
+      _signupPhoneVerifyInFlight = false;
       appStore.setLoading(false);
       toast(e.toString(), print: true);
     }
@@ -305,14 +356,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await _completePendingSignupIfReady();
       return true;
     } on FirebaseAuthException catch (e) {
+      logFirebaseAuthException('signup confirmOtp', e);
       appStore.setLoading(false);
       if (e.code == 'invalid-verification-code') {
         toast(language.theEnteredCodeIsInvalidPleaseTryAgain, print: true);
       } else {
-        toast(e.message ?? e.toString(), print: true);
+        final msg = userFacingFirebaseAuthMessage(e);
+        toast(msg.isNotEmpty ? msg : (e.message ?? e.toString()), print: true);
       }
       return false;
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
+      debugPrint('[SignUp/PhoneAuth] confirmOtp err=$e');
+      debugPrintStack(stackTrace: st);
       appStore.setLoading(false);
       toast(e.toString(), print: true);
       return false;
@@ -509,7 +564,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       DashboardScreen(initialTabIndex: 0).launch(context,
           isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-    }).catchError((e) {
+    }).catchError((e, st) {
+      debugPrint('[SignUp/register] createUser failed: $e');
+      debugPrintStack(stackTrace: st);
       appStore.setLoading(false);
       toast(e.toString());
     });

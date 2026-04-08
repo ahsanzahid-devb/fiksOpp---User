@@ -81,9 +81,11 @@ class _UserWalletBalanceScreenState extends State<UserWalletBalanceScreen> {
 
             walletTopUpApi(request: req);
           },
-        ).stripePay();
-      } catch (_) {
+        ).stripePay(isMounted: () => mounted);
+      } catch (e, st) {
         appStore.setLoading(false);
+        log('Stripe wallet top-up failed: $e');
+        log(st);
       }
     } else if (currentPaymentMethod!.type == PAYMENT_METHOD_RAZOR) {
       RazorPayServiceNew razorPayServiceNew = RazorPayServiceNew(

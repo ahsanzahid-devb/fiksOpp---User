@@ -1,6 +1,7 @@
 import 'package:fiksOpp/model/pagination_model.dart';
 import 'package:fiksOpp/model/service_data_model.dart';
 import 'package:fiksOpp/model/user_data_model.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 class GetPostJobResponse {
   Pagination? pagination;
@@ -79,6 +80,12 @@ class PostJobData {
   Category? category;
   SubCategory? subCategory;
 
+  /// From `post_request_detail` when API returns them (same values sent on save-post-job).
+  num? latitude;
+  num? longitude;
+  String? address;
+  int? cityId;
+
   PostJobData({
     this.id,
     this.title,
@@ -94,7 +101,30 @@ class PostJobData {
     this.createdAt,
     this.category,
     this.subCategory,
+    this.latitude,
+    this.longitude,
+    this.address,
+    this.cityId,
   });
+
+  /// Mirrors provider bidding rules: need coords, address, city, or service-level location data.
+  bool get hasUsableLocationForProviders {
+    if (address.validate().isNotEmpty) return true;
+    if (cityId != null && cityId! > 0) return true;
+    if (latitude != null && longitude != null) return true;
+    for (final s in service.validate()) {
+      if (s.hasUsableLocationForProviders) return true;
+    }
+    return false;
+  }
+
+  String? get resolvedLocationLabel {
+    if (address.validate().isNotEmpty) return address;
+    if (latitude != null && longitude != null) {
+      return '${latitude!.toString()}, ${longitude!.toString()}';
+    }
+    return null;
+  }
 
   PostJobData.fromJson(dynamic json) {
     id = json['id'];
@@ -117,6 +147,17 @@ class PostJobData {
     subCategory = json['sub_category'] != null
         ? SubCategory.fromJson(json['sub_category'])
         : null;
+
+    latitude = json['latitude'] is num
+        ? json['latitude'] as num?
+        : num.tryParse(json['latitude']?.toString() ?? '');
+    longitude = json['longitude'] is num
+        ? json['longitude'] as num?
+        : num.tryParse(json['longitude']?.toString() ?? '');
+    address = json['address']?.toString();
+    cityId = json['city_id'] is int
+        ? json['city_id'] as int?
+        : int.tryParse(json['city_id']?.toString() ?? '');
 
     if (json['service'] != null) {
       service = [];
@@ -144,6 +185,10 @@ class PostJobData {
     if (subCategory != null) map['sub_category'] = subCategory!.toJson();
     if (service != null)
       map['service'] = service?.map((v) => v.toJson()).toList();
+    map['latitude'] = latitude;
+    map['longitude'] = longitude;
+    map['address'] = address;
+    map['city_id'] = cityId;
     return map;
   }
 }

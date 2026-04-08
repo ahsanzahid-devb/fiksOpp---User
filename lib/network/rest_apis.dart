@@ -565,9 +565,8 @@ Future<List<ServiceData>> searchServiceAPI({
   String apiUrl =
       'search-list?$categoryIds$customerId$providerIds$isPriceMinPara$isPriceMaxPara$ratingPara$subCategorys$searchPara$latitudes$longitudes$isFeatures$pages$perPages';
 
-  // Only log in debug mode to avoid printing in production
   assert(() {
-    debugPrint('Calling API: $apiUrl');
+    log('Calling API: $apiUrl');
     return true;
   }());
   try {

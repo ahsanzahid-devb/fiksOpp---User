@@ -36,17 +36,17 @@ Future<void> _showSystemTrayNotification(RemoteMessage message) async {
   final title = message.notification?.title?.trim().isNotEmpty == true
       ? message.notification!.title!.trim()
       : (message.data['title']?.toString() ??
-          message.data['gcm.notification.title']?.toString() ??
-          additional['type']?.toString() ??
-          'FiksOpp');
+            message.data['gcm.notification.title']?.toString() ??
+            additional['type']?.toString() ??
+            'FiksOpp');
 
   final bodyRaw = message.notification?.body?.trim().isNotEmpty == true
       ? message.notification!.body!.trim()
       : (message.data['body']?.toString() ??
-          message.data['message']?.toString() ??
-          message.data['gcm.notification.body']?.toString() ??
-          additional['message']?.toString() ??
-          '');
+            message.data['message']?.toString() ??
+            message.data['gcm.notification.body']?.toString() ??
+            additional['message']?.toString() ??
+            '');
 
   if (title.isEmpty && bodyRaw.isEmpty) return;
 
@@ -64,13 +64,26 @@ Future<void> _showSystemTrayNotification(RemoteMessage message) async {
 
   await plugin
       .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
+        AndroidFlutterLocalNotificationsPlugin
+      >()
       ?.createNotificationChannel(androidChannel);
 
-  const androidInit = AndroidInitializationSettings('@drawable/ic_stat_ic_notification');
-  const darwinInit = DarwinInitializationSettings();
+  const androidInit = AndroidInitializationSettings(
+    '@drawable/ic_stat_ic_notification',
+  );
+  const darwinInit = DarwinInitializationSettings(
+    defaultPresentAlert: true,
+    defaultPresentSound: true,
+    defaultPresentBadge: true,
+    defaultPresentBanner: true,
+    defaultPresentList: true,
+  );
   await plugin.initialize(
-    const InitializationSettings(android: androidInit, iOS: darwinInit, macOS: darwinInit),
+    const InitializationSettings(
+      android: androidInit,
+      iOS: darwinInit,
+      macOS: darwinInit,
+    ),
   );
 
   final androidDetails = AndroidNotificationDetails(
@@ -81,7 +94,13 @@ Future<void> _showSystemTrayNotification(RemoteMessage message) async {
     visibility: NotificationVisibility.public,
     icon: '@drawable/ic_stat_ic_notification',
   );
-  const darwinDetails = DarwinNotificationDetails();
+  const darwinDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+    presentBanner: true,
+    presentList: true,
+  );
 
   await plugin.show(
     message.hashCode,
@@ -92,9 +111,6 @@ Future<void> _showSystemTrayNotification(RemoteMessage message) async {
       iOS: darwinDetails,
       macOS: darwinDetails,
     ),
+    payload: jsonEncode(message.data),
   );
-
-  if (Platform.isIOS) {
-    // iOS killed-state delivery often uses APNs payload; local show is best-effort for data-only.
-  }
 }

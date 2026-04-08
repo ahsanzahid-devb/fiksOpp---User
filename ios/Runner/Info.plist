@@ -6,6 +6,8 @@
 	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>GoogleMapsAPIKey</key>
+	<string>AIzaSyDZDOYkwU7d03tnnUT0e4SPHjT_mL7s4uY</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

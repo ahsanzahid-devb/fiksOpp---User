@@ -8,18 +8,21 @@ Future<Position> getUserLocationPosition() async {
   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   LocationPermission permission = await Geolocator.checkPermission();
   if (!serviceEnabled) {
-    //
-  }
-
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      throw '${language.lblLocationPermissionDenied}';
-    }
+    throw '${language.lblEnableLocation}';
   }
 
   if (permission == LocationPermission.deniedForever) {
     throw '${language.lblLocationPermissionDeniedPermanently}';
+  }
+
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      throw permission == LocationPermission.deniedForever
+          ? '${language.lblLocationPermissionDeniedPermanently}'
+          : '${language.lblLocationPermissionDenied}';
+    }
   }
 
   return await Geolocator.getCurrentPosition(

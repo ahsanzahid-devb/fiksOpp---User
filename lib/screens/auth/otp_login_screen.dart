@@ -6,6 +6,8 @@ import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/screens/auth/sign_up_screen.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
+import 'package:fiksOpp/utils/firebase_auth_phone_utils.dart';
+import 'package:fiksOpp/utils/network_reachability.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,10 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
   ValueNotifier _valueNotifier = ValueNotifier(true);
 
   bool isCodeSent = false;
+
+  bool _otpVerifyInFlight = false;
+  DateTime? _lastOtpVerificationFailureTime;
+  String? _lastOtpVerificationFailureCode;
 
   @override
   void initState() {
@@ -81,31 +87,64 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       formKey.currentState!.save();
       hideKeyboard(context);
 
+      if (!await canReachIdentityToolkitHost()) {
+        debugPrint(
+            '[OtpLogin/PhoneAuth] identitytoolkit host unreachable (offline?)');
+        toast(kPhoneAuthNeedsInternetMessage, print: true);
+        return;
+      }
+
+      if (_otpVerifyInFlight) return;
+      _otpVerifyInFlight = true;
+      _lastOtpVerificationFailureTime = null;
+      _lastOtpVerificationFailureCode = null;
+
       appStore.setLoading(true);
 
       toast(language.sendingOTP);
 
       try {
         await FirebaseAuth.instance.verifyPhoneNumber(
+          timeout: const Duration(seconds: 120),
           phoneNumber:
               "+${selectedCountry.phoneCode}${numberController.text.trim()}",
           verificationCompleted: (PhoneAuthCredential credential) async {
             toast(language.verified);
 
             if (isAndroid) {
-              await FirebaseAuth.instance.signInWithCredential(credential);
+              try {
+                await FirebaseAuth.instance.signInWithCredential(credential);
+              } on FirebaseAuthException catch (e) {
+                logFirebaseAuthException('otpLogin verificationCompleted', e);
+                toast(userFacingFirebaseAuthMessage(e), print: true);
+              }
             }
+            _otpVerifyInFlight = false;
           },
           verificationFailed: (FirebaseAuthException e) {
+            logFirebaseAuthException('otpLogin verificationFailed', e);
             appStore.setLoading(false);
+            _otpVerifyInFlight = false;
+            if (shouldSuppressRedundantPhoneAuthFailure(
+              current: e,
+              previousCode: _lastOtpVerificationFailureCode,
+              previousFailureTime: _lastOtpVerificationFailureTime,
+            )) {
+              debugPrint(
+                  '[OtpLogin/PhoneAuth] suppressed redundant failure after rate limit');
+              return;
+            }
+            _lastOtpVerificationFailureTime = DateTime.now();
+            _lastOtpVerificationFailureCode = e.code;
             if (e.code == 'invalid-phone-number') {
               toast(language.theEnteredCodeIsInvalidPleaseTryAgain,
                   print: true);
             } else {
-              toast(e.toString(), print: true);
+              toast(userFacingFirebaseAuthMessage(e), print: true);
             }
           },
           codeSent: (String _verificationId, int? resendToken) async {
+            _otpVerifyInFlight = false;
             toast(language.otpCodeIsSentToYourMobileNumber);
 
             appStore.setLoading(false);
@@ -119,14 +158,20 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
               //Handle
             }
           },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            FirebaseAuth.instance.signOut();
-            isCodeSent = false;
-            setState(() {});
+          codeAutoRetrievalTimeout: (String vid) {
+            // Do not signOut or clear isCodeSent — user still needs manual SMS entry.
+            debugPrint(
+                '[OtpLogin/PhoneAuth] codeAutoRetrievalTimeout idLen=${vid.length}');
+            if (verificationId.isEmpty && vid.isNotEmpty) {
+              verificationId = vid;
+              isCodeSent = true;
+              setState(() {});
+            }
           },
         );
       } on Exception catch (e) {
         log(e);
+        _otpVerifyInFlight = false;
         appStore.setLoading(false);
 
         toast(e.toString(), print: true);
@@ -185,13 +230,18 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
             toast(e.toString(), print: true);
           }
         } on FirebaseAuthException catch (e) {
+          logFirebaseAuthException('otpLogin submitOtp', e);
           appStore.setLoading(false);
-          if (e.code.toString() == 'invalid-verification-code') {
+          if (e.code == 'invalid-verification-code') {
             toast(language.theEnteredCodeIsInvalidPleaseTryAgain, print: true);
           } else {
-            toast(e.message.toString(), print: true);
+            final msg = userFacingFirebaseAuthMessage(e);
+            toast(msg.isNotEmpty ? msg : (e.message ?? e.toString()),
+                print: true);
           }
-        } on Exception catch (e) {
+        } on Exception catch (e, st) {
+          debugPrint('[OtpLogin/submitOtp] $e');
+          debugPrintStack(stackTrace: st);
           appStore.setLoading(false);
           toast(e.toString(), print: true);
         }

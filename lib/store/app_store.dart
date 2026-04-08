@@ -70,7 +70,7 @@ abstract class _AppStore with Store {
   int stateId = getIntAsync(STATE_ID);
 
   @observable
-  int cityId = getIntAsync(COUNTRY_ID);
+  int cityId = getIntAsync(CITY_ID);
 
   @observable
   String address = getStringAsync(ADDRESS);

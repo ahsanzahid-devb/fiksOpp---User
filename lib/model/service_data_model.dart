@@ -54,6 +54,10 @@ class ServiceData {
   String? visitType;
   Map<String, MultiLanguageRequest>? translations;
 
+  /// Optional; returned on some post-job / detail payloads for map & bidding.
+  num? latitude;
+  num? longitude;
+
   //Local
   bool isSelected = false;
 
@@ -75,6 +79,12 @@ class ServiceData {
 
   bool get isOnSiteService =>
       visitType.validate().toLowerCase() == VISIT_OPTION_ON_SITE;
+
+  bool get hasUsableLocationForProviders =>
+      address.validate().isNotEmpty ||
+      (cityId != null && cityId! > 0) ||
+      serviceAddressMapping.validate().isNotEmpty ||
+      (latitude != null && longitude != null);
 
   num get getDiscountedPrice =>
       price.validate().calculatePercentage(discount.validate().toInt());
@@ -119,7 +129,9 @@ class ServiceData {
       this.advancePaymentAmount,
       this.attachmentsArray,
       this.visitType,
-      this.translations});
+      this.translations,
+      this.latitude,
+      this.longitude});
 
   factory ServiceData.fromJson(Map<String, dynamic> json) {
     return ServiceData(
@@ -178,6 +190,12 @@ class ServiceData {
               .toList()
           : null,
       visitType: json['visit_type'],
+      latitude: json['latitude'] is num
+          ? json['latitude'] as num?
+          : num.tryParse(json['latitude']?.toString() ?? ''),
+      longitude: json['longitude'] is num
+          ? json['longitude'] as num?
+          : num.tryParse(json['longitude']?.toString() ?? ''),
       translations: json['translations'] != null
           ? (jsonDecode(json['translations']) as Map<String, dynamic>).map(
               (key, value) {
@@ -249,6 +267,8 @@ class ServiceData {
         this.advancePaymentPercentage;
     data['advance_payment_amount'] = this.advancePaymentAmount;
     data['visit_type'] = this.visitType;
+    data['latitude'] = this.latitude;
+    data['longitude'] = this.longitude;
     if (translations != null) {
       data['translations'] =
           translations!.map((key, value) => MapEntry(key, value.toJson()));
