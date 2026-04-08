@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:fiksOpp/utils/common.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,13 +9,13 @@ import 'package:http/http.dart' as http;
 import 'package:nb_utils/nb_utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../main.dart';
 import '../screens/booking/booking_detail_screen.dart';
 import '../screens/jobRequest/my_post_detail_screen.dart';
 import '../screens/service/service_detail_screen.dart';
 import '../screens/wallet/user_wallet_balance_screen.dart';
 import 'constant.dart';
+import 'fcm_payload_utils.dart';
 
 bool _foregroundNotificationListenersRegistered = false;
 bool _fcmLocalNotificationsReady = false;
@@ -23,8 +23,6 @@ bool _fcmLocalNotificationsReady = false;
 final FlutterLocalNotificationsPlugin _fcmLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-/// Initializes local notifications once, before FCM, so iOS assigns
-/// [UNUserNotificationCenter] delegate correctly and foreground banners work.
 Future<void> ensureFcmLocalNotificationsPluginReady() async {
   if (_fcmLocalNotificationsReady) return;
 
@@ -44,9 +42,9 @@ Future<void> ensureFcmLocalNotificationsPluginReady() async {
   const androidInit =
       AndroidInitializationSettings('@drawable/ic_stat_ic_notification');
   const darwinInit = DarwinInitializationSettings(
-    requestSoundPermission: false,
-    requestBadgePermission: false,
-    requestAlertPermission: false,
+    requestSoundPermission: true,
+    requestBadgePermission: true,
+    requestAlertPermission: true,
     defaultPresentAlert: true,
     defaultPresentSound: true,
     defaultPresentBadge: true,
@@ -102,14 +100,15 @@ Future<void> initFirebaseMessaging() async {
   final ok = settings.authorizationStatus == AuthorizationStatus.authorized ||
       settings.authorizationStatus == AuthorizationStatus.provisional;
   if (ok) {
-    // iOS: show foreground UI via flutter_local_notifications (banner/list).
-    // FCM's own foreground presentation fights for the same delegate and often
-    // produces no visible banner; disable FCM's duplicate on iOS.
+    // iOS: must allow FCM/APNs foreground presentation when the server sends a
+    // `notification` { title, body }. Relying only on flutter_local_notifications
+    // often shows no banner for topic/data-heavy FCM. We skip duplicate local
+    // notifications in onMessage when `message.notification` is already set.
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
-      alert: !Platform.isIOS,
+      alert: true,
       badge: true,
-      sound: !Platform.isIOS,
+      sound: true,
     )
         .catchError((e) {
       log('setForegroundNotificationPresentationOptions ERROR: ${e}');
@@ -173,52 +172,47 @@ Future<void> registerNotificationListeners() async {
 
   FirebaseMessaging.instance.setAutoInitEnabled(true).then((value) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      Map<String, dynamic> additional = const {};
-      final additionalRaw = message.data['additional_data'];
-      if (additionalRaw is String && additionalRaw.trim().isNotEmpty) {
-        try {
-          final decoded = jsonDecode(additionalRaw);
-          if (decoded is Map<String, dynamic>) additional = decoded;
-        } catch (_) {}
-      }
-
+      logFcmInboundDiagnostics(message, phase: 'foreground_onMessage');
+      final display = fcmResolveDisplayText(message);
       final n = message.notification;
-      final title = n?.title.validate().isNotEmpty == true
-          ? n!.title.validate()
-          : (message.data['title']?.toString() ??
-              message.data['gcm.notification.title']?.toString() ??
-              additional['type']?.toString() ??
-              '');
-      final bodyRaw = n?.body.validate().isNotEmpty == true
-          ? n!.body.validate()
-          : (message.data['body']?.toString() ??
-              message.data['message']?.toString() ??
-              message.data['gcm.notification.body']?.toString() ??
-              additional['message']?.toString() ??
-              '');
-      if (title.isNotEmpty || bodyRaw.isNotEmpty) {
+
+      final nativeTitle = n?.title?.trim() ?? '';
+      final nativeBody = n?.body?.trim() ?? '';
+      final nativeBannerComplete =
+          nativeTitle.isNotEmpty && nativeBody.isNotEmpty;
+      final showLocalBanner =
+          display.hasContent && !(Platform.isIOS && nativeBannerComplete);
+      if (showLocalBanner) {
         showNotification(
           currentTimeStamp(),
-          title.isNotEmpty ? title : 'FiksOpp',
-          bodyRaw.isNotEmpty ? parseHtmlString(bodyRaw) : ' ',
+          display.title.isNotEmpty ? display.title : 'FiksOpp',
+          display.body.isNotEmpty ? parseHtmlString(display.body) : ' ',
           message,
         );
+      } else if (kDebugMode) {
+        if (Platform.isIOS && nativeBannerComplete) {
+          debugPrint(
+              '[FCM|inbound] foreground iOS: using system banner (full notification block)');
+        } else if (!display.hasContent) {
+          debugPrint(
+              '[FCM|inbound] foreground: no banner (add FCM notification{} or resolvable data)');
+        }
       }
     }, onError: (e) {
       log("setAutoInitEnabled error $e");
     });
 
-    // replacement for onResume: When the app is in the background and opened directly from the push notification.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      logFcmInboundDiagnostics(message, phase: 'opened_from_tray');
       handleNotificationClick(message);
     }, onError: (e) {
       log("onMessageOpenedApp Error $e");
     });
 
-    // workaround for onLaunch: When the app is completely closed (not in the background) and opened directly from the push notification
     FirebaseMessaging.instance.getInitialMessage().then(
         (RemoteMessage? message) {
       if (message != null) {
+        logFcmInboundDiagnostics(message, phase: 'initial_message_cold_start');
         handleNotificationClick(message);
       }
     }, onError: (e) {
@@ -229,6 +223,15 @@ Future<void> registerNotificationListeners() async {
   });
 }
 
+int? _postJobIdFromFlatBidData(Map<String, dynamic> d) {
+  final nType =
+      d['notification-type']?.toString() ?? d['notification_type']?.toString();
+  if (nType != 'provider_send_bid') return null;
+  final raw = d['job_id'] ?? d['job_request_id'] ?? d['post_request_id'];
+  if (raw == null) return null;
+  return int.tryParse(raw.toString());
+}
+
 void handleNotificationClick(RemoteMessage message) {
   if (message.data['url'] != null && message.data['url'] is String) {
     commonLaunchUrl(message.data['url'],
@@ -236,38 +239,63 @@ void handleNotificationClick(RemoteMessage message) {
   }
   if (message.data.containsKey('is_chat')) {
     LiveStream().emit(LIVESTREAM_FIREBASE, 3);
-  } else if (message.data.containsKey('additional_data')) {
-    Map<String, dynamic> additionalData =
-        jsonDecode(message.data["additional_data"]) ?? {};
-    int? id;
-    if (additionalData.containsKey('id') && additionalData['id'] != null) {
-      id = additionalData['id'];
-      if (additionalData.containsKey('notification-type') &&
-          additionalData['notification-type'] == 'provider_send_bid') {
-        navigatorKey.currentState!.push(
+  } else {
+    final flatBidPostId = _postJobIdFromFlatBidData(message.data);
+    if (flatBidPostId != null) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (context) => MyPostDetailScreen(
+            postRequestId: flatBidPostId,
+            callback: () {},
+          ),
+        ),
+      );
+    } else {
+      final Map<String, dynamic> additionalData =
+          fcmMergedDataMap(message.data);
+      if (additionalData.isEmpty) return;
+
+      int? postJobIdForBid;
+      if (additionalData['notification-type']?.toString() ==
+              'provider_send_bid' ||
+          additionalData['notification_type']?.toString() ==
+              'provider_send_bid') {
+        postJobIdForBid = int.tryParse((additionalData['job_id'] ??
+                additionalData['job_request_id'] ??
+                additionalData['post_request_id'] ??
+                additionalData['id'])
+            .toString());
+      }
+
+      if (postJobIdForBid != null) {
+        navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (context) => MyPostDetailScreen(
-              postRequestId: id.validate(),
+              postRequestId: postJobIdForBid.validate(),
               callback: () {},
             ),
           ),
         );
-      } else if (additionalData.containsKey('check_booking_type') &&
-          additionalData['check_booking_type'] == 'booking') {
-        navigatorKey.currentState!.push(MaterialPageRoute(
-            builder: (context) =>
-                BookingDetailScreen(bookingId: additionalData['id'].toInt())));
-      } else if (additionalData.containsKey('type') &&
-          additionalData['type'] == 'update_wallet') {
-        navigatorKey.currentState!.push(
-            MaterialPageRoute(builder: (context) => UserWalletBalanceScreen()));
+      } else if (additionalData.containsKey('id') &&
+          additionalData['id'] != null) {
+        final id = additionalData['id'];
+        if (additionalData.containsKey('check_booking_type') &&
+            additionalData['check_booking_type'] == 'booking') {
+          navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (context) =>
+                  BookingDetailScreen(bookingId: id.toInt())));
+        } else if (additionalData.containsKey('type') &&
+            additionalData['type'] == 'update_wallet') {
+          navigatorKey.currentState!.push(MaterialPageRoute(
+              builder: (context) => UserWalletBalanceScreen()));
+        }
       }
-    }
-    if (additionalData.containsKey('service_id') &&
-        additionalData["service_id"] != null) {
-      navigatorKey.currentState!.push(MaterialPageRoute(
-          builder: (context) => ServiceDetailScreen(
-              serviceId: additionalData["service_id"].toInt())));
+      if (additionalData.containsKey('service_id') &&
+          additionalData["service_id"] != null) {
+        navigatorKey.currentState!.push(MaterialPageRoute(
+            builder: (context) => ServiceDetailScreen(
+                serviceId: additionalData["service_id"].toInt())));
+      }
     }
   }
 }
@@ -298,7 +326,6 @@ void showNotification(
                   remoteMessage.data["image_url"], 'largeIcon')),
             )
           : null;
-  // endregion
 
   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'notification',

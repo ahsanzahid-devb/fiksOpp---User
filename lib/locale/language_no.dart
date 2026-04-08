@@ -540,7 +540,10 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblDate => 'Dato';
   @override
-  String get lblEstimatedDate => 'Estimert dato';
+  String get lblEstimatedDate => 'Jobbplanlegging';
+  @override
+  String get hintJobScheduling =>
+      'Jeg vil ha jobben gjort hjemme hos meg i Oslo, Norge på dato kl. tid';
   @override
   String get lblAboutHandyman => 'Om håndverker';
   @override

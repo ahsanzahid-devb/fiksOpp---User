@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fiksOpp/component/back_widget.dart';
 import 'package:fiksOpp/component/base_scaffold_body.dart';
 import 'package:fiksOpp/main.dart';
-import 'package:fiksOpp/screens/auth/sign_up_screen.dart';
+import 'package:fiksOpp/screens/auth/sign_in_screen.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/firebase_auth_phone_utils.dart';
@@ -45,6 +45,9 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
   DateTime? _lastOtpVerificationFailureTime;
   String? _lastOtpVerificationFailureCode;
 
+  int get _maxLocalPhoneDigits =>
+      phoneAuthExpectedLocalDigitLength(selectedCountry);
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +56,48 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
   Future<void> init() async {
     appStore.setLoading(false);
+  }
+
+  /// After Firebase accepts the phone credential, sync with your API and go to
+  /// [DashboardScreen], or [SignInScreen] if the account is not registered yet.
+  /// Used from manual OTP submit and from Android auto `verificationCompleted`.
+  Future<void> _completeBackendOtpLogin({
+    required UserCredential userCredential,
+    required PhoneAuthCredential phoneCredential,
+  }) async {
+    if (!mounted) return;
+    final request = <String, dynamic>{
+      'username': numberController.text.trim(),
+      'password': numberController.text.trim(),
+      'login_type': LOGIN_TYPE_OTP,
+      'uid': userCredential.user!.uid.validate(),
+    };
+    try {
+      final loginResponse = await loginUser(request, isSocialLogin: true);
+      if (!mounted) return;
+      if (loginResponse.isUserExist.validate(value: true)) {
+        await saveUserData(loginResponse.userData!);
+        await appStore.setLoginType(LOGIN_TYPE_OTP);
+        appStore.setLoading(false);
+        if (!mounted) return;
+        DashboardScreen(initialTabIndex: 0).launch(context,
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      } else {
+        appStore.setLoading(false);
+        try {
+          await FirebaseAuth.instance.signOut();
+        } catch (_) {}
+        if (!mounted) return;
+        SignInScreen().launch(context,
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+      }
+    } catch (e) {
+      if (mounted) {
+        finish(context);
+        toast(e.toString());
+      }
+      appStore.setLoading(false);
+    }
   }
 
   //region Methods
@@ -87,6 +132,13 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       formKey.currentState!.save();
       hideKeyboard(context);
 
+      final digitsOnly =
+          numberController.text.replaceAll(RegExp(r'[^0-9]'), '');
+      if (digitsOnly.length != _maxLocalPhoneDigits) {
+        toast('Enter a valid phone number');
+        return;
+      }
+
       if (!await canReachIdentityToolkitHost()) {
         debugPrint(
             '[OtpLogin/PhoneAuth] identitytoolkit host unreachable (offline?)');
@@ -106,20 +158,33 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       try {
         await FirebaseAuth.instance.verifyPhoneNumber(
           timeout: const Duration(seconds: 120),
-          phoneNumber:
-              "+${selectedCountry.phoneCode}${numberController.text.trim()}",
+          phoneNumber: firebasePhoneAuthE164(
+            countryCallingCodeDigits: selectedCountry.phoneCode,
+            localNumberRaw: numberController.text.trim(),
+          ),
           verificationCompleted: (PhoneAuthCredential credential) async {
-            toast(language.verified);
-
-            if (isAndroid) {
-              try {
-                await FirebaseAuth.instance.signInWithCredential(credential);
-              } on FirebaseAuthException catch (e) {
-                logFirebaseAuthException('otpLogin verificationCompleted', e);
+            if (!mounted) return;
+            try {
+              appStore.setLoading(true);
+              toast(language.verified);
+              final uc =
+                  await FirebaseAuth.instance.signInWithCredential(credential);
+              await _completeBackendOtpLogin(
+                  userCredential: uc, phoneCredential: credential);
+            } on FirebaseAuthException catch (e) {
+              logFirebaseAuthException('otpLogin verificationCompleted', e);
+              if (mounted) {
                 toast(userFacingFirebaseAuthMessage(e), print: true);
               }
+              appStore.setLoading(false);
+            } catch (e, st) {
+              debugPrint('[OtpLogin/PhoneAuth] verificationCompleted $e');
+              debugPrintStack(stackTrace: st);
+              appStore.setLoading(false);
+              if (mounted) toast(e.toString(), print: true);
+            } finally {
+              _otpVerifyInFlight = false;
             }
-            _otpVerifyInFlight = false;
           },
           verificationFailed: (FirebaseAuthException e) {
             logFirebaseAuthException('otpLogin verificationFailed', e);
@@ -187,48 +252,12 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
         appStore.setLoading(true);
 
         try {
-          PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          final PhoneAuthCredential credential = PhoneAuthProvider.credential(
               verificationId: verificationId, smsCode: otpCode);
-          UserCredential credentials =
+          final UserCredential credentials =
               await FirebaseAuth.instance.signInWithCredential(credential);
-
-          Map<String, dynamic> request = {
-            'username': numberController.text.trim(),
-            'password': numberController.text.trim(),
-            'login_type': LOGIN_TYPE_OTP,
-            "uid": credentials.user!.uid.validate(),
-          };
-
-          try {
-            await loginUser(request, isSocialLogin: true)
-                .then((loginResponse) async {
-              if (loginResponse.isUserExist.validate(value: true)) {
-                await saveUserData(loginResponse.userData!);
-                await appStore.setLoginType(LOGIN_TYPE_OTP);
-                DashboardScreen(initialTabIndex: 0).launch(context,
-                    isNewTask: true,
-                    pageRouteAnimation: PageRouteAnimation.Fade);
-              } else {
-                appStore.setLoading(false);
-                finish(context);
-
-                SignUpScreen(
-                  isOTPLogin: true,
-                  phoneNumber: numberController.text.trim(),
-                  countryCode: selectedCountry.countryCode,
-                  uid: credentials.user!.uid.validate(),
-                  tokenForOTPCredentials: credential.token,
-                ).launch(context);
-              }
-            }).catchError((e) {
-              finish(context);
-              toast(e.toString());
-              appStore.setLoading(false);
-            });
-          } catch (e) {
-            appStore.setLoading(false);
-            toast(e.toString(), print: true);
-          }
+          await _completeBackendOtpLogin(
+              userCredential: credentials, phoneCredential: credential);
         } on FirebaseAuthException catch (e) {
           logFirebaseAuthException('otpLogin submitOtp', e);
           appStore.setLoading(false);
@@ -261,7 +290,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            32.height,
+            72.height,
             OTPTextField(
               pinLength: OTP_TEXT_FIELD_LENGTH,
               textStyle: primaryTextStyle(),
@@ -336,6 +365,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
                         '${language.lblExample}: ${selectedCountry.example}',
                     hintStyle: secondaryTextStyle(),
                   ),
+                  maxLength: _maxLocalPhoneDigits,
                   autoFocus: true,
                   onFieldSubmitted: (s) {
                     sendOTP();

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fiksOpp/component/back_widget.dart';
 import 'package:fiksOpp/component/loader_widget.dart';
 import 'package:fiksOpp/component/responsive_container.dart';
@@ -14,9 +16,10 @@ import 'package:fiksOpp/utils/images.dart';
 import 'package:fiksOpp/utils/firebase_auth_phone_utils.dart';
 import 'package:fiksOpp/utils/network_reachability.dart';
 import 'package:fiksOpp/utils/string_extensions.dart';
-import 'package:fiksOpp/screens/dashboard/dashboard_screen.dart';
+import 'package:fiksOpp/screens/auth/sign_in_screen.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,27 +106,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _isCreatingUserAfterOtp = false;
   }
 
-  int get _maxLocalPhoneDigits {
-    final exampleDigits =
-        selectedCountry.example.replaceAll(RegExp(r'[^0-9]'), '');
-    if (exampleDigits.isNotEmpty) {
-      var localDigits = exampleDigits;
+  int get _maxLocalPhoneDigits =>
+      phoneAuthExpectedLocalDigitLength(selectedCountry);
 
-      // Some country examples may include the country code; keep only local part.
-      if (localDigits.startsWith(selectedCountry.phoneCode) &&
-          localDigits.length > selectedCountry.phoneCode.length + 5) {
-        localDigits = localDigits.substring(selectedCountry.phoneCode.length);
-      }
-
-      final baseLen = localDigits.length;
-      if (baseLen >= 6) {
-        // Allow optional leading trunk zero for countries where users type it.
-        final adjustedLen = localDigits.startsWith('0') ? baseLen : baseLen + 1;
-        return adjustedLen.clamp(6, 15);
-      }
+  Map<String, dynamic> _redactSignupLogMap(Map<String, dynamic> raw) {
+    final m = Map<String, dynamic>.from(raw);
+    final p = m['password'];
+    if (p != null) {
+      m['password'] = '*** (len=${p is String ? p.length : '?'})';
     }
+    return m;
+  }
 
-    return (15 - selectedCountry.phoneCode.length).clamp(6, 15);
+  void _logSignupPayload(String phase, Map<String, dynamic> data) {
+    if (!kDebugMode) return;
+    try {
+      debugPrint(
+          '[SignUp/payload] $phase: ${jsonEncode(_redactSignupLogMap(data))}');
+    } catch (e) {
+      debugPrint('[SignUp/payload] $phase encode error: $e');
+    }
   }
 
   String? _inferIsoFromAddress(String addr) {
@@ -188,18 +190,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (widget.isOTPLogin) return;
     hideKeyboard(context);
     final mobile = mobileCont.text.trim();
+    final digitsOnly = mobile.replaceAll(RegExp(r'[^0-9]'), '');
     if (mobile.isEmpty) {
       toast(language.requiredText);
       return;
     }
-    if (mobile.length > _maxLocalPhoneDigits) {
+    if (digitsOnly.length != _maxLocalPhoneDigits) {
       toast('Enter a valid phone number');
       return;
     }
     if (appStore.isLoading) return;
     if (_signupPhoneVerifyInFlight) return;
     if (!await canReachIdentityToolkitHost()) {
-      debugPrint('[SignUp/PhoneAuth] identitytoolkit host unreachable (offline?)');
+      debugPrint(
+          '[SignUp/PhoneAuth] identitytoolkit host unreachable (offline?)');
       toast(kPhoneAuthNeedsInternetMessage, print: true);
       return;
     }
@@ -208,10 +212,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _lastSignupVerificationFailureCode = null;
     appStore.setLoading(true);
     toast(language.sendingOTP);
+    final e164 = firebasePhoneAuthE164(
+      countryCallingCodeDigits: selectedCountry.phoneCode,
+      localNumberRaw: mobileCont.text.trim(),
+    );
+    _logSignupPayload('firebase_verifyPhoneNumber', {
+      'phoneE164': e164,
+      'countryIso': selectedCountry.countryCode,
+      'dialCode': '+${selectedCountry.phoneCode}',
+      'localNumberLength': mobileCont.text.trim().length,
+    });
+    if (kDebugMode) {
+      debugPrint(
+          '[SignUp/PhoneAuth] verifyPhoneNumber dialCode=+${selectedCountry.phoneCode} localLen=${mobileCont.text.trim().length}');
+    }
     try {
-       await FirebaseAuth.instance.verifyPhoneNumber(
+      await FirebaseAuth.instance.verifyPhoneNumber(
         timeout: const Duration(seconds: 120),
-        phoneNumber: '+${selectedCountry.phoneCode}${mobileCont.text.trim()}',
+        phoneNumber: e164,
         verificationCompleted: (PhoneAuthCredential credential) async {
           if (!mounted || widget.isOTPLogin) return;
           if (isAndroid) {
@@ -227,16 +245,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 }
                 return;
               }
-              setState(() {
-                _phoneOtpVerifiedForSignup = true;
-                _verifiedPhoneFirebaseUid = uid;
-                _signupOtpCodeSent = false;
-                _signupVerificationId = '';
-              });
               _signupPhoneVerifyInFlight = false;
               appStore.setLoading(false);
-              toast(language.verified);
-              await _completePendingSignupIfReady();
+              await _completePendingSignupIfReady(firebaseUid: uid);
             } catch (e, st) {
               if (e is FirebaseAuthException) {
                 logFirebaseAuthException('signup verificationCompleted', e);
@@ -254,7 +265,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               }
             }
           } else {
-            _signupPhoneVerifyInFlight = false;
+            // iOS rarely uses auto-verification; still clear loading if Firebase invokes this.
+            if (mounted) {
+              _signupPhoneVerifyInFlight = false;
+              appStore.setLoading(false);
+            }
           }
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -345,16 +360,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         toast(errorSomethingWentWrong);
         return false;
       }
-      setState(() {
-        _phoneOtpVerifiedForSignup = true;
-        _verifiedPhoneFirebaseUid = uid;
-        _signupOtpCodeSent = false;
-        _signupVerificationId = '';
-      });
-      appStore.setLoading(false);
-      toast(language.verified);
-      await _completePendingSignupIfReady();
-      return true;
+      return await _completePendingSignupIfReady(firebaseUid: uid);
     } on FirebaseAuthException catch (e) {
       logFirebaseAuthException('signup confirmOtp', e);
       appStore.setLoading(false);
@@ -443,6 +449,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           }
         }
 
+        _logSignupPayload(
+            'form_otp_login_flow_before_api', userResponse.toJson());
         await createUsers(tempRegisterData: userResponse);
       }
     }
@@ -501,6 +509,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ..email = emailCont.text.trim()
           ..password = passwordCont.text.trim();
 
+        _logSignupPayload(
+            'form_pending_before_firebase_otp', _pendingSignupData!.toJson());
+
         await _sendSignupOtp();
       } else {
         toast(language.termsConditionsAccept);
@@ -511,19 +522,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Future<void> _completePendingSignupIfReady() async {
-    if (_isCreatingUserAfterOtp) return;
+  /// Registers with [firebaseUid] from phone verification. Returns whether
+  /// registration finished successfully (including redirect-to-sign-in for
+  /// duplicate email). On failure, restores the form so the user can fix data
+  /// and request OTP again.
+  Future<bool> _completePendingSignupIfReady({String? firebaseUid}) async {
+    if (_isCreatingUserAfterOtp) return false;
+    final resolvedUid = (firebaseUid != null && firebaseUid.isNotEmpty)
+        ? firebaseUid
+        : _verifiedPhoneFirebaseUid.validate();
     final pending = _pendingSignupData;
-    final uid = _verifiedPhoneFirebaseUid.validate();
-    if (pending == null || uid.isEmpty) return;
+    if (pending == null || resolvedUid.isEmpty) {
+      appStore.setLoading(false);
+      return false;
+    }
 
     _isCreatingUserAfterOtp = true;
     _pendingSignupData = null;
-    pending.uid = uid;
+    pending.uid = resolvedUid;
 
     appStore.setLoading(true);
-    await createUsers(tempRegisterData: pending);
+    final ok = await createUsers(tempRegisterData: pending);
+    if (!ok) {
+      _pendingSignupData = pending;
+      pending.uid = null;
+      if (mounted) {
+        setState(() {
+          _phoneOtpVerifiedForSignup = false;
+          _verifiedPhoneFirebaseUid = null;
+          _signupOtpCodeSent = false;
+          _signupVerificationId = '';
+        });
+      }
+      appStore.setLoading(false);
+    }
     _isCreatingUserAfterOtp = false;
+    return ok;
   }
 
   /// API often returns "check / verify your email" even when the client logs the user in; avoid that confusing snackbar on opening home.
@@ -546,8 +580,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return emailTopic && verificationCue;
   }
 
-  Future<void> createUsers({required UserData tempRegisterData}) async {
-    await createUser(tempRegisterData.toJson()).then((registerResponse) async {
+  Future<bool> createUsers({required UserData tempRegisterData}) async {
+    _logSignupPayload('api_createUser_request', tempRegisterData.toJson());
+    try {
+      final registerResponse = await createUser(tempRegisterData.toJson());
       registerResponse.userData!.password = passwordCont.text.trim();
 
       appStore.setLoading(false);
@@ -560,16 +596,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } else {
         toast(MSG_SIGNUP_WELCOME);
       }
-      await saveUserData(registerResponse.userData!);
-
-      DashboardScreen(initialTabIndex: 0).launch(context,
+      if (!mounted) return true;
+      SignInScreen(afterRegistration: true).launch(context,
           isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
-    }).catchError((e, st) {
+      return true;
+    } catch (e, st) {
       debugPrint('[SignUp/register] createUser failed: $e');
       debugPrintStack(stackTrace: st);
       appStore.setLoading(false);
-      toast(e.toString());
-    });
+      toast(e.toString(), print: true);
+      final es = e.toString().toLowerCase();
+      final duplicateAccount = es.contains('already been taken') ||
+          es.contains('already registered') ||
+          es.contains('email has already');
+      if (mounted && duplicateAccount) {
+        SignInScreen().launch(context,
+            isNewTask: true, pageRouteAnimation: PageRouteAnimation.Fade);
+        return true;
+      }
+      return false;
+    }
   }
 
   //endregion

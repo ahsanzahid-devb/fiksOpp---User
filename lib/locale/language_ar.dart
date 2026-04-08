@@ -422,7 +422,11 @@ class LanguageAr extends BaseLanguage {
   String get lblDate => "تاريخ";
 
   @override
-  String get lblEstimatedDate => "التاريخ المقدر";
+  String get lblEstimatedDate => "جدولة العمل";
+
+  @override
+  String get hintJobScheduling =>
+      "أريد إنجاز العمل في منزلي في أوسلو، النرويج في التاريخ والوقت";
 
   @override
   String get lblAboutHandyman => "حول العمل اليدوي";

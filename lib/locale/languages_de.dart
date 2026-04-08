@@ -414,7 +414,11 @@ class LanguageDe extends BaseLanguage {
   String get lblDate => "Datum";
 
   @override
-  String get lblEstimatedDate => "Geschätztes Datum";
+  String get lblEstimatedDate => "Job-Terminplanung";
+
+  @override
+  String get hintJobScheduling =>
+      "Ich möchte den Auftrag bei mir zu Hause in Oslo, Norwegen am Datum um Uhrzeit erledigt haben";
 
   @override
   String get lblAboutHandyman => "Über Handwerker.";

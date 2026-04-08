@@ -37,10 +37,11 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  static const String _defaultLocationLabel = 'Denmark';
+
   int currentIndex = 0;
   bool isInterNetConnect = true;
 
-  /// Ignore LIVESTREAM_FIREBASE tab switch briefly after launch (avoids stray notification switching tab after login).
   bool _ignoreFirebaseStreamUntil = false;
 
   @override
@@ -178,26 +179,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(
                             appStore.isCurrentLocation
                                 ? getStringAsync(CURRENT_ADDRESS)
-                                : language.lblLocationOff,
+                                : _defaultLocationLabel,
                             style: secondaryTextStyle(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ).expand(),
                           8.width,
                           Icon(Icons.keyboard_arrow_down,
-                              size: 24,
-                              color: appStore.isCurrentLocation
-                                  ? primaryColor
-                                  : context.iconColor),
+                              size: 24, color: primaryColor),
                         ],
                       ),
                     ),
-                    onTap: () async {
-                      SearchServiceScreen().launch(context).then((value) {
-                        setStatusBarColor(Colors.transparent,
-                            statusBarIconBrightness: Brightness.dark);
-                      });
-                    },
+                    // onTap: () async {
+                    //   SearchServiceScreen().launch(context).then((value) {
+                    //     setStatusBarColor(Colors.transparent,
+                    //         statusBarIconBrightness: Brightness.dark);
+                    //   }
+
+                    //   );
+                    // },
                   ).cornerRadiusWithClipRRect(28);
                 },
               ).paddingSymmetric(horizontal: 16),

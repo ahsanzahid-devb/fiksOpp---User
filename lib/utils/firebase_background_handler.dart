@@ -1,10 +1,12 @@
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:html/parser.dart' as html_parser;
+
+import 'fcm_payload_utils.dart';
 
 String _parseHtmlSnippet(String? s) {
   if (s == null || s.isEmpty) return '';
@@ -15,8 +17,6 @@ String _parseHtmlSnippet(String? s) {
   }
 }
 
-/// Top-level handler for FCM when app is terminated or in background (Android).
-/// Must not import `main.dart` to keep the isolate lean and avoid cycles.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -24,33 +24,18 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> _showSystemTrayNotification(RemoteMessage message) async {
-  Map<String, dynamic> additional = const {};
-  final additionalRaw = message.data['additional_data'];
-  if (additionalRaw is String && additionalRaw.trim().isNotEmpty) {
-    try {
-      final decoded = jsonDecode(additionalRaw);
-      if (decoded is Map<String, dynamic>) additional = decoded;
-    } catch (_) {}
+  logFcmInboundDiagnostics(message, phase: 'background_isolate');
+  final display = fcmResolveDisplayText(message);
+  if (!display.hasContent) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print('[FCM|inbound] background: no tray notification (no display text)');
+    }
+    return;
   }
 
-  final title = message.notification?.title?.trim().isNotEmpty == true
-      ? message.notification!.title!.trim()
-      : (message.data['title']?.toString() ??
-            message.data['gcm.notification.title']?.toString() ??
-            additional['type']?.toString() ??
-            'FiksOpp');
-
-  final bodyRaw = message.notification?.body?.trim().isNotEmpty == true
-      ? message.notification!.body!.trim()
-      : (message.data['body']?.toString() ??
-            message.data['message']?.toString() ??
-            message.data['gcm.notification.body']?.toString() ??
-            additional['message']?.toString() ??
-            '');
-
-  if (title.isEmpty && bodyRaw.isEmpty) return;
-
-  final body = _parseHtmlSnippet(bodyRaw);
+  final title = display.title.isEmpty ? 'FiksOpp' : display.title;
+  final body = _parseHtmlSnippet(display.body.isEmpty ? ' ' : display.body);
   final plugin = FlutterLocalNotificationsPlugin();
 
   const androidChannel = AndroidNotificationChannel(
@@ -64,8 +49,7 @@ Future<void> _showSystemTrayNotification(RemoteMessage message) async {
 
   await plugin
       .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(androidChannel);
 
   const androidInit = AndroidInitializationSettings(

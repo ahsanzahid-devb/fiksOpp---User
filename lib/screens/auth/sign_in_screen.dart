@@ -23,10 +23,15 @@ class SignInScreen extends StatefulWidget {
   final bool? isFromServiceBooking;
   final bool returnExpected;
 
+  /// After email/password signup + phone OTP: open sign-in with empty fields so
+  /// the user logs in once and receives a proper API token (register may not return one).
+  final bool afterRegistration;
+
   SignInScreen(
       {this.isFromDashboard,
       this.isFromServiceBooking,
-      this.returnExpected = false});
+      this.returnExpected = false,
+      this.afterRegistration = false});
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -51,13 +56,13 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void init() async {
     isRemember = getBoolAsync(IS_REMEMBERED);
-    if (isRemember) {
+    if (!widget.afterRegistration && isRemember) {
       emailCont.text = getStringAsync(USER_EMAIL);
       passwordCont.text = getStringAsync(USER_PASSWORD);
     }
 
     /// For Demo Purpose
-    if (await isIqonicProduct) {
+    if (!widget.afterRegistration && await isIqonicProduct) {
       emailCont.text = DEFAULT_EMAIL;
       passwordCont.text = DEFAULT_PASS;
     }

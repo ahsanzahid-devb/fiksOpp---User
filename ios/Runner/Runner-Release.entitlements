@@ -10,7 +10,5 @@
 	</array>
 	<key>com.apple.developer.game-center</key>
 	<true/>
-	<key>com.apple.developer.usernotifications.communication</key>
-	<true/>
 </dict>
 </plist>

@@ -415,7 +415,11 @@ class LanguageFr extends BaseLanguage {
   String get lblDate => "Date";
 
   @override
-  String get lblEstimatedDate => "Date estimée";
+  String get lblEstimatedDate => "Planification du travail";
+
+  @override
+  String get hintJobScheduling =>
+      "Je veux que le travail soit fait chez moi à Oslo, Norvège, à la date à l'heure";
 
   @override
   String get lblAboutHandyman => "À propos de Handyman";

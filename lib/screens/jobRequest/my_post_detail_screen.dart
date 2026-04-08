@@ -161,7 +161,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(language.datePriceInfo, style: secondaryTextStyle()),
+              Text(language.lblEstimatedDate, style: secondaryTextStyle()),
               4.height,
               Text(datePriceInfo, style: boldTextStyle(size: 14)),
               20.height,

@@ -25,8 +25,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Timer? _lateConfigTimer;
 
   static const int _configFetchMaxAttempts = 3;
+  /// Per attempt; total wait can be ~3× this + backoff. Keep reasonable for splash UX.
   static const Duration _configFetchTimeoutPerAttempt =
-      Duration(seconds: 45);
+      Duration(seconds: 18);
 
   void _slog(String message) {
     log('SPLASH | ${DateTime.now().toIso8601String()} | $message');
@@ -57,9 +58,9 @@ class _SplashScreenState extends State<SplashScreen> {
     await appStore.setLanguage(savedLanguage);
     _slog('appStore.setLanguage done');
 
-    // Sync new configurations when app is open
-    await setValue(LAST_APP_CONFIGURATION_SYNCED_TIME, 0);
-    _slog('LAST_APP_CONFIGURATION_SYNCED_TIME reset to 0');
+    // Do not reset LAST_APP_CONFIGURATION_SYNCED_TIME here: [getAppConfigurations]
+    // already skips the network when last sync was within 5 minutes. Resetting forced
+    // a full API round-trip on every cold start and made splash feel stuck.
 
     try {
       await _fetchAppConfigurationsWithRetries();

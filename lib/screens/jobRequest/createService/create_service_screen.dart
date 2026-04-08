@@ -93,7 +93,6 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   @override
   void initState() {
     super.initState();
-    jobDateCont.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
     if (widget.jobTitle != null && widget.jobTitle!.trim().isNotEmpty) {
       jobTitleCont.text = widget.jobTitle!.trim();
     }
@@ -734,7 +733,8 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                           textFieldType: TextFieldType.OTHER,
                           focus: jobDateFocus,
                           decoration: inputDecoration(context,
-                              labelText: language.lblEstimatedDate),
+                              labelText: language.lblEstimatedDate,
+                              hintText: language.hintJobScheduling),
                           keyboardType: TextInputType.text,
                           validator: (s) {
                             if (s == null || s.isEmpty) return null;
