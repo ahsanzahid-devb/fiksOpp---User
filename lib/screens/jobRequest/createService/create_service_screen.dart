@@ -130,17 +130,62 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     await getCategoryData();
   }
 
+  /// [DropdownMenuItem.value] uses reference equality; keep one row per id and
+  /// align [selectedCategory] / [selectedSubCategory] to instances in the list.
+  List<CategoryData> _dedupeCategoriesById(List<CategoryData> raw) {
+    final seen = <int>{};
+    final out = <CategoryData>[];
+    for (final c in raw) {
+      final id = c.id;
+      if (id == null) {
+        out.add(c);
+        continue;
+      }
+      if (seen.add(id)) out.add(c);
+    }
+    return out;
+  }
+
+  void _alignSelectedCategoryWithList() {
+    final sel = selectedCategory;
+    if (sel?.id == null) return;
+    for (final c in categoryList) {
+      if (c.id == sel!.id) {
+        selectedCategory = c;
+        return;
+      }
+    }
+    selectedCategory = null;
+  }
+
+  void _alignSelectedSubcategoryWithList() {
+    final sel = selectedSubCategory;
+    if (sel?.id == null) return;
+    for (final c in subCategoryList) {
+      if (c.id == sel!.id) {
+        selectedSubCategory = c;
+        return;
+      }
+    }
+    selectedSubCategory = null;
+  }
+
   Future<void> getCategoryData() async {
     appStore.setLoading(true);
     await getCategoryList(CATEGORY_LIST_ALL).then((value) {
-      if (value.categoryList!.isNotEmpty) {
-        categoryList.addAll(value.categoryList.validate());
-      }
+      final list = value.categoryList.validate();
+      categoryList
+        ..clear()
+        ..addAll(_dedupeCategoriesById(list));
 
       if (isUpdate) {
-        selectedCategory = value.categoryList!.firstWhere(
-            (element) => element.id == widget.data!.categoryId.validate());
+        final cid = widget.data!.categoryId.validate();
+        final matches = categoryList.where((e) => e.id == cid);
+        selectedCategory =
+            matches.isEmpty ? null : matches.first;
       }
+
+      _alignSelectedCategoryWithList();
 
       setState(() {});
       appStore.setLoading(false);
@@ -158,10 +203,13 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
 
       subCategoryList.clear();
       if (response.categoryList != null && response.categoryList!.isNotEmpty) {
-        subCategoryList.addAll(response.categoryList.validate());
+        subCategoryList
+            .addAll(_dedupeCategoriesById(response.categoryList.validate()));
       } else {
+        selectedSubCategory = null;
         toast(language.noSubcategoriesFound);
       }
+      _alignSelectedSubcategoryWithList();
     } catch (e) {
       toast(e.toString(), print: true);
     } finally {

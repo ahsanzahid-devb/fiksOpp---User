@@ -19,6 +19,23 @@ allprojects {
     }
 }
 
+// Third-party plugins (e.g. razorpay_flutter) often default to Java 8; JDK 21+ warns
+// "source value 8 is obsolete". Align every Android module with the app (Java 11).
+subprojects { subproject ->
+    subproject.afterEvaluate {
+        if (subproject.plugins.hasPlugin('com.android.library') ||
+                subproject.plugins.hasPlugin('com.android.application')) {
+            subproject.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_11
+                targetCompatibility JavaVersion.VERSION_11
+            }
+        }
+        subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+        }
+    }
+}
+
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
