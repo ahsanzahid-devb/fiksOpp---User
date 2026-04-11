@@ -609,7 +609,7 @@ String get lblNoServicesFound => "Keine Dienste in Ihrer Zone gefunden";
   String get lblHour => "Stunde";
 
   @override
-  String get lblHelplineNumber => "Helpline -Nummer";
+  String get lblHelplineNumber => "Support-E-Mail";
 
   @override
   String get lblSubcategories => "Unterkategorien";

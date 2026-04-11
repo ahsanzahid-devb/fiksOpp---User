@@ -611,7 +611,7 @@ class LanguageFr extends BaseLanguage {
   String get lblHour => "heure";
 
   @override
-  String get lblHelplineNumber => "Numéro d'assistance téléphonique";
+  String get lblHelplineNumber => "E-mail d'assistance";
 
   @override
   String get lblSubcategories => "Sous-catégories";

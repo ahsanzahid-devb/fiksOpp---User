@@ -46,11 +46,12 @@ const TERMS_CONDITION_URL = '';
 const PRIVACY_POLICY_URL = '';
 const HELP_AND_SUPPORT_URL = '';
 const REFUND_POLICY_URL = '';
-const INQUIRY_SUPPORT_EMAIL = '';
+/// Public support inbox (About when API has no inquiry email; Profile support row).
+const DEFAULT_SUPPORT_EMAIL = 'post@fiksopp.com';
 
-/// Shown in Profile / About and opened with the system dialer when the API
-/// `helpline_number` is empty. Override anytime by setting helpline in admin.
-const DEFAULT_HELPLINE_NUMBER = '+4792929212';
+const INQUIRY_SUPPORT_EMAIL = DEFAULT_SUPPORT_EMAIL;
+
+/// Profile support contact: if admin `helpline_number` is an email, that is used; otherwise [DEFAULT_SUPPORT_EMAIL].
 
 //Airtel Money Payments
 ///It Supports ["UGX", "NGN", "TZS", "KES", "RWF", "ZMW", "CFA", "XOF", "XAF", "CDF", "USD", "XAF", "SCR", "MGA", "MWK"]

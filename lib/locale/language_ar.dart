@@ -617,7 +617,7 @@ class LanguageAr extends BaseLanguage {
   String get lblHour => "ساعة";
 
   @override
-  String get lblHelplineNumber => "رقم خط المساعدة";
+  String get lblHelplineNumber => "البريد الإلكتروني للدعم";
 
   @override
   String get lblSubcategories => "الفئات الفرعية";

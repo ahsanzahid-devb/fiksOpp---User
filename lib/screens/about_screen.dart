@@ -50,60 +50,32 @@ class _AboutScreenState extends State<AboutScreen> {
           Text(APP_NAME_TAG_LINE, style: secondaryTextStyle(), maxLines: 2),
           30.height,
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (effectiveSupportHelpline().isNotEmpty)
-                Container(
-                  height: 80,
-                  width: 80,
-                  padding: EdgeInsets.all(16),
-                  decoration: boxDecorationWithRoundedCorners(
-                      borderRadius: radius(),
-                      backgroundColor: context.scaffoldBackgroundColor),
-                  child: Column(
-                    children: [
-                      Image.asset(ic_calling, height: 22, color: primaryColor),
-                      4.height,
-                      Text(language.lblCall,
-                          style: secondaryTextStyle(),
-                          textAlign: TextAlign.center),
-                    ],
-                  ),
-                ).onTap(
-                  () {
-                    final n = effectiveSupportHelpline();
-                    toast(n);
-                    launchCall(n);
-                  },
-                  hoverColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
+              Container(
+                height: 80,
+                width: 80,
+                padding: EdgeInsets.all(16),
+                decoration: boxDecorationWithRoundedCorners(
+                    borderRadius: radius(),
+                    backgroundColor: context.scaffoldBackgroundColor),
+                child: Column(
+                  children: [
+                    Image.asset(ic_message, height: 22, color: primaryColor),
+                    4.height,
+                    Text(language.email,
+                        style: secondaryTextStyle(),
+                        textAlign: TextAlign.center),
+                  ],
                 ),
-              if (appConfigurationStore.inquiryEmail.isNotEmpty)
-                Container(
-                  height: 80,
-                  width: 80,
-                  padding: EdgeInsets.all(16),
-                  decoration: boxDecorationWithRoundedCorners(
-                      borderRadius: radius(),
-                      backgroundColor: context.scaffoldBackgroundColor),
-                  child: Column(
-                    children: [
-                      Image.asset(ic_message, height: 22, color: primaryColor),
-                      4.height,
-                      Text(language.email,
-                          style: secondaryTextStyle(),
-                          textAlign: TextAlign.center),
-                    ],
-                  ),
-                ).onTap(
-                  () {
-                    launchMail(appConfigurationStore.inquiryEmail);
-                  },
-                  hoverColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                ),
+              ).onTap(
+                () {
+                  launchMail(effectiveInquiryEmail());
+                },
+                hoverColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
+              ),
             ],
           ),
           25.height,

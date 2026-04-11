@@ -623,7 +623,7 @@ class LanguageHi extends BaseLanguage {
   String get lblHour => "घंटा";
 
   @override
-  String get lblHelplineNumber => "हेल्पलाइन नंबर";
+  String get lblHelplineNumber => "सहायता ईमेल";
 
   @override
   String get lblSubcategories => "उपश्रेणियों";

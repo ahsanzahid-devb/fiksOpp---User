@@ -108,11 +108,18 @@ Future<void> launchCall(String? raw) async {
   }
 }
 
-/// Support line for the dialer: admin [helpline_number] when set, else [DEFAULT_HELPLINE_NUMBER].
-String effectiveSupportHelpline() {
+/// Support email for mailto: admin `helpline_number` when it looks like an email, else [DEFAULT_SUPPORT_EMAIL].
+String effectiveSupportEmail() {
   final t = appConfigurationStore.helplineNumber.trim();
-  if (t.isNotEmpty) return t;
-  return DEFAULT_HELPLINE_NUMBER;
+  if (t.isNotEmpty && t.contains('@')) return t;
+  return DEFAULT_SUPPORT_EMAIL;
+}
+
+/// About / inquiry mailto: admin `inquiry_email` when set, else [DEFAULT_SUPPORT_EMAIL].
+String effectiveInquiryEmail() {
+  final e = appConfigurationStore.inquiryEmail.trim();
+  if (e.isNotEmpty) return e;
+  return DEFAULT_SUPPORT_EMAIL;
 }
 
 /// Apple public store URLs must include a numeric app id. Values like

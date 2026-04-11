@@ -450,7 +450,7 @@ class ProfileFragmentState extends State<ProfileFragment> {
                         ).visible(rolesAndPermissionStore
                             .refundAndCancellationPolicy),
                         Observer(builder: (context) {
-                          final helpline = effectiveSupportHelpline();
+                          final supportEmail = effectiveSupportEmail();
                           final helpVisible =
                               appConfigurationStore.helpAndSupport.isNotEmpty &&
                                   rolesAndPermissionStore.helpAndSupport;
@@ -488,22 +488,23 @@ class ProfileFragmentState extends State<ProfileFragment> {
                                       bottom: Radius.circular(16),
                                     ),
                                   ),
-                                  leading: ic_calling.iconImage(
-                                      size: SETTING_ICON_SIZE),
-                                  title: language.lblHelplineNumber,
-                                  subTitle: helpline,
-                                  titleTextStyle: boldTextStyle(size: 12),
-                                  subTitleTextStyle:
-                                      secondaryTextStyle(size: 12),
-                                  padding: EdgeInsets.only(
-                                    bottom: 16,
-                                    right: 16,
-                                    left: 16,
-                                    top: 16,
-                                  ),
-                                  highlightColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  onTap: () => launchCall(helpline),
+                                    leading: ic_message.iconImage(
+                                        size: SETTING_ICON_SIZE,
+                                    ),
+                                    title: language.lblHelplineNumber,
+                                    subTitle: supportEmail,
+                                    titleTextStyle: boldTextStyle(size: 12),
+                                    subTitleTextStyle:
+                                        secondaryTextStyle(size: 12),
+                                    padding: EdgeInsets.only(
+                                        bottom: 16,
+                                        right: 16,
+                                        left: 16,
+                                        top: 16,
+                                    ),
+                                    highlightColor: Colors.transparent,
+                                    splashColor: Colors.transparent,
+                                    onTap: () => launchMail(supportEmail),
                                 ),
                               ],
                             ),

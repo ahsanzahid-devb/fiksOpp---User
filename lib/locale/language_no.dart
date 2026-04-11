@@ -675,7 +675,7 @@ class LanguageNo extends LanguageEn {
   @override
   String get lblHr => 't';
   @override
-  String get lblHelplineNumber => 'Hjelpetelefon';
+  String get lblHelplineNumber => 'Støtte-e-post';
   @override
   String get lblSubcategories => 'Underkategorier';
   @override

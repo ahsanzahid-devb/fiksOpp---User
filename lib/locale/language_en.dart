@@ -620,7 +620,7 @@ class LanguageEn extends BaseLanguage {
   String get lblHour => "hour";
 
   @override
-  String get lblHelplineNumber => "Helpline Number";
+  String get lblHelplineNumber => "Support email";
 
   @override
   String get lblSubcategories => "Subcategories";
