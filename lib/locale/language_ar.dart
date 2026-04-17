@@ -425,6 +425,9 @@ class LanguageAr extends BaseLanguage {
   String get lblEstimatedDate => "جدولة العمل";
 
   @override
+  String get lblSelectArea => "اختر المنطقة";
+
+  @override
   String get hintJobScheduling =>
       "أريد إنجاز العمل في منزلي في أوسلو، النرويج في التاريخ والوقت";
 

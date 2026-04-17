@@ -19,7 +19,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:nb_utils/nb_utils.dart';
 import '../../../component/chat_gpt_loder.dart';
 import '../../../model/multi_language_request_model.dart';
@@ -73,6 +72,23 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   FocusNode jobTitleFocus = FocusNode();
   FocusNode jobDescriptionFocus = FocusNode();
   FocusNode jobDateFocus = FocusNode();
+  String? selectedArea;
+
+  static const List<String> kAreaOptions = [
+    'Asker',
+    'Bærum',
+    'Bergen',
+    'Drammen',
+    'Jessheim',
+    'Kløfta',
+    'Lillestrøm',
+    'Lørenskog',
+    'Oslo',
+    'Rælingen',
+    'Stavanger',
+    'Trondheim',
+    'Ullensaker',
+  ];
 
   List<XFile> imageFiles = [];
   List<Attachments> attachmentsArray = [];
@@ -102,6 +118,9 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     }
     if (widget.jobDate != null && widget.jobDate!.trim().isNotEmpty) {
       jobDateCont.text = widget.jobDate!.trim();
+      if (kAreaOptions.contains(jobDateCont.text.trim())) {
+        selectedArea = jobDateCont.text.trim();
+      }
     }
     init();
     appStore.setSelectedLanguage(languageList().first);
@@ -181,8 +200,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
       if (isUpdate) {
         final cid = widget.data!.categoryId.validate();
         final matches = categoryList.where((e) => e.id == cid);
-        selectedCategory =
-            matches.isEmpty ? null : matches.first;
+        selectedCategory = matches.isEmpty ? null : matches.first;
       }
 
       _alignSelectedCategoryWithList();
@@ -478,6 +496,11 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   /// Runs after screen is closed; posts job with short timeout and shows toast.
   Future<void> _postJobInBackground(Map<String, dynamic> request) async {
     try {
+      _logPublishLoc('_postJobInBackground payload', {
+        'selectedArea': selectedArea,
+        'jobDateCont': jobDateCont.text.trim(),
+        'postJobPrice': request[PostJob.price]?.toString(),
+      });
       final canPost = await _canCurrentUserPostJob();
       if (!canPost) return;
 
@@ -776,25 +799,25 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                               labelText: language.postJobDescription),
                         ),
                         16.height,
-                        AppTextField(
-                          controller: jobDateCont,
-                          textFieldType: TextFieldType.OTHER,
-                          focus: jobDateFocus,
-                          decoration: inputDecoration(context,
-                              labelText: language.lblEstimatedDate,
-                              hintText: language.hintJobScheduling),
-                          keyboardType: TextInputType.text,
-                          validator: (s) {
-                            if (s == null || s.isEmpty) return null;
-                            final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                            if (dateRegex.hasMatch(s)) {
-                              try {
-                                DateFormat('yyyy-MM-dd').parseStrict(s);
-                              } catch (e) {
-                                return language.pleaseEnterValidDate;
-                              }
-                            }
-                            return null;
+                        DropdownButtonFormField<String>(
+                          decoration: inputDecoration(
+                            context,
+                            labelText: language.lblSelectArea,
+                          ),
+                          hint: Text(language.lblSelectArea,
+                              style: secondaryTextStyle()),
+                          initialValue: selectedArea,
+                          dropdownColor: context.scaffoldBackgroundColor,
+                          items: kAreaOptions.map((area) {
+                            return DropdownMenuItem<String>(
+                              value: area,
+                              child: Text(area, style: primaryTextStyle()),
+                            );
+                          }).toList(),
+                          onChanged: (String? value) {
+                            selectedArea = value;
+                            jobDateCont.text = value.validate();
+                            setState(() {});
                           },
                         ),
                         20.height,

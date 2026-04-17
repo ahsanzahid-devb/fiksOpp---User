@@ -27,6 +27,7 @@ const APP_BAR_TEXT_SIZE = 18;
 const MARK_AS_READ = 'markas_read';
 const IS_CURRENT_LOCATION = 'CURRENT_LOCATION';
 const GET_LOCATION_API_TIMEOUT_SECOND = 15;
+
 /// Max seconds for booking save + booking detail and other heavy flows (avoids endless loading).
 const BOOKING_API_TIMEOUT_SECONDS = 45;
 
@@ -65,6 +66,7 @@ const MSG_DUPLICATE_IMAGE =
     'This image was already added. Please choose a different photo.';
 const SEND_OTP_BUTTON = 'Send OTP';
 const CONFIRM_OTP_BUTTON = 'Confirm OTP';
+
 /// Shown after sign-up when the API message is only about email verification (user is already taken to the app home).
 const MSG_SIGNUP_WELCOME = "You're signed in. Welcome!";
 
@@ -105,8 +107,8 @@ const LIVESTREAM_UPDATE_HELP_DESK_LIST = "LIVESTREAM_UPDATE_HELP_DESK_LIST";
 //endregion
 
 //region default USER login
-const DEFAULT_EMAIL = 'demo@user.com';
-const DEFAULT_PASS = '12345678';
+const DEFAULT_EMAIL = '';
+const DEFAULT_PASS = '';
 //endregion
 
 //region THEME MODE TYPE

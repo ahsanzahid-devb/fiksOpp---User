@@ -2,7 +2,6 @@ import 'package:fiksOpp/component/base_scaffold_widget.dart';
 import 'package:fiksOpp/component/cached_image_widget.dart';
 import 'package:fiksOpp/component/disabled_rating_bar_widget.dart';
 import 'package:fiksOpp/component/loader_widget.dart';
-import 'package:fiksOpp/component/price_widget.dart';
 import 'package:fiksOpp/component/view_all_label_component.dart';
 import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/model/get_my_post_job_list_response.dart';
@@ -84,17 +83,21 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
     String title = data.title.validate().isNotEmpty ? data.title! : '—';
     String description =
         data.description.validate().isNotEmpty ? data.description! : '—';
-    String? categoryName = data.service.validate().isNotEmpty
-        ? (data.service!.first.categoryName.validate().isNotEmpty
-            ? data.service!.first.categoryName
-            : null)
-        : null;
-    String? subCategoryName = data.service.validate().isNotEmpty
-        ? (data.service!.first.subCategoryName.validate().isNotEmpty
-            ? data.service!.first.subCategoryName
-            : null)
-        : null;
-    num jobPrice = data.jobPrice ?? 0;
+    String? categoryName = data.category?.name.validate().isNotEmpty == true
+        ? data.category?.name
+        : data.service.validate().isNotEmpty
+            ? (data.service!.first.categoryName.validate().isNotEmpty
+                ? data.service!.first.categoryName
+                : null)
+            : null;
+    String? subCategoryName =
+        data.subCategory?.name.validate().isNotEmpty == true
+            ? data.subCategory?.name
+            : data.service.validate().isNotEmpty
+                ? (data.service!.first.subCategoryName.validate().isNotEmpty
+                    ? data.service!.first.subCategoryName
+                    : null)
+                : null;
     String datePriceInfo =
         (data.price.validate().isNotEmpty && data.price != "0")
             ? data.price!
@@ -121,14 +124,6 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
             detailTextStyle: primaryTextStyle(),
             isReadMore: description.length > 80,
           ),
-          if (data.resolvedLocationLabel.validate().isNotEmpty) ...[
-            16.height,
-            titleWidget(
-              title: language.hintAddress,
-              detail: data.resolvedLocationLabel!,
-              detailTextStyle: primaryTextStyle(),
-            ),
-          ],
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -144,24 +139,7 @@ class _MyPostDetailScreenState extends State<MyPostDetailScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(language.jobPrice, style: secondaryTextStyle()),
-              4.height,
-              jobPrice > 0
-                  ? PriceWidget(
-                      price: jobPrice,
-                      isHourlyService: false,
-                      color: textPrimaryColorGlobal,
-                      isFreeService: false,
-                      size: 14,
-                    )
-                  : Text('—', style: boldTextStyle(size: 14)),
-              20.height,
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(language.lblEstimatedDate, style: secondaryTextStyle()),
+              Text(language.lblSelectArea, style: secondaryTextStyle()),
               4.height,
               Text(datePriceInfo, style: boldTextStyle(size: 14)),
               20.height,

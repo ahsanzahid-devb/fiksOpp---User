@@ -428,6 +428,9 @@ class LanguageHi extends BaseLanguage {
   String get lblEstimatedDate => "जॉब शेड्यूलिंग";
 
   @override
+  String get lblSelectArea => "क्षेत्र चुनें";
+
+  @override
   String get hintJobScheduling =>
       "मैं चाहता/चाहती हूँ कि काम मेरे घर ओस्लो, नॉर्वे में तारीख और समय पर हो";
 

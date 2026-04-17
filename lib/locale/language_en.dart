@@ -425,6 +425,9 @@ class LanguageEn extends BaseLanguage {
   String get lblEstimatedDate => "Job Scheduling";
 
   @override
+  String get lblSelectArea => "Select Area";
+
+  @override
   String get hintJobScheduling =>
       "I want job done at my place in Oslo, Norway on date at time";
 
