@@ -616,7 +616,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final serverMsg = registerResponse.message.validate();
       if (serverMsg.isNotEmpty &&
           _registerMessageIsEmailVerificationOnly(serverMsg)) {
-        toast(MSG_SIGNUP_WELCOME);
+        toast(
+          language.msgSignupCheckYourEmail,
+          length: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+        );
       } else if (serverMsg.isNotEmpty) {
         toast(serverMsg);
       } else {

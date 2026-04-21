@@ -1337,6 +1337,10 @@ class LanguageNo extends LanguageEn {
   String get transactionExpired => 'Transaksjon utløpt';
   @override
   String get verifyEmail => 'Bekreft e-post';
+
+  @override
+  String get msgSignupCheckYourEmail =>
+      'Vi har sendt en bekreftelseslenke til e-posten din.';
   @override
   String get minRead => 'min lesning';
   @override
@@ -1655,8 +1659,7 @@ class LanguageNo extends LanguageEn {
   @override
   String get asHandyman => 'som håndverker';
   @override
-  String get passwordLengthShouldBe =>
-      'Passordet må være mellom 8 og 14 tegn.';
+  String get passwordLengthShouldBe => 'Passordet må være mellom 8 og 14 tegn.';
   @override
   String get cash => 'Kontant';
   @override

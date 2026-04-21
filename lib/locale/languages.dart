@@ -1082,6 +1082,9 @@ abstract class BaseLanguage {
 
   String get verifyEmail;
 
+  /// After registration when the server sends an email verification link.
+  String get msgSignupCheckYourEmail;
+
   String get minRead;
 
   String get loadingChats;

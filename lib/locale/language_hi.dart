@@ -1695,6 +1695,10 @@ class LanguageHi extends BaseLanguage {
   String get verifyEmail => 'ईमेल सत्यापित करें';
 
   @override
+  String get msgSignupCheckYourEmail =>
+      'हमने आपके ईमेल पर एक सत्यापन लिंक भेजा है।';
+
+  @override
   String get minRead => 'मिनट पढ़ें';
 
   @override

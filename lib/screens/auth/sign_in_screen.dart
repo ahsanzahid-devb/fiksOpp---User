@@ -61,14 +61,11 @@ class _SignInScreenState extends State<SignInScreen> {
       passwordCont.text = getStringAsync(USER_PASSWORD);
     }
 
-    /// For Demo Purpose
     if (!widget.afterRegistration && await isIqonicProduct) {
       emailCont.text = DEFAULT_EMAIL;
       passwordCont.text = DEFAULT_PASS;
     }
   }
-
-  //region Methods
 
   void _handleLogin() {
     hideKeyboard(context);

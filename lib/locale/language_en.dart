@@ -1692,6 +1692,10 @@ class LanguageEn extends BaseLanguage {
   String get verifyEmail => 'Verify Email';
 
   @override
+  String get msgSignupCheckYourEmail =>
+      "We've sent a verification link to your email.";
+
+  @override
   String get minRead => 'min read';
 
   @override

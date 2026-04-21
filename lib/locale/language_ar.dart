@@ -1666,6 +1666,10 @@ class LanguageAr extends BaseLanguage {
   String get verifyEmail => 'التحقق من البريد الإلكتروني';
 
   @override
+  String get msgSignupCheckYourEmail =>
+      'أرسلنا رابط التحقق إلى بريدك الإلكتروني.';
+
+  @override
   String get minRead => 'اقرأ مين';
 
   @override
