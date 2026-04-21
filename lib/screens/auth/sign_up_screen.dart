@@ -26,6 +26,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
 
+/// When `true`, email/password signup sends Firebase SMS and only then calls the API
+/// (requires iOS APNs, SMS quota, etc.). When `false`, registration uses email/password
+/// only—same as temporarily disabling phone verification.
+///
+/// Re-enable phone verification later by setting this to `true`.
+const bool kSignupRequireFirebasePhoneOtp = false;
+
 class SignUpScreen extends StatefulWidget {
   final String? phoneNumber;
   final String? countryCode;
@@ -215,6 +222,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final e164 = firebasePhoneAuthE164(
       countryCallingCodeDigits: selectedCountry.phoneCode,
       localNumberRaw: mobileCont.text.trim(),
+    );
+    logPhoneAuthPreVerifyContext(
+      phoneE164: e164,
+      countryIso: selectedCountry.countryCode,
+      dialCode: '+${selectedCountry.phoneCode}',
+      localNumberLength: mobileCont.text.trim().length,
     );
     _logSignupPayload('firebase_verifyPhoneNumber', {
       'phoneE164': e164,
@@ -512,6 +525,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _logSignupPayload(
             'form_pending_before_firebase_otp', _pendingSignupData!.toJson());
 
+        if (!kSignupRequireFirebasePhoneOtp) {
+          _logSignupPayload('skip_firebase_phone_otp_direct_register', {
+            'note':
+                'kSignupRequireFirebasePhoneOtp=false — API register without Firebase phone UID',
+          });
+          appStore.setLoading(true);
+          final ok = await createUsers(tempRegisterData: _pendingSignupData!);
+          if (ok) {
+            _pendingSignupData = null;
+          }
+          return;
+        }
+
         await _sendSignupOtp();
       } else {
         toast(language.termsConditionsAccept);
@@ -659,6 +685,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             textFieldType: TextFieldType.NAME,
             controller: fNameCont,
             focus: fNameFocus,
+            // Use Done + nextFocus so nb_utils requestFocus runs; TextInputAction.next
+            // triggers ReadingOrderTraversal and crashes with some layouts (e.g. phone in Row).
+            textInputAction: TextInputAction.done,
             nextFocus: lNameFocus,
             errorThisFieldRequired: language.requiredText,
             decoration:
@@ -670,6 +699,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             textFieldType: TextFieldType.NAME,
             controller: lNameCont,
             focus: lNameFocus,
+            textInputAction: TextInputAction.done,
             nextFocus: userNameFocus,
             errorThisFieldRequired: language.requiredText,
             decoration:
@@ -681,6 +711,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             textFieldType: TextFieldType.USERNAME,
             controller: userNameCont,
             focus: userNameFocus,
+            textInputAction: TextInputAction.done,
             nextFocus: emailFocus,
             readOnly: widget.isOTPLogin.validate() ? widget.isOTPLogin : false,
             errorThisFieldRequired: language.requiredText,
@@ -694,6 +725,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             controller: emailCont,
             focus: emailFocus,
             errorThisFieldRequired: language.requiredText,
+            textInputAction: TextInputAction.done,
             nextFocus: mobileFocus,
             decoration:
                 inputDecoration(context, labelText: language.hintEmailTxt),
@@ -731,12 +763,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               10.width,
               // Mobile number text field...
               AppTextField(
-                textFieldType:
-                    isAndroid ? TextFieldType.PHONE : TextFieldType.NAME,
+                textFieldType: TextFieldType.PHONE,
                 controller: mobileCont,
                 focus: mobileFocus,
                 errorThisFieldRequired: language.requiredText,
-                nextFocus: passwordFocus,
+                textInputAction: TextInputAction.done,
+                // Password field is not in the tree when isOTPLogin — do not chain Next to passwordFocus.
+                nextFocus: widget.isOTPLogin ? null : passwordFocus,
                 decoration: inputDecoration(context,
                         labelText: "${language.hintContactNumberTxt}")
                     .copyWith(
@@ -759,6 +792,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   textFieldType: TextFieldType.PASSWORD,
                   controller: passwordCont,
                   focus: passwordFocus,
+                  textInputAction: TextInputAction.done,
                   obscureText: true,
                   readOnly:
                       widget.isOTPLogin.validate() ? widget.isOTPLogin : false,

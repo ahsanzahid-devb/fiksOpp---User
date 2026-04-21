@@ -156,12 +156,19 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       toast(language.sendingOTP);
 
       try {
+        final e164 = firebasePhoneAuthE164(
+          countryCallingCodeDigits: selectedCountry.phoneCode,
+          localNumberRaw: numberController.text.trim(),
+        );
+        logPhoneAuthPreVerifyContext(
+          phoneE164: e164,
+          countryIso: selectedCountry.countryCode,
+          dialCode: '+${selectedCountry.phoneCode}',
+          localNumberLength: numberController.text.trim().length,
+        );
         await FirebaseAuth.instance.verifyPhoneNumber(
           timeout: const Duration(seconds: 120),
-          phoneNumber: firebasePhoneAuthE164(
-            countryCallingCodeDigits: selectedCountry.phoneCode,
-            localNumberRaw: numberController.text.trim(),
-          ),
+          phoneNumber: e164,
           verificationCompleted: (PhoneAuthCredential credential) async {
             if (!mounted) return;
             try {

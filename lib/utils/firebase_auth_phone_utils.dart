@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -66,6 +68,72 @@ void logFirebaseAuthException(String tag, FirebaseAuthException e) {
   debugPrint('[FirebaseAuth|$tag] message=${e.message}');
   debugPrint(
       '[FirebaseAuth|$tag] email=${e.email} phoneNumber=${e.phoneNumber}');
+  final tenant = e.tenantId;
+  if (tenant != null && tenant.isNotEmpty) {
+    debugPrint('[FirebaseAuth|$tag] tenantId=$tenant');
+  }
+  final cred = e.credential;
+  if (cred != null) {
+    debugPrint('[FirebaseAuth|$tag] credentialProvider=${cred.providerId}');
+  }
+  logPhoneAuthFailureDiagnostics(tag: tag, e: e);
+}
+
+/// Extra context before calling [FirebaseAuth.verifyPhoneNumber].
+/// Filter logs: `[PhoneAuth|preVerify]`.
+void logPhoneAuthPreVerifyContext({
+  required String phoneE164,
+  String? countryIso,
+  String? dialCode,
+  int? localNumberLength,
+}) {
+  final mode = kReleaseMode
+      ? 'release'
+      : kProfileMode
+          ? 'profile'
+          : 'debug';
+  final buf = StringBuffer('[PhoneAuth|preVerify]')
+    ..write(' buildMode=$mode')
+    ..write(' platform=$defaultTargetPlatform')
+    ..write(' phoneE164=$phoneE164');
+  if (countryIso != null) buf.write(' countryIso=$countryIso');
+  if (dialCode != null) buf.write(' dialCode=$dialCode');
+  if (localNumberLength != null) {
+    buf.write(' localNumberLength=$localNumberLength');
+  }
+  debugPrint(buf.toString());
+  developer.log(buf.toString(), name: 'PhoneAuth.preVerify');
+}
+
+/// After any [FirebaseAuthException] from phone auth — runbook for iOS
+/// [internal-error] and other hard failures. Filter: `PhoneAuth.runbook`.
+void logPhoneAuthFailureDiagnostics({
+  required String tag,
+  required FirebaseAuthException e,
+}) {
+  final summary = firebaseAuthExceptionSummary(e);
+  developer.log(
+    'failure tag=$tag $summary',
+    name: 'PhoneAuth.failure',
+  );
+
+  if (defaultTargetPlatform == TargetPlatform.iOS) {
+    developer.log(
+      'iOS checklist (App Store Connect does NOT configure Firebase Phone Auth): '
+      'match Firebase Console iOS app bundle ID to Xcode; upload APNs Auth Key in '
+      'Firebase Project settings → Cloud Messaging; enable Push capability; '
+      'debug uses aps-environment=development entitlements, release uses production — '
+      'both need the key in Firebase; disable App Check debug enforcement or register '
+      'debug token; test on a physical device.',
+      name: 'PhoneAuth.runbook',
+    );
+    if (e.code == 'internal-error' || e.code == 'missing-app-credential') {
+      debugPrint(
+        '[PhoneAuth|runbook] iOS ${e.code}: see logs named PhoneAuth.runbook + '
+        'Firebase project fiksopp-bb927 → iOS app → APNs',
+      );
+    }
+  }
 }
 
 /// Firebase sometimes fires two failures for one [verifyPhoneNumber] call:

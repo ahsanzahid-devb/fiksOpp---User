@@ -6,7 +6,6 @@ import 'package:fiksOpp/screens/dashboard/fragment/booking_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/dashboard_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/profile_fragment.dart';
 import 'package:fiksOpp/screens/jobRequest/my_post_request_list_screen.dart';
-import 'package:fiksOpp/screens/service/search_service_screen.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/constant.dart';
@@ -15,7 +14,6 @@ import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../component/voice_search_component.dart';
 import '../../utils/app_configuration.dart';
 import '../newDashboard/dashboard_1/dashboard_fragment_1.dart';
@@ -24,10 +22,8 @@ import '../newDashboard/dashboard_3/dashboard_fragment_3.dart';
 import '../newDashboard/dashboard_4/dashboard_fragment_4.dart';
 
 class DashboardScreen extends StatefulWidget {
-  /// When true, open on Bookings tab (index 2).
   final bool? redirectToBooking;
 
-  /// Force initial tab (0=Home, 1=My Jobs, 2=Bookings, …). Used after login/signup to always land on Home.
   final int? initialTabIndex;
 
   DashboardScreen({this.redirectToBooking, this.initialTabIndex});
@@ -37,7 +33,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  static const String _defaultLocationLabel = 'Denmark';
+  static const String _defaultLocationLabel = '';
 
   int currentIndex = 0;
   bool isInterNetConnect = true;

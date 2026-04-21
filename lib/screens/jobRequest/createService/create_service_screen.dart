@@ -71,7 +71,6 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
   FocusNode descriptionFocus = FocusNode();
   FocusNode jobTitleFocus = FocusNode();
   FocusNode jobDescriptionFocus = FocusNode();
-  FocusNode jobDateFocus = FocusNode();
   String? selectedArea;
 
   static const List<String> kAreaOptions = [
@@ -682,7 +681,6 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
     jobDateCont.dispose();
     jobTitleFocus.dispose();
     jobDescriptionFocus.dispose();
-    jobDateFocus.dispose();
     super.dispose();
   }
 
@@ -784,7 +782,7 @@ class _CreateServiceScreenState extends State<CreateServiceScreen> {
                           textFieldType: TextFieldType.MULTILINE,
                           maxLines: 2,
                           focus: jobDescriptionFocus,
-                          nextFocus: jobDateFocus,
+                          // Area is a Dropdown — no TextField for jobDateFocus; chaining Next here crashed focus traversal.
                           enableChatGPT: appConfigurationStore.chatGPTStatus,
                           promptFieldInputDecorationChatGPT:
                               inputDecoration(context).copyWith(
