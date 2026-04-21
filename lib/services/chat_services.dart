@@ -199,6 +199,30 @@ class ChatServices extends BaseService {
         .handleError((e) => 0);
   }
 
+  /// Total unread chat messages for current user across all contacts.
+  Stream<int> getTotalUnreadCount({required String userId}) {
+    if (userId.trim().isEmpty) return Stream<int>.value(0);
+
+    return userRef!
+        .doc(userId)
+        .collection(CONTACT_COLLECTION)
+        .snapshots()
+        .asyncMap((contactsSnapshot) async {
+      int totalUnread = 0;
+      for (final contactDoc in contactsSnapshot.docs) {
+        final contactId = contactDoc.id;
+        final unreadMessagesSnapshot = await ref!
+            .doc(contactId)
+            .collection(userId)
+            .where('isMessageRead', isEqualTo: false)
+            .where('receiverId', isEqualTo: userId)
+            .get();
+        totalUnread += unreadMessagesSnapshot.docs.length;
+      }
+      return totalUnread;
+    }).handleError((_) => 0);
+  }
+
   Stream<QuerySnapshot> fetchLastMessageBetween(
       {required String senderId, required String receiverId}) {
     return ref!

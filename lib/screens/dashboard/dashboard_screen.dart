@@ -6,7 +6,6 @@ import 'package:fiksOpp/screens/dashboard/fragment/booking_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/dashboard_fragment.dart';
 import 'package:fiksOpp/screens/dashboard/fragment/profile_fragment.dart';
 import 'package:fiksOpp/screens/jobRequest/my_post_request_list_screen.dart';
-import 'package:fiksOpp/screens/service/search_service_screen.dart';
 import 'package:fiksOpp/utils/colors.dart';
 import 'package:fiksOpp/utils/common.dart';
 import 'package:fiksOpp/utils/constant.dart';
@@ -15,7 +14,6 @@ import 'package:fiksOpp/utils/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
-
 import '../../component/voice_search_component.dart';
 import '../../utils/app_configuration.dart';
 import '../newDashboard/dashboard_1/dashboard_fragment_1.dart';
@@ -50,16 +48,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (widget.initialTabIndex != null) {
       currentIndex = widget.initialTabIndex!.clamp(0, 4);
     } else if (widget.redirectToBooking.validate(value: false)) {
-      currentIndex = 2; // Booking is now at index 2 (after Home, My Jobs)
+      currentIndex = 2;
     }
     _ignoreFirebaseStreamUntil = true;
-    // Ignore FCM-driven tab switch for 60s after launch so login/signup land on home (index 0)
     Future.delayed(const Duration(seconds: 60), () {
       if (mounted) _ignoreFirebaseStreamUntil = false;
     });
 
     afterBuildCreated(() async {
-      /// Changes System theme when changed
       if (getIntAsync(THEME_MODE_INDEX) == THEME_MODE_SYSTEM) {
         appStore.setDarkMode(context.platformBrightness() == Brightness.dark);
       }
@@ -73,11 +69,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       };
     });
 
-    /// Handle Firebase Notification click and redirect to that Service & BookDetail screen
     LiveStream().on(LIVESTREAM_FIREBASE, (value) {
       if (_ignoreFirebaseStreamUntil) return;
       if (value == 3) {
-        // Chat at 3 when enabled, else Profile at 3
         currentIndex = appConfigurationStore.isEnableChat ? 4 : 3;
         setState(() {});
       }
@@ -156,7 +150,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Address search bar at the bottom - only show when on HOME tab (index 0)
             if (currentIndex == 0)
               Observer(
                 builder: (context) {
@@ -237,11 +230,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       label: language.booking,
                     ),
                     if (appConfigurationStore.isEnableChat)
-                      NavigationDestination(
-                        icon: ic_chat.iconImage(color: appTextSecondaryColor),
-                        selectedIcon:
-                            ic_chat.iconImage(color: context.primaryColor),
-                        label: language.lblChat,
+                      StreamBuilder<int>(
+                        stream: chatServices.getTotalUnreadCount(
+                            userId: appStore.uid.validate()),
+                        builder: (context, snapshot) {
+                          final unreadCount = snapshot.data ?? 0;
+
+                          Widget chatIcon(Color color) {
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                ic_chat.iconImage(color: color),
+                                if (unreadCount > 0)
+                                  Positioned(
+                                    right: -2,
+                                    top: -2,
+                                    child: Container(
+                                      height: 12,
+                                      width: 12,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        unreadCount > 9
+                                            ? '9+'
+                                            : unreadCount.toString(),
+                                        style: primaryTextStyle(
+                                          size: 6,
+                                          color: Colors.white,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }
+
+                          return NavigationDestination(
+                            icon: chatIcon(appTextSecondaryColor),
+                            selectedIcon: chatIcon(context.primaryColor),
+                            label: language.lblChat,
+                          );
+                        },
                       ),
                     Observer(
                       builder: (context) {
