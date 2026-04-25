@@ -30,6 +30,18 @@ class NotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inner = data.data;
+    final title = inner?.type.validate().isNotEmpty == true
+        ? inner!.type.validate().split('_').join(' ').capitalizeFirstLetter()
+        : inner?.activityType.validate().isNotEmpty == true
+            ? inner!.activityType
+                .validate()
+                .split('_')
+                .join(' ')
+                .capitalizeFirstLetter()
+            : 'Notification';
+    final message = parseHtmlString(inner?.message.validate() ?? '');
+
     return Container(
       width: context.width(),
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -56,22 +68,19 @@ class NotificationWidget extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${data.data!.type.validate().split('_').join(' ').capitalizeFirstLetter()}',
-                          style: boldTextStyle(size: 12))
+                  Text(title, style: boldTextStyle(size: 12))
                       .expand(),
                   Text(data.createdAt.validate(), style: secondaryTextStyle()),
                 ],
               ),
               4.height,
-              // Text(parseHtmlString(data.data!.message.validate()), style: secondaryTextStyle(), maxLines: 3, overflow: TextOverflow.ellipsis),
-              ReadMoreText(
-                parseHtmlString(data.data!.message.validate()),
-                trimLines: 2,
-                trimMode: TrimMode.Line,
-                trimCollapsedText: ' Read more', //Todo:
-                trimExpandedText: ' Read less', //Todo:
-                style: secondaryTextStyle(),
-              )
+              if (message.isNotEmpty)
+                Text(
+                  message,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: secondaryTextStyle(),
+                ),
             ],
           ).expand(),
         ],

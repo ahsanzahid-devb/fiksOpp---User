@@ -44,6 +44,15 @@ class UserService extends BaseService {
     });
   }
 
+  Future<UserData?> getUserByIdNull(int userId) {
+    return ref!.where('id', isEqualTo: userId).limit(1).get().then((value) {
+      if (value.docs.isNotEmpty) {
+        return UserData.fromJson(value.docs.first.data() as Map<String, dynamic>);
+      }
+      return null;
+    });
+  }
+
   Stream<List<UserData>> users({String? searchText}) {
     Query query = ref!;
 

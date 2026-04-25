@@ -11,6 +11,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../screens/booking/booking_detail_screen.dart';
+import '../screens/chat/chat_list_screen.dart';
+import '../screens/chat/user_chat_screen.dart';
 import '../screens/jobRequest/my_post_detail_screen.dart';
 import '../screens/service/service_detail_screen.dart';
 import '../screens/wallet/user_wallet_balance_screen.dart';
@@ -245,6 +247,40 @@ int? _postJobIdFromFlatBidData(Map<String, dynamic> d) {
   return int.tryParse(raw.toString());
 }
 
+int? _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  return int.tryParse(value?.toString() ?? '');
+}
+
+Future<void> _openChatFromPayload(Map<String, dynamic> additionalData) async {
+  final senderId = _asInt(additionalData['sender_id']);
+  final receiverId = _asInt(additionalData['receiver_id']);
+  final currentUserId = appStore.userId;
+  final targetId =
+      (senderId != null && senderId != currentUserId) ? senderId : receiverId;
+
+  if (targetId == null || targetId <= 0) {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(builder: (context) => ChatListScreen()),
+    );
+    return;
+  }
+
+  final receiverUser = await userService.getUserByIdNull(targetId);
+  if (receiverUser != null) {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => UserChatScreen(receiverUser: receiverUser),
+      ),
+    );
+  } else {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(builder: (context) => ChatListScreen()),
+    );
+  }
+}
+
 void handleNotificationClick(RemoteMessage message) {
   if (message.data['url'] != null && message.data['url'] is String) {
     commonLaunchUrl(
@@ -269,6 +305,25 @@ void handleNotificationClick(RemoteMessage message) {
       );
       if (additionalData.isEmpty) return;
 
+      final notificationType =
+          (additionalData['notification-type'] ?? additionalData['notification_type'])
+              ?.toString()
+              .toLowerCase();
+      final checkBookingType =
+          additionalData['check_booking_type']?.toString().toLowerCase();
+      final activityType =
+          additionalData['activity_type']?.toString().toLowerCase();
+      final type = additionalData['type']?.toString().toLowerCase();
+      final isChatNotification = notificationType == 'chat_message' ||
+          checkBookingType == 'chat' ||
+          activityType == 'chat_message' ||
+          (type?.contains('chat') ?? false);
+      if (isChatNotification) {
+        log('[NotificationClick] opening chat from payload');
+        _openChatFromPayload(additionalData);
+        return;
+      }
+
       int? postJobIdForBid;
       if (additionalData['notification-type']?.toString() ==
               'provider_send_bid' ||
@@ -292,16 +347,20 @@ void handleNotificationClick(RemoteMessage message) {
             ),
           ),
         );
-      } else if (additionalData.containsKey('id') &&
-          additionalData['id'] != null) {
-        final id = additionalData['id'];
+      } else if ((additionalData.containsKey('booking_id') &&
+              additionalData['booking_id'] != null) ||
+          (additionalData.containsKey('id') && additionalData['id'] != null)) {
+        final bookingId = _asInt(additionalData['booking_id']) ??
+            _asInt(additionalData['id']);
         if (additionalData.containsKey('check_booking_type') &&
             additionalData['check_booking_type'] == 'booking') {
-          navigatorKey.currentState!.push(
-            MaterialPageRoute(
-              builder: (context) => BookingDetailScreen(bookingId: id.toInt()),
-            ),
-          );
+          if (bookingId != null) {
+            navigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => BookingDetailScreen(bookingId: bookingId),
+              ),
+            );
+          }
         } else if (additionalData.containsKey('type') &&
             additionalData['type'] == 'update_wallet') {
           navigatorKey.currentState!.push(
@@ -311,13 +370,16 @@ void handleNotificationClick(RemoteMessage message) {
       }
       if (additionalData.containsKey('service_id') &&
           additionalData["service_id"] != null) {
-        navigatorKey.currentState!.push(
-          MaterialPageRoute(
-            builder: (context) => ServiceDetailScreen(
-              serviceId: additionalData["service_id"].toInt(),
+        final serviceId = _asInt(additionalData["service_id"]);
+        if (serviceId != null) {
+          navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => ServiceDetailScreen(
+                serviceId: serviceId,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
   }

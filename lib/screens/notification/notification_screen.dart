@@ -4,6 +4,8 @@ import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/model/notification_model.dart';
 import 'package:fiksOpp/network/rest_apis.dart';
 import 'package:fiksOpp/screens/booking/booking_detail_screen.dart';
+import 'package:fiksOpp/screens/chat/chat_list_screen.dart';
+import 'package:fiksOpp/screens/chat/user_chat_screen.dart';
 import 'package:fiksOpp/screens/jobRequest/my_post_detail_screen.dart';
 import 'package:fiksOpp/screens/notification/components/notification_widget.dart';
 import 'package:fiksOpp/screens/wallet/user_wallet_balance_screen.dart';
@@ -21,6 +23,115 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   Future<List<NotificationData>>? future;
+  bool _notificationTapInProgress = false;
+
+  List<NotificationData> _dedupeNotifications(List<NotificationData> input) {
+    final seen = <String>{};
+    final out = <NotificationData>[];
+    for (final n in input) {
+      final d = n.data;
+      final key = [
+        n.id.validate(),
+        n.createdAt.validate(),
+        d?.notificationType.validate() ?? '',
+        d?.activityType.validate() ?? '',
+        d?.message.validate() ?? '',
+        (d?.bookingId ?? 0).toString(),
+        (d?.postRequestId ?? 0).toString(),
+      ].join('|');
+      if (seen.add(key)) {
+        out.add(n);
+      }
+    }
+    return out;
+  }
+  bool _hasType(NotificationInnerData inner, String expected) {
+    final nType = inner.notificationType.validate().toLowerCase();
+    final type = inner.type.validate().toLowerCase();
+    final activity = inner.activityType.validate().toLowerCase();
+    final needle = expected.toLowerCase();
+    return nType.contains(needle) ||
+        type.contains(needle) ||
+        activity.contains(needle);
+  }
+
+  bool _isChatNotification(NotificationInnerData inner) {
+    final nType = inner.notificationType.validate().toLowerCase();
+    final type = inner.type.validate().toLowerCase();
+    final activity = inner.activityType.validate().toLowerCase();
+    final checkBookingType = inner.checkBookingType.validate().toLowerCase();
+    return nType.contains('chat_message') ||
+        type.contains('chat') ||
+        activity.contains('chat_message') ||
+        checkBookingType == 'chat';
+  }
+
+  int _resolveBookingId(NotificationInnerData inner) {
+    return inner.bookingId ?? inner.id ?? 0;
+  }
+
+  int _resolvePostRequestId(NotificationInnerData inner) {
+    return inner.postRequestId ?? inner.jobId ?? inner.id ?? 0;
+  }
+
+  Future<void> _openPostRequest(
+    BuildContext context,
+    int postRequestId,
+    NotificationData data,
+  ) async {
+    if (postRequestId <= 0) {
+      log(
+          '[NotificationTap] invalid postRequestId for notificationId=${data.id}');
+      toast(language.postJobDataNotFound);
+      return;
+    }
+
+    log('[NotificationTap] opening post detail postRequestId=$postRequestId '
+        'notificationId=${data.id}');
+    try {
+      final response =
+          await getPostJobDetail({PostJob.postRequestId: postRequestId});
+      if (response.postRequestDetail != null) {
+        await MyPostDetailScreen(
+          postJobData: response.postRequestDetail!,
+          postRequestId: postRequestId,
+          callback: () {},
+        ).launch(context);
+      } else {
+        toast(language.postJobDataNotFound);
+      }
+    } catch (e) {
+      log('[NotificationTap] post detail error: $e');
+      toast(e.toString());
+    }
+  }
+
+  Future<void> _openChatFromNotification(
+    BuildContext context,
+    NotificationInnerData inner,
+    NotificationData data,
+  ) async {
+    final senderId = inner.senderId;
+    final receiverId = inner.receiverId;
+    final currentUserId = appStore.userId;
+    final targetId =
+        (senderId != null && senderId != currentUserId) ? senderId : receiverId;
+
+    if (targetId == null || targetId <= 0) {
+      log('[NotificationTap] chat target id missing for notificationId=${data.id}');
+      await ChatListScreen().launch(context);
+      return;
+    }
+
+    final receiverUser = await userService.getUserByIdNull(targetId);
+    if (receiverUser != null) {
+      log('[NotificationTap] opening direct chat with userId=$targetId');
+      await UserChatScreen(receiverUser: receiverUser).launch(context);
+    } else {
+      log('[NotificationTap] chat user not found, opening chat list userId=$targetId');
+      await ChatListScreen().launch(context);
+    }
+  }
 
   @override
   void initState() {
@@ -69,9 +180,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
           );
         },
         onSuccess: (list) {
+          final visibleList = _dedupeNotifications(list);
           return AnimatedListView(
             shrinkWrap: true,
-            itemCount: list.length,
+            itemCount: visibleList.length,
             slideConfiguration: sliderConfigurationGlobal,
             listAnimationType: ListAnimationType.FadeIn,
             fadeInConfiguration: FadeInConfiguration(duration: 2.seconds),
@@ -88,46 +200,68 @@ class _NotificationScreenState extends State<NotificationScreen> {
               return 2.seconds.delay;
             },
             itemBuilder: (context, index) {
-              NotificationData data = list[index];
+              NotificationData data = visibleList[index];
 
               return GestureDetector(
-                onTap: () async {
-                  if (data.data!.notificationType.validate().contains(WALLET)) {
-                    if (appConfigurationStore.onlinePaymentStatus) {
-                      UserWalletBalanceScreen().launch(context);
-                    }
-                  } else if (data.data!.notificationType
-                          .validate()
-                          .contains(BOOKING) ||
-                      data.data!.notificationType
-                          .validate()
-                          .contains(PAYMENT_MESSAGE_STATUS)) {
-                    await BookingDetailScreen(
-                            bookingId: data.data!.id.validate())
-                        .launch(context);
-                    init();
-                    setState(() {});
-                  } else if (data.data!.notificationType
-                      .validate()
-                      .contains(PROVIDER_SEND_BID)) {
-                    int jobId = data.data!.jobId ?? 0;
+                 onTap: () async {
+                  if (_notificationTapInProgress) {
+                    log('[NotificationTap] ignored duplicate tap');
+                    return;
+                  }
+                  _notificationTapInProgress = true;
 
-                    getPostJobDetail({PostJob.postRequestId: jobId})
-                        .then((response) {
-                      if (response.postRequestDetail != null) {
-                        MyPostDetailScreen(
-                          postJobData: response.postRequestDetail!,
-                          postRequestId: jobId,
-                          callback: () {},
-                        ).launch(context);
-                      } else {
-                        toast(language.postJobDataNotFound);
+                  final inner = data.data;
+                  log(
+                      '[NotificationTap] start notificationId=${data.id} hasInner=${inner != null}');
+                  if (inner == null) {
+                    log('[NotificationTap] no payload for notificationId=${data.id}');
+                    toast('No action available for this notification');
+                    _notificationTapInProgress = false;
+                    return;
+                  }
+
+                  try {
+                    final bookingId = _resolveBookingId(inner);
+                    final postRequestId = _resolvePostRequestId(inner);
+                    final typeSummary =
+                        'type=${inner.type} activity=${inner.activityType} notificationType=${inner.notificationType}';
+                    log('[NotificationTap] parsed bookingId=$bookingId '
+                        'postRequestId=$postRequestId $typeSummary');
+
+                    if (_hasType(inner, WALLET)) {
+                      log('[NotificationTap] branch=wallet');
+                      if (appConfigurationStore.onlinePaymentStatus) {
+                        await UserWalletBalanceScreen().launch(context);
                       }
-                    }).catchError((e) {
-                      toast(e.toString());
-                    });
-                  } else {
-                    //
+                    } else if (_isChatNotification(inner)) {
+                      log('[NotificationTap] branch=chat');
+                      await _openChatFromNotification(context, inner, data);
+                    } else if (_hasType(inner, BOOKING) ||
+                        _hasType(inner, PAYMENT_MESSAGE_STATUS)) {
+                      log('[NotificationTap] branch=booking');
+                      if (bookingId > 0) {
+                        await BookingDetailScreen(bookingId: bookingId)
+                            .launch(context);
+                      } else {
+                        toast('Booking data not found');
+                      }
+                    } else if (_hasType(inner, PROVIDER_SEND_BID)) {
+                      log('[NotificationTap] branch=provider_send_bid');
+                      await _openPostRequest(context, postRequestId, data);
+                    } else {
+                      log('[NotificationTap] branch=fallback');
+                      if (postRequestId > 0) {
+                        await _openPostRequest(context, postRequestId, data);
+                      } else if (bookingId > 0) {
+                        await BookingDetailScreen(bookingId: bookingId)
+                            .launch(context);
+                      } else {
+                        toast('No action available for this notification');
+                      }
+                    }
+                  } finally {
+                    _notificationTapInProgress = false;
+                    log('[NotificationTap] end notificationId=${data.id}');
                   }
                 },
                 child: NotificationWidget(data: data),
