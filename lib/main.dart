@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:fiksOpp/app_theme.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/locale/app_localizations.dart';
 import 'package:fiksOpp/locale/language_en.dart';
 import 'package:fiksOpp/locale/languages.dart';
@@ -115,6 +118,13 @@ void main() async {
       print('Firebase init failed: $e');
     }
   }
+
+  // Meta / Facebook App Events — install + first app open attribution.
+  // IMPORTANT: This MUST run BEFORE runApp() so the SDK is initialized on first app launch.
+  // - initialize(): enables advertiser tracking and emits fb_mobile_first_app_launch once.
+  // - explicit app-open activation logging is disabled to avoid fb_mobile_activate_app events.
+  // Wrapped: a tracking failure must never block app startup.
+  await FacebookEventsService.instance.initialize();
 
   passwordLengthGlobal = PASSWORD_MIN_LENGTH;
   appButtonBackgroundColorGlobal = primaryColor;

@@ -1,11 +1,11 @@
 buildscript {
-    ext.kotlin_version = '2.1.0'
+    ext.kotlin_version = '2.3.10'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -16,22 +16,27 @@ allprojects {
         maven {
             url "https://phonepe.mycloudrepo.io/public/repositories/phonepe-intentsdk-android"
         }
+        maven { url "https://jitpack.io" }
     }
 }
 
-// Third-party plugins (e.g. razorpay_flutter) often default to Java 8; JDK 21+ warns
-// "source value 8 is obsolete". Align every Android module with the app (Java 11).
+// Force every Android subproject to align with the app: Java 11 + compileSdk 36.
+// Some plugins (e.g. midpay) hardcode older compileSdkVersion 32 which forces
+// Gradle to require platforms;android-32. Overriding here keeps a single SDK target.
 subprojects { subproject ->
     subproject.afterEvaluate {
         if (subproject.plugins.hasPlugin('com.android.library') ||
                 subproject.plugins.hasPlugin('com.android.application')) {
-            subproject.android.compileOptions {
-                sourceCompatibility JavaVersion.VERSION_11
-                targetCompatibility JavaVersion.VERSION_11
+            subproject.android {
+                compileSdkVersion 36
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
             }
         }
         subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
         }
     }
 }

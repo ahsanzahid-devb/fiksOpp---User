@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/component/base_scaffold_body.dart';
 import 'package:fiksOpp/component/responsive_container.dart';
 import 'package:fiksOpp/main.dart';
@@ -221,6 +222,10 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void onLoginSuccessRedirection() {
+    // Meta event — fire once per successful authentication, regardless of
+    // entry path (email/password, Google, Apple, OTP).
+    unawaited(FacebookEventsService.instance
+        .logLoginSuccess(method: appStore.loginType));
     afterBuildCreated(() {
       appStore.setLoading(false);
       if (!mounted) {

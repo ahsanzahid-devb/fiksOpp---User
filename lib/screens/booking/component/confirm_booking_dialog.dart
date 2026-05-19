@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/generated/assets.dart';
 import 'package:fiksOpp/main.dart';
 import 'package:fiksOpp/model/package_data_model.dart';
@@ -129,6 +132,17 @@ class _ConfirmBookingDialogState extends State<ConfirmBookingDialog> {
 
     appStore.setLoading(true);
 
+    // Meta event — initiated checkout (fb_mobile_initiated_checkout).
+    final String _fbCurrency =
+        appConfigurationStore.currencyCode.validate(value: 'USD');
+    final double? _fbAmount = widget.bookingPrice?.toDouble();
+    unawaited(FacebookEventsService.instance.logStartBooking(
+      contentId: widget.data.serviceDetail!.id.validate().toString(),
+      amount: _fbAmount,
+      currency: _fbCurrency,
+      numItems: widget.qty,
+    ));
+
     saveBooking(request).then((bookingDetailResponse) async {
       appStore.setLoading(false);
 
@@ -144,6 +158,25 @@ class _ConfirmBookingDialogState extends State<ConfirmBookingDialog> {
         bookings: bookingDetailResponse,
         isForAdvancePayment: true,
         onPaymentSuccess: () {
+          // Meta events — booking_completed + fb_mobile_purchase. Fired here
+          // because PaymentScreen invokes this callback ONLY on success.
+          final String _bookingId =
+              bookingDetailResponse.bookingDetail!.id.toString();
+          final double _paidAmount =
+              (_fbAmount ?? 0).toDouble();
+          unawaited(FacebookEventsService.instance.logBookingCompleted(
+            bookingId: _bookingId,
+            amount: _paidAmount,
+            currency: _fbCurrency,
+          ));
+          if (_paidAmount > 0) {
+            unawaited(FacebookEventsService.instance.logPaymentSuccess(
+              amount: _paidAmount,
+              currency: _fbCurrency,
+              bookingId: _bookingId,
+            ));
+          }
+
           final ctx = navigatorKey.currentContext;
           if (ctx == null || !ctx.mounted) return;
           showInDialog(

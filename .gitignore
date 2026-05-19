@@ -27,6 +27,12 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+
+# iOS generated (do NOT ignore ios/Podfile, ios/Runner/, ios/Flutter/*.xcconfig)
+# Regenerate: flutter pub get && cd ios && pod install
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/ephemeral/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
@@ -44,6 +50,9 @@ app.*.symbols
 /android/.gradle/
 /android/local.properties
 /android/captures/
+/android/build/
+/android/app/build/
+/android/build/ios/
 # Obfuscation related
 app.*.map.json
 

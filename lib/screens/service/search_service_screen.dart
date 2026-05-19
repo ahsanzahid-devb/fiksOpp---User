@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:fiksOpp/component/base_scaffold_widget.dart';
 import 'package:fiksOpp/component/loader_widget.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/store/filter_store.dart';
 import 'package:flutter/material.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -141,6 +144,12 @@ class _SearchServiceScreenState extends State<SearchServiceScreen> {
 
                         filterStore.setSearch(s);
                         appStore.setLoading(true);
+
+                        // Meta event — only fire when there is a real query.
+                        if (s.trim().isNotEmpty) {
+                          unawaited(FacebookEventsService.instance
+                              .logSearch(searchString: s.trim()));
+                        }
 
                         fetchAllServiceData();
                         setState(() {});

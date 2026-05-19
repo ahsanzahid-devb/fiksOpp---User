@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:fiksOpp/component/back_widget.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/component/loader_widget.dart';
 import 'package:fiksOpp/component/responsive_container.dart';
 import 'package:fiksOpp/component/selected_item_widget.dart';
@@ -611,6 +613,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final registerResponse = await createUser(tempRegisterData.toJson());
       registerResponse.userData!.password = passwordCont.text.trim();
+
+      // Meta event — new account created. Fired once per successful registration;
+      // do NOT pass email/phone/name (PII) to Meta.
+      unawaited(FacebookEventsService.instance.logSignUpSuccess(
+        method: widget.isOTPLogin ? 'otp' : 'email',
+      ));
 
       appStore.setLoading(false);
       final serverMsg = registerResponse.message.validate();

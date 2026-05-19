@@ -4,7 +4,7 @@ description: A new Flutter project.
 publish_to: "none"
 # iOS: CFBundleShortVersionString / Android: versionName — must increase for each store submission.
 # +NNN: build number (CFBundleVersion / versionCode) — must increase for each upload.
-version: 11.14.10+317
+version: 11.14.11+318
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -100,6 +100,9 @@ dependencies:
   share_plus: ^11.0.0
   dotted_border: ^3.1.0
   device_preview: ^1.2.0
+
+  # ANALYTICS — Meta / Facebook App Events (install/open/conversion tracking)
+  facebook_app_events: ^0.20.1
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:fiksOpp/component/base_scaffold_widget.dart';
 import 'package:fiksOpp/component/loader_widget.dart';
 import 'package:fiksOpp/component/online_service_icon_widget.dart';
+import 'package:fiksOpp/core/services/facebook_events_service.dart';
 import 'package:fiksOpp/component/price_widget.dart';
 import 'package:fiksOpp/component/view_all_label_component.dart';
 import 'package:fiksOpp/main.dart';
@@ -71,6 +74,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen>
       serviceId: widget.serviceId.validate(),
       customerId: appStore.userId,
     );
+
+    // Meta event — content view (fb_mobile_content_view).
+    unawaited(FacebookEventsService.instance.logContentView(
+      contentId: widget.serviceId.validate().toString(),
+      contentType: 'service',
+    ));
   }
 
   //region Widgets

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Meta / Facebook App Events — TESTING credentials.
+        App created at developers.facebook.com → Meta for Developers.
+          • facebook_app_id        → Meta App ID
+          • facebook_client_token  → App → Settings → Advanced → Client Token
+          • fb_login_protocol_scheme = "fb" + facebook_app_id (no space)
+          • facebook_display_name  → Display name shown in Meta dashboards
+        The "fb..." key MUST stay a string resource; the Facebook SDK reads it
+        at startup and a literal in the manifest will be rejected by AAPT.
+    -->
+    <string name="facebook_app_id" translatable="false">990028406873562</string>
+    <string name="facebook_client_token" translatable="false">24852704c38f03a8b9de15182966e3f6</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb990028406873562</string>
+    <string name="facebook_display_name" translatable="false">Fiksopp live style</string>
+</resources>
