@@ -12,6 +12,16 @@
 .swiftpm/
 migrate_working_dir/
 
+# Secrets & signing — NEVER commit (rotate if ever pushed to remote)
+*.p8
+AuthKey_*.p8
+**/key.properties
+**/*.jks
+**/*.keystore
+
+# Local tooling venv (icon generation)
+.venv_icon/
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -33,6 +43,9 @@ migrate_working_dir/
 /ios/Pods/
 /ios/.symlinks/
 /ios/Flutter/ephemeral/
+**/xcuserdata/
+**/*.xcuserstate
+**/DerivedData/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/

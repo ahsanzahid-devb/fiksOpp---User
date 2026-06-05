@@ -1,4 +1,7 @@
 {
+  "dart.flutterSdkPath": "/Users/zubairhusnain/development/flutter",
+  "dart.analysisServerFolding": false,
+  "git.autoRefresh": false,
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
